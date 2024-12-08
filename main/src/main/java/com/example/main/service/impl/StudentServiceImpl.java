@@ -30,9 +30,9 @@ public class StudentServiceImpl implements StudentService
      //Необходимые поля
     private final StudentRepository reposStudent;
 
-    private final TaskRepository reposTask;
+   // private final TaskRepository reposTask;
 
-    private final SequnceRepository reposSequnce;
+    //private final SequnceRepository reposSequnce;
 
     private final TeacherRepository reposTeacher;
     
@@ -69,7 +69,8 @@ public class StudentServiceImpl implements StudentService
     @Override
     public Task getTask(Long idStudent, Long idTask) 
     {
-        return reposStudent.getTaskByStudentAndTaskId(idStudent, idTask);
+            return null;
+     //   return reposStudent.getTaskByStudentAndTaskId(idStudent, idTask);
     }
 
     @Override
@@ -82,27 +83,27 @@ public class StudentServiceImpl implements StudentService
     @Override
     public void postAnswerTask(Long idStudent, Long idTask, String AnswerTask) 
     {
-        SequenceOfPrimitives sequence = reposSequnce.findById(reposSequnce.findSolutionIdByStudentAndTask(idStudent, idTask)).orElseThrow();
-        sequence.setSequenceText(AnswerTask);
+        // SequenceOfPrimitives sequence = reposSequnce.findById(reposSequnce.findSolutionIdByStudentAndTask(idStudent, idTask)).orElseThrow();
+        // sequence.setSequenceText(AnswerTask);
     }
 
-    @Override
-    public Integer getMark(Long idStudent, Long idTask) 
-    {
-        return reposTeacher.findMarkByStudentAndTask(idStudent, idTask);
-    }
+    // @Override
+    // public Integer getMark(Long idStudent, Long idTask) 
+    // {
+    //     return reposTeacher.findMarkByStudentAndTask(idStudent, idTask);
+    // }
 
-    @Override
-    public List<Integer> getAllMarks(Long idStudent) 
-    {
-        Student student = reposStudent.findById(idStudent).orElseThrow();        
-        List<Integer> marksStydent = new ArrayList<>();
-        for (Task tasks : student.getTasks()) 
-        {
-            marksStydent.add(reposTeacher.findMarkByStudentAndTask(idStudent, tasks.getTaskId()));
-        }
-        return marksStydent;
-    }
+    // @Override
+    // public List<Integer> getAllMarks(Long idStudent) 
+    // {
+    //     Student student = reposStudent.findById(idStudent).orElseThrow();        
+    //     List<Integer> marksStydent = new ArrayList<>();
+    //     for (Task tasks : student.getTasks()) 
+    //     {
+    //         marksStydent.add(reposTeacher.findMarkByStudentAndTask(idStudent, tasks.getTaskId()));
+    //     }
+    //     return marksStydent;
+    // }
 
 
 

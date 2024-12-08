@@ -20,8 +20,8 @@ public interface StudentService
 
     //Журнал
 
-    Integer getMark(Long idStudent, Long idTask);
+    // Integer getMark(Long idStudent, Long idTask);
 
-    List<Integer> getAllMarks(Long idStudent);
+    // List<Integer> getAllMarks(Long idStudent);
 
 }

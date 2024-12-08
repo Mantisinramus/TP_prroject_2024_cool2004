@@ -12,7 +12,7 @@ public interface TeacherService
 {
     //вход
 
-    Long auth(String log, String password);
+ //   Long auth(String log, String password);
 
     void changePassword(Long idTeacher, String newpassword);
 
@@ -48,13 +48,13 @@ public interface TeacherService
 
     //Журнал пока хз, надеюсь сегодня придумаю что-нибудь пжжжж ГОСПОДИ ПОМОГИ МНЕ ЗАЩИТИ ГРЕШНЫЕ ДУШИ
 
-    Integer getMarkByStydentByTask(Long idStudent, Long idTask);
+    //Integer getMarkByStydentByTask(Long idStudent, Long idTask);
 
-    List<Integer> getMarksByStydent(Long idStudent);
+    // List<Integer> getMarksByStydent(Long idStudent);
 
-    //List<> getMarksByStydents(); - не могу придумать
+    // //List<> getMarksByStydents(); - не могу придумать
 
-    void setMarkbyStydent(Long idStudent, Long idTask, Integer mark);
+    // void setMarkbyStydent(Long idStudent, Long idTask, Integer mark);
 
     //Работа с решениеми
 

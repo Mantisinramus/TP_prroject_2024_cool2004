@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostAuthorize;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,16 +32,16 @@ public class TeacherController {
         private final TeacherService teacherService;
 
     // Авторизация учителя
-    @PostMapping("/auth")
-    public ResponseEntity<Long> auth(@RequestParam String log, @RequestParam String password) {
-        Long teacherId = teacherService.auth(log, password);
+    // @PostMapping("/auth")
+    // public ResponseEntity<Long> auth(@RequestParam String log, @RequestParam String password) {
+    //     Long teacherId = teacherService.auth(log, password);
 
-        if (teacherId == 0) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(teacherId); // Неверные данные
-        }
+    //     if (teacherId == 0) {
+    //         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(teacherId); // Неверные данные
+    //     }
 
-        return ResponseEntity.ok(teacherId); // Возвращаем ID учителя
-    }
+    //     return ResponseEntity.ok(teacherId); // Возвращаем ID учителя
+    // }
 
     // Изменение пароля учителя
     @PutMapping("/{idTeacher}/password")
@@ -154,26 +154,26 @@ public class TeacherController {
     }
 
     // Получение оценки по студенту и задаче
-    @GetMapping("/students/{idStudent}/tasks/{idTask}/mark")
-    public ResponseEntity<Integer> getMarkByStudentAndTask(
-            @PathVariable Long idStudent,
-            @PathVariable Long idTask) {
-        return ResponseEntity.ok(teacherService.getMarkByStydentByTask(idStudent, idTask));
-    }
+    // @GetMapping("/students/{idStudent}/tasks/{idTask}/mark")
+    // public ResponseEntity<Integer> getMarkByStudentAndTask(
+    //         @PathVariable Long idStudent,
+    //         @PathVariable Long idTask) {
+    //     return ResponseEntity.ok(teacherService.getMarkByStydentByTask(idStudent, idTask));
+    // }
 
     // Получение всех оценок студента
-    @GetMapping("/students/{idStudent}/marks")
-    public ResponseEntity<List<Integer>> getMarksByStudent(@PathVariable Long idStudent) {
-        return ResponseEntity.ok(teacherService.getMarksByStydent(idStudent));
-    }
+    // @GetMapping("/students/{idStudent}/marks")
+    // public ResponseEntity<List<Integer>> getMarksByStudent(@PathVariable Long idStudent) {
+    //     return ResponseEntity.ok(teacherService.getMarksByStydent(idStudent));
+    // }
 
     // Установка оценки студенту за задачу
-    @PostMapping("/students/{idStudent}/tasks/{idTask}/mark")
-    public ResponseEntity<String> setMarkForStudent(
-            @PathVariable Long idStudent,
-            @PathVariable Long idTask,
-            @RequestParam Integer mark) {
-        teacherService.setMarkbyStydent(idStudent, idTask, mark);
-        return ResponseEntity.ok("Mark updated successfully");
-    }
+    // @PostMapping("/students/{idStudent}/tasks/{idTask}/mark")
+    // public ResponseEntity<String> setMarkForStudent(
+    //         @PathVariable Long idStudent,
+    //         @PathVariable Long idTask,
+    //         @RequestParam Integer mark) {
+    //     teacherService.setMarkbyStydent(idStudent, idTask, mark);
+    //     return ResponseEntity.ok("Mark updated successfully");
+    // }
 }

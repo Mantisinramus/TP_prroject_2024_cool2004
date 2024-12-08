@@ -66,26 +66,26 @@ public class StudentController
     }
 
     // Получение оценки за конкретную задачу
-    @GetMapping("/{idStudent}/tasks/{idTask}/mark")
-    public ResponseEntity<Integer> getMark(
-            @PathVariable Long idStudent,
-            @PathVariable Long idTask) {
+    // @GetMapping("/{idStudent}/tasks/{idTask}/mark")
+    // public ResponseEntity<Integer> getMark(
+    //         @PathVariable Long idStudent,
+    //         @PathVariable Long idTask) {
         
-        Integer mark = studentService.getMark(idStudent, idTask);
+    //     Integer mark = studentService.getMark(idStudent, idTask);
         
-        if (mark == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();  // Оценка не найдена
-        }
+    //     if (mark == null) {
+    //         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();  // Оценка не найдена
+    //     }
         
-        return ResponseEntity.ok(mark);  // Возвращаем оценку
-    }
+    //     return ResponseEntity.ok(mark);  // Возвращаем оценку
+    // }
 
     // Получение всех оценок студента
-    @GetMapping("/{idStudent}/marks")
-    public ResponseEntity<List<Integer>> getAllMarks(@PathVariable Long idStudent) {
-        List<Integer> marks = studentService.getAllMarks(idStudent);
-        return ResponseEntity.ok(marks);  // Возвращаем все оценки студента
-    }
+    // @GetMapping("/{idStudent}/marks")
+    // public ResponseEntity<List<Integer>> getAllMarks(@PathVariable Long idStudent) {
+    //     List<Integer> marks = studentService.getAllMarks(idStudent);
+    //     return ResponseEntity.ok(marks);  // Возвращаем все оценки студента
+    // }
 
 
 }

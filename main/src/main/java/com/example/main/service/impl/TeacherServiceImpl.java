@@ -46,35 +46,36 @@ public class TeacherServiceImpl implements TeacherService {
 
     //Работа с Учителем
 
-    public Long auth(String log, String password) 
-    {
-        // Ищем ID учитель по логину
-        Long teacherId = reposTeacher.findTeacherIdByLogin(log);
+    // public Long auth(String log, String password) 
+    // {
+    //     // Ищем ID учитель по логину
+    //     Long teacherId = reposTeacher.findTeacherIdByLogin(log);
     
-        // Если учитель с таким логином не найден
-        if (teacherId == null) {
-            // throw new StudentNotFoundException("Student not found with login: " + log);
-        }   
+    //     // Если учитель с таким логином не найден
+    //     if (teacherId == null) {
+    //         // throw new StudentNotFoundException("Student not found with login: " + log);
+    //     }   
     
-        // Если учитель найден, извлекаем его из базы
-        Teacher teacher = reposTeacher.findById(teacherId).get();
+    //     // Если учитель найден, извлекаем его из базы
+    //     Teacher teacher = reposTeacher.findById(teacherId).get();
     
-        // Проверяем пароль
-        if (teacher.getTeacherPassword().equals(password)) {
-            // Если пароль верный, возвращаем ID учителя
-            return teacherId;
-        } else {
-            // Если пароль неверный, выбрасываем исключение
-            //throw new IncorrectPasswordException("Incorrect password for student with login: " + log);
-            return (long)0;
-        }
-    }
+    //     // Проверяем пароль
+    //     if (teacher.getTeacherPassword().equals(password)) {
+    //         // Если пароль верный, возвращаем ID учителя
+    //         return teacherId;
+    //     } else {
+    //         // Если пароль неверный, выбрасываем исключение
+    //         //throw new IncorrectPasswordException("Incorrect password for student with login: " + log);
+    //         return (long)0;
+    //     }
+    // }
 
     @Override
     public void changePassword(Long idTeacher, String newpassword) 
     {
         Teacher teacher = reposTeacher.findById(idTeacher).orElseThrow();
         teacher.setTeacherPassword(newpassword);
+        reposTeacher.save(teacher);
     }
 
 
@@ -83,7 +84,8 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public Long searchStudentInitial(String Initial) 
     {
-        return reposStudent.getIdStudentByInitials(Initial);
+            return null;
+       // return reposStudent.getIdStudentByInitials(Initial);
     }
 
     @Override
@@ -178,31 +180,31 @@ public class TeacherServiceImpl implements TeacherService {
 
 
     //Журнал
-    @Override
-    public Integer getMarkByStydentByTask(Long idStudent, Long idTask) 
-    {
-        return reposTeacher.findMarkByStudentAndTask(idStudent, idTask);
-    }
+    // @Override
+    // public Integer getMarkByStydentByTask(Long idStudent, Long idTask) 
+    // {
+    //     return reposTeacher.findMarkByStudentAndTask(idStudent, idTask);
+    // }
 
-    @Override
-    public List<Integer> getMarksByStydent(Long idStudent) 
-    {
-        Student student = reposStudent.findById(idStudent).orElseThrow();        
-        List<Integer> marksStydent = new ArrayList<>();
-        for (Task tasks : student.getTasks()) 
-        {
-            marksStydent.add(reposTeacher.findMarkByStudentAndTask(idStudent, tasks.getTaskId()));
-        }
-        return marksStydent;
-    }
+    // @Override
+    // public List<Integer> getMarksByStydent(Long idStudent) 
+    // {
+    //     Student student = reposStudent.findById(idStudent).orElseThrow();        
+    //     List<Integer> marksStydent = new ArrayList<>();
+    //     for (Task tasks : student.getTasks()) 
+    //     {
+    //         marksStydent.add(reposTeacher.findMarkByStudentAndTask(idStudent, tasks.getTaskId()));
+    //     }
+    //     return marksStydent;
+    // }
 
-    @Override
-    public void setMarkbyStydent(Long idStudent, Long idTask, Integer mark) 
-    {
-        Long idSolution = reposSolut.findSolutionIdByStudentIdAndTaskId(idStudent, idTask);
-        Solution soluti = reposSolut.findById(idSolution).orElseThrow();
-        soluti.setMark(mark);  
-    }
+    // @Override
+    // public void setMarkbyStydent(Long idStudent, Long idTask, Integer mark) 
+    // {
+    //     Long idSolution = reposSolut.findSolutionIdByStudentIdAndTaskId(idStudent, idTask);
+    //     Solution soluti = reposSolut.findById(idSolution).orElseThrow();
+    //     soluti.setMark(mark);  
+    // }
 
     //Работа с решением
 
