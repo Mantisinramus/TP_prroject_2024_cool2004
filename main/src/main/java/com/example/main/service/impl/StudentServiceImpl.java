@@ -2,6 +2,7 @@ package com.example.main.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -38,17 +39,37 @@ public class StudentServiceImpl implements StudentService
     //TODO пока не ебу как это делать
     
     @Override
-    public void auth(String log, String password) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'auth'");
+    public Long auth(String log, String password) 
+    {
+        // Ищем ID студента по логину
+        Long studentId = reposStudent.findStudentIdByLogin(log);
+    
+        // Если студент с таким логином не найден
+        if (studentId == null) {
+            // throw new StudentNotFoundException("Student not found with login: " + log);
+        }   
+    
+        // Если студент найден, извлекаем его из базы
+        Student student = reposStudent.findById(studentId).get();
+    
+        // Проверяем пароль
+        if (student.getStudentPassword().equals(password)) {
+            // Если пароль верный, возвращаем ID студента
+            return studentId;
+        } else {
+            // Если пароль неверный, выбрасываем исключение
+            //throw new IncorrectPasswordException("Incorrect password for student with login: " + log);
+            return (long)0;
+        }
+        
     }
 
     //Работа с решением
 
     @Override
-    public Task getTask(Long idTask) 
+    public Task getTask(Long idStudent, Long idTask) 
     {
-        return reposTask.findById(idTask).get();
+        return reposStudent.getTaskByStudentAndTaskId(idStudent, idTask);
     }
 
     @Override
@@ -59,9 +80,9 @@ public class StudentServiceImpl implements StudentService
     }
 
     @Override
-    public void postAnswerTask(Long idTask, String AnswerTask) 
+    public void postAnswerTask(Long idStudent, Long idTask, String AnswerTask) 
     {
-        SequenceOfPrimitives sequence = reposSequnce.findById(idTask).orElseThrow();
+        SequenceOfPrimitives sequence = reposSequnce.findById(reposSequnce.findSolutionIdByStudentAndTask(idStudent, idTask)).orElseThrow();
         sequence.setSequenceText(AnswerTask);
     }
 

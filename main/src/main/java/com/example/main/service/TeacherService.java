@@ -12,7 +12,7 @@ public interface TeacherService
 {
     //вход
 
-    void auth(String log, String password);
+    Long auth(String log, String password);
 
     void changePassword(Long idTeacher, String newpassword);
 

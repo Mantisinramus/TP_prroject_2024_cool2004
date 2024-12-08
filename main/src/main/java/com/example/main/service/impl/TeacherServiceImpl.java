@@ -46,6 +46,30 @@ public class TeacherServiceImpl implements TeacherService {
 
     //Работа с Учителем
 
+    public Long auth(String log, String password) 
+    {
+        // Ищем ID учитель по логину
+        Long teacherId = reposTeacher.findTeacherIdByLogin(log);
+    
+        // Если учитель с таким логином не найден
+        if (teacherId == null) {
+            // throw new StudentNotFoundException("Student not found with login: " + log);
+        }   
+    
+        // Если учитель найден, извлекаем его из базы
+        Teacher teacher = reposTeacher.findById(teacherId).get();
+    
+        // Проверяем пароль
+        if (teacher.getTeacherPassword().equals(password)) {
+            // Если пароль верный, возвращаем ID учителя
+            return teacherId;
+        } else {
+            // Если пароль неверный, выбрасываем исключение
+            //throw new IncorrectPasswordException("Incorrect password for student with login: " + log);
+            return (long)0;
+        }
+    }
+
     @Override
     public void changePassword(Long idTeacher, String newpassword) 
     {
@@ -187,20 +211,6 @@ public class TeacherServiceImpl implements TeacherService {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getSequenceStydent'");
     }
-
-    
-    //TODO смена фио учителю
-    
-    
-    
-    
-    
-    
-    public void auth(String log, String password) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'auth'");
-    }
-
 
     @Override
     public Boolean checkSequence(Sequence checkSequence) {
