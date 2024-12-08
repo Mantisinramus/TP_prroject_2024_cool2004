@@ -32,6 +32,8 @@ public class StudentServiceImpl implements StudentService
     private final TaskRepository reposTask;
 
     private final SequnceRepository reposSequnce;
+
+    private final TeacherRepository reposTeacher;
     
     //TODO пока не ебу как это делать
     
@@ -43,10 +45,6 @@ public class StudentServiceImpl implements StudentService
 
     //Работа с решением
 
-
-
-
-
     @Override
     public Task getTask(Long idTask) 
     {
@@ -57,12 +55,7 @@ public class StudentServiceImpl implements StudentService
     public List<Task> getAllTasks(Long idStudent) 
     {
         Student student = reposStudent.findById(idStudent).orElseThrow();
-        List<Task> searchTask = new ArrayList();
-        for (long idTask : student.getStudentTaskList()) 
-        {
-            searchTask.add(reposTask.findById(idStudent).get());
-        }
-        return searchTask;
+        return student.getTasks();
     }
 
     @Override
@@ -73,18 +66,23 @@ public class StudentServiceImpl implements StudentService
     }
 
     @Override
-    public List<Solution> getAllScore(Long idStudent) 
+    public Integer getMark(Long idStudent, Long idTask) 
     {
-        Student student = reposStudent.findById(idStudent).orElseThrow();
-        return;
+        return reposTeacher.findMarkByStudentAndTask(idStudent, idTask);
     }
 
     @Override
-    public Integer getScore(Long idStudent, Long idTask) 
+    public List<Integer> getAllMarks(Long idStudent) 
     {
-        Student student = reposStudent.findById(idStudent).orElseThrow();
-        
-        return;
+        Student student = reposStudent.findById(idStudent).orElseThrow();        
+        List<Integer> marksStydent = new ArrayList<>();
+        for (Task tasks : student.getTasks()) 
+        {
+            marksStydent.add(reposTeacher.findMarkByStudentAndTask(idStudent, tasks.getTaskId()));
+        }
+        return marksStydent;
     }
+
+
 
 }

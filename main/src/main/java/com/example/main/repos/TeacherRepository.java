@@ -1,6 +1,5 @@
 package com.example.main.repos;
 
-import java.util.Queue;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -8,12 +7,15 @@ import org.springframework.data.repository.query.Param;
 
 import com.example.main.model.Teacher;
 
+import jakarta.transaction.Transactional;
+
 public interface TeacherRepository extends JpaRepository<Teacher, Long> 
 {
-    @Modifying
+
+    //Поиск оценки
     @Transactional
-    @Query("SELECT Mark FROM solution WHERE task_id =: idTask AND")
-    void setMark(@Param("idTask") Long)
+    @Query("SELECT s.mark FROM Solution s " +"JOIN s.task t " +"JOIN t.student st " +"WHERE st.studentId = :studentId AND t.taskId = :taskId")
+    Integer findMarkByStudentAndTask(@Param("studentId") Long studentId, @Param("taskId") Long taskId);
 
 }
 

@@ -21,8 +21,8 @@ public interface StudentService
 
     //Журнал
 
-    List<Solution> getAllScore(Long idStudent);
+    Integer getMark(Long idStudent, Long idTask);
 
-    Integer getScore(Long idStudent, Long idTask);
+    List<Integer> getAllMarks(Long idStudent);
 
 }
