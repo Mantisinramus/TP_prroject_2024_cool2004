@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
@@ -16,20 +17,20 @@ public class Task{
     @Id
     @Column(name =  "task_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long taskId;
+    private Long taskId;
 	
-@Column(name = "task_name")
+    @Column(name = "task_name")
     private String taskName;
 
-@Column(name = "task_text")
+    @Column(name = "task_text")
     private String taskText;
 
-  @ManyToOne(cascade = CascadeType.ALL)
+    @Lob // Длинное текстовое поле для хранения JSON
+    private String field; // JSON-структура поля
+    
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "teacher_id")
     private Teacher teacher;
 
-  @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "playground_id")
-    private Playground playground ;
 }
 

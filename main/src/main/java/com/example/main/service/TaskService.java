@@ -1,6 +1,7 @@
 package com.example.main.service;
 
-public interface TaskService {
+public interface TaskService 
+{
 
 }
 

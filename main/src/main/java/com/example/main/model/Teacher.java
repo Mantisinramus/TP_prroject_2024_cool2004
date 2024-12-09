@@ -22,7 +22,7 @@ public class Teacher {
 	@Column(name = "teacher_login")
     private String teacherLogin;
 	
-@Column(name = "teacher_password")
+    @Column(name = "teacher_password")
     private String teacherPassword;
 
 }

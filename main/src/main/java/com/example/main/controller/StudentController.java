@@ -37,8 +37,8 @@ public class StudentController
 
     // Получение задачи по ID
     @GetMapping("/{idStudent}/tasks/{idTask}")
-    public ResponseEntity<Task> getTask(@PathVariable Long idStudent, @PathVariable Long idTask) {
-        Task task = studentService.getTask(idStudent, idTask);
+    public ResponseEntity<Task> getTask(@PathVariable Long idTask) {
+        Task task = studentService.getTask(idTask);
         
         if (task == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();  // Задача не найдена

@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
@@ -22,10 +23,19 @@ public class Solution {
     @Column(name = "mark")
     private int mark;
 
+    @Lob
+    @Column(name = "sequnce_text")
+    private String sequenceText;
+
+    @Column(name = "is_correct")
+    private boolean isCorrect;
+
+    @Column(name = "teacher_answer")
+    private String teacherAnswer;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "sequnce_id")
-    private SequenceOfPrimitives  sequence;
+    @JoinColumn(name = "student_id")
+    private Student student;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "task_id")

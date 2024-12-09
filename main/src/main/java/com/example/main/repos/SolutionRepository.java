@@ -12,8 +12,8 @@ public interface SolutionRepository extends JpaRepository<Solution, Long>
 {
     //поиск id оценки по id студента и id задачи , если нет, тогда обработать через else, потом дореализую
     @Transactional
-    @Query("SELECT s.solutionId FROM Solution s WHERE s.task.taskId = :taskId AND s.task.teacher.student.studentId = :studentId")
-    Long findSolutionIdByStudentIdAndTaskId(@Param("studentId") Long studentId, @Param("taskId") Long taskId);
+    @Query("SELECT s.solutionId FROM Solution s WHERE s.task.taskId = :task AND s.student.studentId = :student")
+    Long findSolutionIdByStudentIdAndTaskId(@Param("student") Long student, @Param("task") Long task);
 
 }
 

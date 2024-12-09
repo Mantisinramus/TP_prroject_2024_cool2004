@@ -12,7 +12,7 @@ public interface StudentService
 
     //Работа с решением
 
-    Task getTask(Long idStudent, Long idTask);
+    Task getTask(Long idTask);
 
     List<Task> getAllTasks(Long idStudent);
 

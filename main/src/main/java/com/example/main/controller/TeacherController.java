@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,9 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.main.model.Playground;
+import com.example.main.model.Solution;
 import com.example.main.model.Student;
 import com.example.main.model.Task;
+import com.example.main.model.Teacher;
 import com.example.main.service.TeacherService;
 
 import lombok.AllArgsConstructor;
@@ -29,7 +29,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 @AllArgsConstructor
 public class TeacherController {
 
-        private final TeacherService teacherService;
+    private final TeacherService teacherService;
+
+    @PostMapping("/reg")
+    public ResponseEntity<String> addTeacher(@RequestBody Teacher teacher) 
+    {
+        teacherService.addTeacher(teacher);
+        return ResponseEntity.ok("Teacher added successfully!");
+    }
+
+
 
     // Авторизация учителя
     @PostMapping("/auth")
@@ -79,7 +88,7 @@ public class TeacherController {
     }
 
     // Получение всех студентов
-    @GetMapping("/students")
+    @GetMapping("/students/getAll")
     public ResponseEntity<List<Student>> getAllStudents() {
         return ResponseEntity.ok(teacherService.findAllStudents());
     }
@@ -125,12 +134,8 @@ public class TeacherController {
 
     // Добавление задачи
     @PostMapping("/tasks")
-    public ResponseEntity<String> addTask(
-            @RequestParam Long playgroundId,
-            @RequestBody Task task) {
-        Playground playground = new Playground();
-        playground.setPlaygroundId(playgroundId);
-        teacherService.addTask(playground, task);
+    public ResponseEntity<String> addTask(@RequestBody Task task) {
+        teacherService.addTask(task);
         return ResponseEntity.ok("Task added successfully");
     }
 
@@ -142,14 +147,10 @@ public class TeacherController {
     }
 
     // Редактирование задачи
+     
     @PutMapping("/tasks/{idTask}")
-    public ResponseEntity<String> editTask(
-            @PathVariable Long idTask,
-            @RequestParam Long playgroundId,
-            @RequestBody Task task) {
-        Playground playground = new Playground();
-        playground.setPlaygroundId(playgroundId);
-        teacherService.editTask(playgroundId, idTask, playground, task);
+    public ResponseEntity<String> editTask(@PathVariable Long idTask, @RequestBody Task task) {
+        teacherService.editTask(idTask, task);
         return ResponseEntity.ok("Task updated successfully");
     }
 
@@ -175,5 +176,20 @@ public class TeacherController {
             @RequestParam Integer mark) {
         teacherService.setMarkbyStydent(idStudent, idTask, mark);
         return ResponseEntity.ok("Mark updated successfully");
+    }
+
+    // получение решения студента
+    @GetMapping("/students/{idStudent}/solution/{idTask}")
+    public ResponseEntity<Solution> getSolutionStydent( @PathVariable Long idStudent, @PathVariable Long idTask)
+    {
+        return ResponseEntity.ok(teacherService.getSolutionStydent(idStudent, idTask));
+    }
+
+    // Установка ответа учителя на решение
+    @PostMapping("/students/{idStudent}/tasks/{idTask}/answer")
+    public ResponseEntity<String> setAnswerBySequence(@PathVariable Long idStudent, @PathVariable Long idTask, @RequestParam String answer)
+    {
+        teacherService.setAnswerBySequence(idStudent, idTask, answer);
+        return ResponseEntity.ok("Answer updated successfully");
     }
 }
