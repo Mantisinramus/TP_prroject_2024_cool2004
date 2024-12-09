@@ -2,17 +2,14 @@ package com.example.main.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
-import javax.sound.midi.Sequence;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+import com.example.main.model.Solution;
 import com.example.main.model.Student;
 import com.example.main.model.Task;
 import com.example.main.model.Teacher;
-import com.example.main.model.Solution;
 import com.example.main.repos.SolutionRepository;
 import com.example.main.repos.StudentRepository;
 import com.example.main.repos.TaskRepository;
@@ -113,6 +110,7 @@ public class TeacherServiceImpl implements TeacherService {
     {
         Student student = reposStudent.findById(idStudent).get();
         student.setStudentPassword(password);
+        reposStudent.save(student);
     }
     
 
@@ -122,8 +120,15 @@ public class TeacherServiceImpl implements TeacherService {
     public void addTestStudent(Long idStudent, Long idTask) 
     {
         Student student = reposStudent.findById(idStudent).orElseThrow(() -> new RuntimeException("Student not found"));
+        Task task = reposTask.findById(idTask).orElseThrow(() -> new RuntimeException("Student not found"));
         student.getTasksId().add(idTask);
+        Solution sol = new Solution();
+        sol.setStudent(student);
+        sol.setTask(task);
+        sol.setMark(0); // Устанавливаем начальную оценку
+        sol.setSequenceText(""); // Пустой текст решения
         reposStudent.save(student);
+        reposSolut.save(sol);
     }
     
     @Override
@@ -199,7 +204,9 @@ public class TeacherServiceImpl implements TeacherService {
         // Обновляем поля задачи с новыми значениями
         existingTask.setTaskName(updatedTask.getTaskName());
         existingTask.setTaskText(updatedTask.getTaskText());
-        existingTask.setField(updatedTask.getField());
+        existingTask.setPotions(updatedTask.getPotions());
+        existingTask.setWalls(updatedTask.getWalls());
+        existingTask.setPlayer(updatedTask.getPlayer());
 
         reposTask.save(existingTask);
     }

@@ -2,22 +2,17 @@ package com.example.main.service.impl;
 
 import java.util.List;
 
-import com.example.main.DataModel.Action;
-import com.example.main.DataModel.GridSize;
-import com.example.main.DataModel.Position;
-import com.example.main.DataModel.TaskData;
-import com.example.main.service.SolutionService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+import com.example.main.DataModel.Action;
+import com.example.main.DataModel.PositionDataModel;
 import com.example.main.model.Solution;
 import com.example.main.model.Task;
-
 import com.example.main.repos.SolutionRepository;
 import com.example.main.repos.TaskRepository;
+import com.example.main.service.SolutionService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
 
@@ -44,17 +39,15 @@ public class SolutionServiceImpl implements SolutionService
             // Инициализация ObjectMapper для парсинга JSON
             ObjectMapper objectMapper = new ObjectMapper();
 
-            //парсим JSON задания
-            TaskData taskData = objectMapper.readValue(task.getField(), TaskData.class);
             List<Action> actions = objectMapper.readValue(solution.getSequenceText(), objectMapper.getTypeFactory().constructCollectionType(List.class, Action.class));
             
             // Начальные данные из задания
-            Position player = taskData.getPlayer();
-            List<Position> potions = taskData.getPotions();
-            Integer potionsCount = taskData.getPotions().size();
-            Position cauldron = taskData.getCauldron();
-            List<Position> walls = taskData.getWalls();
-            GridSize gridSize = taskData.getGridSize();
+            PositionDataModel player = task.getPlayer();
+            List<PositionDataModel> potions = task.getPotions();
+            Integer potionsCount = task.getPotions().size();
+            PositionDataModel cauldron = task.getCauldron();
+            List<PositionDataModel> walls = task.getWalls();
+            PositionDataModel gridSize = task.getGridSize();
 
             //выполнение шагов
             for (Action action : actions) 
@@ -82,11 +75,11 @@ public class SolutionServiceImpl implements SolutionService
                 return false;
     }
     // Метод для выполнения одиночного действия
-    private boolean performAction(Action action, Position player, List<Position> potions, Position cauldron, List<Position> walls, GridSize gridSize, Integer countPos) {
+    private boolean performAction(Action action, PositionDataModel player, List<PositionDataModel> potions, PositionDataModel cauldron, List<PositionDataModel> walls, PositionDataModel gridSize, Integer countPos) {
         switch (action.getAction()) {
             case "move_up":
                 player.setY(player.getY() - action.getSteps());
-                for (Position potion : potions) {
+                for (PositionDataModel potion : potions) {
                     if (player.getX() == potion.getX() && player.getY() == potion.getY()) 
                     {
                         potion.setY(potion.getY() - action.getSteps());
@@ -95,7 +88,7 @@ public class SolutionServiceImpl implements SolutionService
                 break;
             case "move_down":
                 player.setY(player.getY() + action.getSteps());
-                for (Position potion : potions) {
+                for (PositionDataModel potion : potions) {
                     if (player.getX() == potion.getX() && player.getY() == potion.getY()) 
                     {
                         potion.setY(potion.getY() + action.getSteps());
@@ -104,7 +97,7 @@ public class SolutionServiceImpl implements SolutionService
                 break;
             case "move_left":
                 player.setX(player.getX() - action.getSteps());
-                for (Position potion : potions) {
+                for (PositionDataModel potion : potions) {
                     if (player.getX() == potion.getX() && player.getY() == potion.getY()) 
                     {
                         potion.setX(potion.getX() - action.getSteps());
@@ -113,7 +106,7 @@ public class SolutionServiceImpl implements SolutionService
                 break;
             case "move_right":
                 player.setX(player.getX() + action.getSteps());
-                for (Position potion : potions) {
+                for (PositionDataModel potion : potions) {
                     if (player.getX() == potion.getX() && player.getY() == potion.getY()) 
                     {
                         potion.setX(potion.getX() + action.getSteps());
@@ -130,12 +123,12 @@ public class SolutionServiceImpl implements SolutionService
         }
 
         // Проверка на выход за пределы поля
-        if (player.getX() < 0 || player.getX() >= gridSize.getWidth() || player.getY() < 0 || player.getY() >= gridSize.getHeight()) {
+        if (player.getX() < 0 || player.getX() >= gridSize.getX() || player.getY() < 0 || player.getY() >= gridSize.getY()) {
             return false;
         }
 
         // Проверка на уничтожение зелий при попадании в котёл
-        for (Position potion : potions) {
+        for (PositionDataModel potion : potions) {
             if (potion.equals(cauldron)) {
                 potions.remove(potion);
                 countPos--;  // уменьшаем зелья))))))) пися попа
@@ -147,7 +140,7 @@ public class SolutionServiceImpl implements SolutionService
     }
 
     // Метод для выполнения набора действий
-    private boolean performActions(List<Action> actions, Position player, List<Position> potions, Position cauldron, List<Position> walls, GridSize gridSize, Integer countPos) {
+    private boolean performActions(List<Action> actions, PositionDataModel player, List<PositionDataModel> potions, PositionDataModel cauldron, List<PositionDataModel> walls, PositionDataModel gridSize, Integer countPos) {
         for (Action action : actions) {
             if (!performAction(action, player, potions, cauldron, walls, gridSize, countPos)) {
                 return false;  // Если одно из действий не удалось выполнить

@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.main.service.SolutionService;
 
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/solution")
@@ -20,9 +19,13 @@ public class SolutionController
     private final SolutionService solutionService;
 
     @GetMapping("/checkSequence/{idStudent}/{idTask}")
-    public ResponseEntity<Boolean> checkSequence(@PathVariable Long idStudent, @PathVariable Long idTask) {
+    public ResponseEntity<String> checkSequence(@PathVariable Long idStudent, @PathVariable Long idTask) {
         boolean isCorrect = solutionService.checkSequence(idStudent, idTask);
-        if (isCorrect) return ResponseEntity.ok("Task completed successfully!");
+        if (isCorrect) {
+            return ResponseEntity.ok("Task completed successfully!");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Task failed!");
+        }
     }
 
 }

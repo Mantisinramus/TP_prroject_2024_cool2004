@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.main.model.Solution;
@@ -20,7 +21,6 @@ import com.example.main.model.Teacher;
 import com.example.main.service.TeacherService;
 
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 
@@ -75,7 +75,7 @@ public class TeacherController {
     }
 
     // Удаление студента
-    @DeleteMapping("/students/{idStudent}")
+    @DeleteMapping("/students/{idStudent}/del")
     public ResponseEntity<String> deleteStudentById(@PathVariable Long idStudent) {
         teacherService.deleteStudentById(idStudent);
         return ResponseEntity.ok("Student deleted successfully");
@@ -127,7 +127,7 @@ public class TeacherController {
     }
 
     // Получение всех задач
-    @GetMapping("/tasks")
+    @GetMapping("/taskAll")
     public ResponseEntity<List<Task>> getAllTasks() {
         return ResponseEntity.ok(teacherService.getAllTasks());
     }
