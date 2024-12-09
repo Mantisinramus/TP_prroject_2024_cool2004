@@ -1,5 +1,6 @@
 package com.example.main.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.context.annotation.Primary;
@@ -35,11 +36,8 @@ public class SolutionServiceImpl implements SolutionService
             Solution solution = reposSolut.findById(reposSolut.findSolutionIdByStudentIdAndTaskId(idStudent, idTask)).orElseThrow();
             Task task = reposTask.findById(idTask).orElseThrow();
 
-
-            // Инициализация ObjectMapper для парсинга JSON
-            ObjectMapper objectMapper = new ObjectMapper();
-
-            List<Action> actions = objectMapper.readValue(solution.getSequenceText(), objectMapper.getTypeFactory().constructCollectionType(List.class, Action.class));
+            String sequenceText = solution.getSequenceText();
+            String[] commands = sequenceText.split(",");
             
             // Начальные данные из задания
             PositionDataModel player = task.getPlayer();
@@ -50,10 +48,11 @@ public class SolutionServiceImpl implements SolutionService
             PositionDataModel gridSize = task.getGridSize();
 
             //выполнение шагов
-            for (Action action : actions) 
-            {
-                if (action.getAction().equals("repeat"))
+            for (Action command : commands) 
+            {   
+                if (command.startsWith(""))
                 {
+
                     // Выполнение повторяющихся действий
                     for (int i = 0; i < action.getTimes(); i++)
                     {
@@ -148,5 +147,38 @@ public class SolutionServiceImpl implements SolutionService
         }
         return true;
     }
+
+    private List<Action> parseSequence(String sequenceText) {
+    List<Action> actions = new ArrayList<>();
+    String[] commands = sequenceText.split(",");
+
+    for (String command : commands) {
+        command = command.trim();
+        if (command.startsWith("повторить")) {
+            Pattern repeatPattern = Pattern.compile("повторить (\\d+)\\((.+)\\)");
+            Matcher matcher = repeatPattern.matcher(command);
+            if (matcher.matches()) {
+                int repeatCount = Integer.parseInt(matcher.group(1));
+                String innerCommands = matcher.group(2);
+
+                // Рекурсивный вызов для вложенных команд
+                List<Action> subActions = parseSequence(innerCommands);
+                actions.add(new Action("repeat", repeatCount, subActions));
+            }
+        } else {
+            // Простая команда
+            String[] parts = command.split(" ");
+            if (parts.length == 2) {
+                String actionName = parts[0];
+                int steps = Integer.parseInt(parts[1]);
+                actions.add(new Action(actionName, steps));
+            } else {
+                throw new IllegalArgumentException("Некорректная команда: " + command);
+            }
+        }
+    }
+
+    return actions;
+}
 
 }

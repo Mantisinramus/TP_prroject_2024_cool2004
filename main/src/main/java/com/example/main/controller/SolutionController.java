@@ -1,6 +1,5 @@
 package com.example.main.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,13 +18,9 @@ public class SolutionController
     private final SolutionService solutionService;
 
     @GetMapping("/checkSequence/{idStudent}/{idTask}")
-    public ResponseEntity<String> checkSequence(@PathVariable Long idStudent, @PathVariable Long idTask) {
-        boolean isCorrect = solutionService.checkSequence(idStudent, idTask);
-        if (isCorrect) {
-            return ResponseEntity.ok("Task completed successfully!");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Task failed!");
-        }
+    public ResponseEntity<Boolean> checkSequence(@PathVariable Long idStudent, @PathVariable Long idTask) 
+    {
+       return ResponseEntity.ok(solutionService.checkSequence(idStudent, idTask));
     }
 
 }

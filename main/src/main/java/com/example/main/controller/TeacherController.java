@@ -169,7 +169,7 @@ public class TeacherController {
     }
 
     // Установка оценки студенту за задачу
-    @PostMapping("/students/{idStudent}/tasks/{idTask}/mark")
+    @PutMapping("/students/{idStudent}/tasks/{idTask}/mark")
     public ResponseEntity<String> setMarkForStudent(
             @PathVariable Long idStudent,
             @PathVariable Long idTask,

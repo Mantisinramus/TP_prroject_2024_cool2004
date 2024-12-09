@@ -80,6 +80,7 @@ public class StudentServiceImpl implements StudentService
     {
         Solution solution = reposSolut.findById(reposSolut.findSolutionIdByStudentIdAndTaskId(idStudent, idTask)).orElseThrow();
         solution.setSequenceText(AnswerTask);
+        reposSolut.save(solution);
     }
 
     //получение оценки

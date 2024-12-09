@@ -85,6 +85,7 @@ public class TeacherServiceImpl implements TeacherService {
     public void addStudent(Student student)
     {
         reposStudent.save(student);
+
     }
 
     @Override
@@ -192,7 +193,8 @@ public class TeacherServiceImpl implements TeacherService {
     {
         Long idSolution = reposSolut.findSolutionIdByStudentIdAndTaskId(idStudent, idTask);
         Solution soluti = reposSolut.findById(idSolution).orElseThrow();
-        soluti.setMark(mark);  
+        soluti.setMark(mark); 
+        reposSolut.save(soluti);
     }
 
     //Работа с решением
