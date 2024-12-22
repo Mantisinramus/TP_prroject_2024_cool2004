@@ -122,7 +122,7 @@ public class TeacherServiceImpl implements TeacherService {
     {
         Student student = reposStudent.findById(idStudent).orElseThrow(() -> new RuntimeException("Student not found"));
         Task task = reposTask.findById(idTask).orElseThrow(() -> new RuntimeException("Student not found"));
-        student.getTasksId().add(idTask);
+      //  student.getTasksId().add(idTask);
         Solution sol = new Solution();
         sol.setStudent(student);
         sol.setTask(task);

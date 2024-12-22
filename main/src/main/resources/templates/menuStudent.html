@@ -1,0 +1,72 @@
+<style>
+    table {
+      width: 50%;
+      border-collapse: collapse;
+      font-family: Arial, sans-serif;
+    }
+  
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+  
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+  <h1>Мои задания</h1>
+  <table id="taskTable">
+    <thead>
+      <tr>
+        <th>Название</th>
+        <th>Оценка</th>
+      </tr>
+    </thead>
+    <tbody id="solutions-table">
+      <!-- Здесь будут динамически добавляться строки из базы данных -->
+    </tbody>
+  </table>
+  
+  <script>
+    // Функция для добавления строки в таблицу
+    function loadTasks() {
+      const id = localStorage.getItem("studentId");
+      console.log(id);
+      fetch('/api/students/'+id+'/solutions')
+      
+
+        fetch('/api/students/'+id+'/solutions')
+                .then(response => response.json())
+                .then(solutions => {
+                    const solutionsTable= document.getElementById('solutions-table');
+                    solutionsTable.innerHTML = '';
+                    solutions.forEach(solution => {
+                        const row = solutionsTable.insertRow();
+                        const taskNameCell  = row.insertCell();
+                        const markCell = row.insertCell();
+                        localStorage.setItem('solutionId', solution.solutionId);
+                        markCell.textContent = solution.mark;
+                         fetch('/api/solution/taskName/'+solution.solutionId).then(response => response.json()).then(tasks=>{
+                          tasks.forEach(task=> 
+                          {
+                            const taskNameLink = document.createElement('a');
+                            taskNameLink.href = '/taskStudent';
+                            taskNameLink.textContent = task.taskName;
+                            taskNameCell.appendChild(taskNameLink);
+                            localStorage.setItem('taskId', task.taskId);
+                            
+                            // console.log("sol" + localStorage.getItem("solutionId"));
+                            // console.log("t" + localStorage.getItem("taskId"));
+                           })
+                          
+                        });      
+                    });
+                })
+                .catch(error => console.error('Error loading accounts:', error));
+
+    }
+  
+    loadTasks();
+    // Пример заполнения таблицы данными из базы данных
+  </script>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Название задания</title>
+  <style>
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .game-area {
+      width: 80%;
+      height: 300px;
+      border: 1px solid black;
+      margin-bottom: 20px;
+    }
+    .task-description {
+  width: 80%;
+  margin-bottom: 20px;
+  /* Предотвращаем изменение пользователем */
+  user-select: none; /* Для большинства браузеров */
+  -webkit-user-select: none; /* Для Safari */
+  -khtml-user-select: none; /* Для старых версий Konqueror */
+  -moz-user-select: none; /* Для Firefox */
+  -ms-user-select: none; /* Для IE/Edge */
+
+  /* Фиксированный размер (выберите подходящие значения) */
+  width: 300px; /* Или другой фиксированный размер */
+  height: 100px; /* Или другой фиксированный размер */
+  overflow: auto; /* Добавляем полосы прокрутки, если текст выходит за пределы */
+  resize: none; /* Запрещаем изменение размера */
+     pointer-events: none;
+  white-space: pre-wrap; /* Разрешаем перенос строк, сохраняя пробелы */
+  word-break: break-all; /* Разбиваем длинные слова, если они не помещаются в строку */
+  padding: 10px; /* Добавляем отступы для читаемости */
+  border: 1px solid #ccc; /* Добавляем рамку для визуального разделения */
+  font-family: sans-serif; /* Можно задать шрифт */
+}
+
+
+    .solution-area {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .solution-area textarea {
+      width: 300px;
+      height: 100px;
+      margin-right: 20px;
+    }
+    .controls {
+      display: flex;
+      flex-direction: column;
+    }
+    .controls button {
+      margin-bottom: 10px;
+    }
+    .feedback {
+      display: flex;
+      justify-content: space-between;
+      width: 80%;
+    }
+    .feedback textarea,
+    .feedback input {
+      width: 200px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 id = "taskName"></h1>
+    <textarea class="task-description" id = "task-description"></textarea>
+    <div class="game-area">
+      ИГРОВОЕ ПОЛЕ (пока непонятно как реализовать)
+    </div>
+    <div class="solution-area">
+      <textarea placeholder="Введите решение"></textarea>
+      <div class="controls">
+        <button>Проверить</button>
+        <button>Очистить</button>
+        <button>Отправить</button>
+      </div>
+    </div>
+    <div class="feedback">
+      <textarea id = "feedback-area"></textarea>
+      <input id = "mark-area"> </input>
+    </div>
+  </div>
+</body>
+</html>
+
+
+<script>
+  // Функция для добавления строки в таблицу
+  function load() {
+    const taskId = localStorage.getItem("taskId");
+    const solutionId = localStorage.getItem("solutionId");
+    fetch('api/teacher/tasks/'+taskId).then(response => response.json()).then(data=>
+    {
+      let taskNameElement = document.getElementById("taskName");
+      taskNameElement.textContent = data.taskName;
+
+      let taskDescElement = document.getElementById("task-description");
+      taskDescElement.textContent = data.taskText;
+    })
+
+    fetch('api/students/solutions/'+solutionId).then(response => response.json()).then(data=>
+    {
+      console.log(solutionId);
+      console.log(data);
+      let feedbackArea = document.getElementById("feedback-area");
+      feedbackArea.textContent = data.teacherAnswer;
+
+      let markArea = document.getElementById("mark-area");
+      markArea.textContent = data.mark;
+    })
+
+    ////api/students/solutions/{idSolution}
+  }
+
+  load();
+
+</script>

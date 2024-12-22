@@ -1,7 +1,9 @@
 package com.example.main.service;
 
 import java.util.List;
+import java.util.Optional;
 
+import com.example.main.model.Solution;
 import com.example.main.model.Task;
 
 public interface StudentService 
@@ -23,5 +25,9 @@ public interface StudentService
     Integer getMark(Long idStudent, Long idTask);
 
     List<Integer> getAllMarks(Long idStudent);
+
+    List<Solution> getAllSolutions(Long idStudent);
+
+    Optional<Solution> getSolution(Long idSolution);
 
 }

@@ -31,46 +31,46 @@ public class SolutionServiceImpl implements SolutionService
     @Override
     public Boolean checkSequence(Long idStudent, Long idTask) 
     {
-        try {
+        // try {
 
-            Solution solution = reposSolut.findById(reposSolut.findSolutionIdByStudentIdAndTaskId(idStudent, idTask)).orElseThrow();
-            Task task = reposTask.findById(idTask).orElseThrow();
+        //     Solution solution = reposSolut.findById(reposSolut.findSolutionIdByStudentIdAndTaskId(idStudent, idTask)).orElseThrow();
+        //     Task task = reposTask.findById(idTask).orElseThrow();
 
-            String sequenceText = solution.getSequenceText();
-            String[] commands = sequenceText.split(",");
+        //     String sequenceText = solution.getSequenceText();
+        //     String[] commands = sequenceText.split(",");
             
-            // Начальные данные из задания
-            PositionDataModel player = task.getPlayer();
-            List<PositionDataModel> potions = task.getPotions();
-            Integer potionsCount = task.getPotions().size();
-            PositionDataModel cauldron = task.getCauldron();
-            List<PositionDataModel> walls = task.getWalls();
-            PositionDataModel gridSize = task.getGridSize();
+        //     // Начальные данные из задания
+        //     PositionDataModel player = task.getPlayer();
+        //     List<PositionDataModel> potions = task.getPotions();
+        //     Integer potionsCount = task.getPotions().size();
+        //     PositionDataModel cauldron = task.getCauldron();
+        //     List<PositionDataModel> walls = task.getWalls();
+        //     PositionDataModel gridSize = task.getGridSize();
 
-            //выполнение шагов
-            for (Action command : commands) 
-            {   
-                if (command.startsWith(""))
-                {
+        //     //выполнение шагов
+        //     for (Action command : commands) 
+        //     {   
+        //         if (command.startsWith(""))
+        //         {
 
-                    // Выполнение повторяющихся действий
-                    for (int i = 0; i < action.getTimes(); i++)
-                    {
-                        if (!performActions(action.getActions(), player, potions, cauldron, walls, gridSize, potionsCount)) {
-                            return false;  // Если что-то пошло не так в процессе повторений
-                        }
-                    }
+        //             // Выполнение повторяющихся действий
+        //             for (int i = 0; i < action.getTimes(); i++)
+        //             {
+        //                 if (!performActions(action.getActions(), player, potions, cauldron, walls, gridSize, potionsCount)) {
+        //                     return false;  // Если что-то пошло не так в процессе повторений
+        //                 }
+        //             }
                     
-                } else {
-                    //одиночка
-                    if (!performAction(action, player, potions, cauldron, walls, gridSize, potionsCount)) {
-                        return false;  // Если что-то пошло не так в процессе повторений
-                    }
-                }
-            }
-            if(potionsCount == 0) return true;
-        } catch (Exception e) {
-        }
+        //         } else {
+        //             //одиночка
+        //             if (!performAction(action, player, potions, cauldron, walls, gridSize, potionsCount)) {
+        //                 return false;  // Если что-то пошло не так в процессе повторений
+        //             }
+        //         }
+        //     }
+        //     if(potionsCount == 0) return true;
+        // } catch (Exception e) {
+        // }
                 return false;
     }
     // Метод для выполнения одиночного действия
@@ -149,36 +149,40 @@ public class SolutionServiceImpl implements SolutionService
     }
 
     private List<Action> parseSequence(String sequenceText) {
-    List<Action> actions = new ArrayList<>();
-    String[] commands = sequenceText.split(",");
+    // List<Action> actions = new ArrayList<>();
+    // String[] commands = sequenceText.split(",");
 
-    for (String command : commands) {
-        command = command.trim();
-        if (command.startsWith("повторить")) {
-            Pattern repeatPattern = Pattern.compile("повторить (\\d+)\\((.+)\\)");
-            Matcher matcher = repeatPattern.matcher(command);
-            if (matcher.matches()) {
-                int repeatCount = Integer.parseInt(matcher.group(1));
-                String innerCommands = matcher.group(2);
+    // for (String command : commands) {
+    //     command = command.trim();
+    //     if (command.startsWith("повторить")) {
+    //         Pattern repeatPattern = Pattern.compile("повторить (\\d+)\\((.+)\\)");
+    //         Matcher matcher = repeatPattern.matcher(command);
+    //         if (matcher.matches()) {
+    //             int repeatCount = Integer.parseInt(matcher.group(1));
+    //             String innerCommands = matcher.group(2);
 
-                // Рекурсивный вызов для вложенных команд
-                List<Action> subActions = parseSequence(innerCommands);
-                actions.add(new Action("repeat", repeatCount, subActions));
-            }
-        } else {
-            // Простая команда
-            String[] parts = command.split(" ");
-            if (parts.length == 2) {
-                String actionName = parts[0];
-                int steps = Integer.parseInt(parts[1]);
-                actions.add(new Action(actionName, steps));
-            } else {
-                throw new IllegalArgumentException("Некорректная команда: " + command);
-            }
-        }
-    }
-
-    return actions;
+    //             // Рекурсивный вызов для вложенных команд
+    //             List<Action> subActions = parseSequence(innerCommands);
+    //             actions.add(new Action("repeat", repeatCount, subActions));
+    //         }
+    //     } else {
+    //         // Простая команда
+    //         String[] parts = command.split(" ");
+    //         if (parts.length == 2) {
+    //             String actionName = parts[0];
+    //             int steps = Integer.parseInt(parts[1]);
+    //             actions.add(new Action(actionName, steps));
+    //         } else {
+    //             throw new IllegalArgumentException("Некорректная команда: " + command);
+    //         }
+    //     }
+    // }
+    return null;
+   // return actions;
 }
+    @Override
+    public List<Task> findTaskBySolutionId(Long idSolution) {
+        return reposTask.findTaskBySolutionId(idSolution);
+    }
 
 }

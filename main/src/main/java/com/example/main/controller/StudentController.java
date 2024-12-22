@@ -1,6 +1,7 @@
 package com.example.main.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.main.model.Solution;
 import com.example.main.model.Task;
 import com.example.main.service.StudentService;
 
@@ -55,6 +57,8 @@ public class StudentController
         return ResponseEntity.ok(tasks);  // Возвращаем все задачи студента
     }
 
+   
+
     // Отправка ответа на задачу
     @PutMapping("/{idStudent}/tasks/{idTask}/answer")
     public ResponseEntity<String> postAnswerTask(
@@ -91,5 +95,18 @@ public class StudentController
         return ResponseEntity.ok(marks);  // Возвращаем все оценки студента
     }
 
+
+
+    @GetMapping("/{idStudent}/solutions")
+    public ResponseEntity<List<Solution>> getAllSolutions(@PathVariable Long idStudent) {
+        List<Solution> solutions = studentService.getAllSolutions(idStudent);
+        return ResponseEntity.ok(solutions);  // Возвращаем все задачи студента
+    }
+
+     // Получение задачи
+     @GetMapping("/solutions/{idSolution}")
+     public ResponseEntity<Optional<Solution>> getSolution(@PathVariable Long idSolution) {
+         return ResponseEntity.ok(studentService.getSolution(idSolution));
+     }
 
 }

@@ -2,6 +2,7 @@ package com.example.main.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -102,5 +103,17 @@ public class StudentServiceImpl implements StudentService
             marksStydent.add(sol.getMark());
         }
         return marksStydent;
+    }
+
+    @Override
+    public List<Solution> getAllSolutions(Long idStudent) {
+        Student student = reposStudent.findById(idStudent).orElseThrow();        
+        return reposSolut.findAllByStudentId(idStudent);
+
+    }
+
+    @Override
+    public Optional<Solution> getSolution(Long idSolution) {
+        return reposSolut.findById(idSolution);
     }
 }
