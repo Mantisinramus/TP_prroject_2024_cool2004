@@ -1,6 +1,7 @@
 package com.example.main.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,14 +53,6 @@ public class TeacherController {
         return ResponseEntity.ok(teacherId); // Возвращаем ID учителя
     }
 
-    // Изменение пароля учителя
-    @PutMapping("/{idTeacher}/password")
-    public ResponseEntity<String> changePassword(
-        @PathVariable Long idTeacher,
-        @RequestParam String newpassword) {
-    teacherService.changePassword(idTeacher, newpassword);
-    return ResponseEntity.ok("Password successfully updated");
-}
 
     // Поиск студента по инициалам
     @GetMapping("/students/search")
@@ -93,14 +86,7 @@ public class TeacherController {
         return ResponseEntity.ok(teacherService.findAllStudents());
     }
 
-    // Изменение пароля студента
-    @PutMapping("/students/{idStudent}/password")
-    public ResponseEntity<String> changeStudentPassword(
-            @PathVariable Long idStudent,
-            @RequestParam String password) {
-        teacherService.changePassStudent(idStudent, password);
-        return ResponseEntity.ok("Student password updated");
-    }
+   
 
     // Добавление задачи студенту
     @PostMapping("/students/{idStudent}/tasks/{idTask}")
@@ -192,4 +178,60 @@ public class TeacherController {
         teacherService.setAnswerBySequence(idStudent, idTask, answer);
         return ResponseEntity.ok("Answer updated successfully");
     }
+
+
+     // Получение инфо об учителе
+     @GetMapping("/info/{idTeacher}")
+     public ResponseEntity<Optional<Teacher>> getTeacher(@PathVariable Long idTeacher) {
+        return ResponseEntity.ok(teacherService.getTeacher(idTeacher));
+    }
+
+     // Изменение логина учителя
+     @PostMapping("/{idTeacher}/login")
+     public ResponseEntity<Long> changeLogin(
+         @PathVariable Long idTeacher,
+         @RequestParam String password,
+         @RequestParam String newLogin) {
+     return ResponseEntity.ok( teacherService.changeLogin(idTeacher, password, newLogin));
+ }
+
+
+    // Изменение пароля учителя
+    @PostMapping("/{idTeacher}/password")
+    public ResponseEntity<Long> changePassword(
+        @PathVariable Long idTeacher,
+        @RequestParam String oldPassword,
+        @RequestParam String newPassword) {
+    ;
+    return ResponseEntity.ok(teacherService.changePassword(idTeacher, oldPassword, newPassword));
+}
+
+
+ // Изменение пароля студента
+ @PutMapping("/students/{idStudent}/password")
+ public ResponseEntity<String> changeStudentPassword(
+         @PathVariable Long idStudent,
+         @RequestParam String password) {
+     teacherService.changePassStudent(idStudent, password);
+     return ResponseEntity.ok("Student password updated");
+ }
+
+ // Изменение ФИО студента
+ @PutMapping("/students/{idStudent}/initials")
+ public ResponseEntity<String> changeStudentInitials(
+         @PathVariable Long idStudent,
+         @RequestParam String initials) {
+     teacherService.changeInitialsStudent(idStudent, initials);
+     return ResponseEntity.ok("Student password updated");
+ }
+
+ // Изменение логина студента
+ @PutMapping("/students/{idStudent}/login")
+ public ResponseEntity<String> changeStudentLogin(
+         @PathVariable Long idStudent,
+         @RequestParam String login) {
+     teacherService.changeLoginStudent(idStudent, login);
+     return ResponseEntity.ok("Student password updated");
+ }
+
 }

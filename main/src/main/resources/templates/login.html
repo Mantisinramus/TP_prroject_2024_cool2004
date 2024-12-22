@@ -80,19 +80,24 @@
     </div>
     
     <script>
+        let isTeacher = true;
       const teacherBtn = document.getElementById('teacher-btn');
       const studentBtn = document.getElementById('student-btn');
       const loginBtn = document.getElementById('login-btn');
       const loginInput = document.getElementById('login');
       const passwordInput = document.getElementById('password');
-  
+      teacherBtn.classList.add('active');
+
+
       teacherBtn.addEventListener('click', () => {
+        isTeacher = true;
         teacherBtn.classList.add('active');
         studentBtn.classList.remove('active');
       });
   
       studentBtn.addEventListener('click', () => {
         studentBtn.classList.add('active');
+        isTeacher = false;
         teacherBtn.classList.remove('active');
       });
   
@@ -123,6 +128,7 @@
 
       async function authenticateStudent(login, password) {
       try {
+        if(!isTeacher){
         const response = await fetch('/api/students/auth?log=' + login + '&password=' + password, {
           method: 'POST'
         });
@@ -134,11 +140,27 @@
             window.location.href = '/menuStudent';
           console.log('Успешная аутентификация. ID студента:', studentId);
         }
-      } catch (error) {
+     } 
+     if(isTeacher)
+     {
+      const response = await fetch('/api/teacher/auth?log=' + login + '&password=' + password, {
+          method: 'POST'
+        });
+        const teacherId = await response.json();
+        if (teacherId === 0) {
+            alert("Ошибка авторизации");
+        } else {
+            localStorage.setItem('teacherId', teacherId);
+            window.location.href = '/menuTeacher';
+          console.log('Успешная аутентификация. ID учителя:', teacherId);
+        }
+     }
+    } catch (error) {
         console.error('Ошибка аутентификации:', error);
         errorMessage.style.display = 'block';
       }
     }
+  
     </script>
   </body>
 </html>

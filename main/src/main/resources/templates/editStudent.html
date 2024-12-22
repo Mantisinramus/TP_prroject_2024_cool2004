@@ -1,0 +1,159 @@
+<div class="container">
+    <h1 id="FIO" class="title">ФИО</h1>
+    <h2 id="loginTxt" class="subtitle">ЛОГИН</h2>
+    <h3 id = "passwordTxt" class="subtitle">ПАРОЛЬ</h3> <!-- Добавленная надпись "Пароль" -->
+    <div class="buttons">
+        <button id="change-login" class="btn btn-primary">Изменить логин</button>
+        <button id="change-password" class="btn btn-primary">Изменить пароль</button>
+        <button id="change-initials" class="btn btn-primary">Изменить ФИО</button>
+    </div>
+    <div id="initials-form" class="form-container" style="display: none;">
+        <input type="text" id="changeInitials" class="form-control" placeholder="Введите новое ФИО" />
+        <button id="confirm-initials" class="btn btn-success">Подтвердить</button>
+    </div>
+    <div id="login-form" class="form-container" style="display: none;">
+        <input type="text" id="changeLogin" class="form-control" placeholder="Введите новый логин" />
+        <button id="confirm-login" class="btn btn-success">Подтвердить</button>
+    </div>
+    <div id="password-form" class="form-container" style="display: none;">
+        <input type="newPassword" id="changePassword" class="form-control" placeholder="Введите новый пароль" />
+        <button id="confirm-password" class="btn btn-success">Подтвердить</button>
+    </div>
+</div>
+
+<style>
+    .container {
+        max-width: 400px;
+        margin: 0; /* Убираем автоматические отступы */
+        padding: 20px;
+        background-color: #f2f2f2;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: left; /* Выравнивание текста по левому краю */
+    }
+
+    .title, .subtitle {
+        color: #333;
+    }
+
+    .buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .btn {
+        background-color: #ff6b00;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        background-color: #d95800;
+    }
+
+    .form-container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-control {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+</style>
+
+<script>
+const changeLoginS = document.getElementById('changeLogin');
+const changePasswordS = document.getElementById('changePassword');
+const changeInitialsS = document.getElementById('changeInitials');
+
+
+// Логика для отображения/скрытия форм
+document.getElementById('change-login').addEventListener('click', () => {
+    document.getElementById('password-form').style.display = 'none';
+    document.getElementById('initials-form').style.display = 'none';
+    document.getElementById('login-form').style.display = 'block';
+});
+
+document.getElementById('change-password').addEventListener('click', () => {
+    document.getElementById('login-form').style.display = 'none';
+    document.getElementById('initials-form').style.display = 'none';
+    document.getElementById('password-form').style.display = 'block';
+});
+
+document.getElementById('change-initials').addEventListener('click', () => {
+    document.getElementById('login-form').style.display = 'none';
+    document.getElementById('initials-form').style.display = 'block';
+    document.getElementById('password-form').style.display = 'none';
+});
+
+
+document.getElementById('confirm-login').addEventListener('click', async () => {
+    // Логика для изменения логина
+    const newLogin = changeLoginS.value;
+    changeLogin(newLogin);
+});
+
+document.getElementById('confirm-password').addEventListener('click', () => {
+    // Логика для изменения пароля
+    const newPassword = changePasswordS.value;
+    changePassword(newPassword);
+});
+
+document.getElementById('confirm-initials').addEventListener('click', () => {
+    // Логика для изменения пароля
+    const newInitials = changeInitialsS.value;
+    changeInitials(newInitials);
+});
+
+
+function load() {
+   
+
+    fetch('api/teacher/students/' + editStudentId).then(response => response.json()).then(data => {
+        let fioTxt = document.getElementById("FIO");
+        let loginTxt = document.getElementById("loginTxt");
+        let passwordTxt = document.getElementById("passwordTxt");
+        fioTxt.textContent = "ФИО: "+data.studentInitials;
+        loginTxt.textContent = "Логин: "+data.studentLogin;
+        passwordTxt.textContent = "Пароль: "+data.studentPassword;
+    });
+}
+
+async function changeLogin(newLogin) {
+    const response = await fetch('/api/teacher/students/'+editStudentId+'/login?login=' + newLogin, {
+          method: 'PUT'
+        });
+        load();
+}
+
+async function changePassword(newPassword) {
+  
+        const response = await fetch('/api/teacher/students/'+editStudentId+'/password?password=' + newPassword, {
+          method: 'PUT'
+        });
+        load();
+}
+
+async function changeInitials(newInitials) {
+    const response = await fetch('/api/teacher/students/'+editStudentId+'/initials?initials=' + newInitials, {
+          method: 'PUT'
+        });
+        load();
+}
+
+
+const editStudentId = localStorage.getItem("editStudentId");
+load();
+</script>

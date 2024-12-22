@@ -1,6 +1,7 @@
 package com.example.main.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.example.main.model.Solution;
 import com.example.main.model.Student;
@@ -19,7 +20,7 @@ public interface TeacherService
 
     Long auth(String log, String password);
 
-    void changePassword(Long idTeacher, String newpassword);
+    Long changePassword(Long idTeacher, String oldPassword, String newPassword);
 
     //Работа со студентом
 
@@ -63,6 +64,14 @@ public interface TeacherService
     Solution getSolutionStydent(Long idStudent, Long idTask);
 
     void setAnswerBySequence(Long idStudent, Long idTask, String Answer);
+
+    Optional<Teacher> getTeacher(Long idTeacher);
+
+    Long changeLogin(Long idTeacher, String password, String newLogin);
+
+    void changeInitialsStudent(Long idStudent, String initials);
+
+    void changeLoginStudent(Long idStudent, String login);
 
 }
 

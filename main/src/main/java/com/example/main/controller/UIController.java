@@ -29,4 +29,18 @@ public class UIController {
         return "taskStudent";
     }
 
+    @GetMapping("/profTeacher")
+    public String profTeacher() {
+        return "profTeacher";
+    }
+
+    @GetMapping("/adminTeacher")
+    public String adminTeacher() {
+        return "adminTeacher";
+    }
+
+    @GetMapping("/editStudent")
+    public String editStudent() {
+        return "editStudent";
+    }
 }

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список учеников</title>
+    <style>
+        /* CSS для вертикального расположения */
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Выравниваем по левому краю */
+            padding: 20px; /* Добавляем отступы */
+            font-family: Arial, sans-serif; /* Изменяем шрифт */
+        }
+        h1, h2, table, .add-student-form {
+            margin-bottom: 20px; /* Отступы между элементами */
+            width: 80%; /* Занимают всю доступную ширину */
+        }
+        input {
+            display: block;
+            margin-bottom: 10px;
+            padding: 10px; /* Добавляем внутренние отступы */
+            font-size: 16px; /* Увеличиваем размер шрифта */
+            border: 1px solid #ccc; /* Цвет рамки */
+            border-radius: 5px; /* Скругление углов */
+            width: calc(40% - 22px); /* Ширина с учетом отступов */
+        }
+        button {
+            padding: 10px 20px; /* Внутренние отступы */
+            font-size: 16px; /* Увеличиваем размер шрифта */
+            background-color: green; /* Зеленый фон */
+            color: white; /* Белый текст */
+            border: none; /* Убираем рамку */
+            border-radius: 5px; /* Скругление углов */
+            cursor: pointer; /* Указатель при наведении */
+        }
+        button:hover {
+            background-color: darkgreen; /* Темно-зеленый фон при наведении */
+        }
+        table {
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Список учеников</h1>
+    <table id="studentTable">
+      <thead>
+        <tr>
+          <th>ФИО</th>
+          <th>Логин</th>
+          <th>Управление</th>
+        </tr>
+      </thead>
+      <tbody id="student-table">
+        <!-- Здесь будут динамически добавляться строки из базы данных -->
+      </tbody>
+    </table>
+
+    <h2>Добавление ученика</h2>
+      <div class="add-student-form">
+        <input type="text" placeholder="Введите ФИО ученика" id="studentName">
+        <input type="text" placeholder="Введите логин ученика" id="studentLogin">
+        <input type="text" placeholder="Введите пароль ученика" id="studentPassword">
+        <button class="form-button" id ="addButton">Добавить</button>
+      </div>
+<script>
+  // Функция для добавления строки в таблицу
+  const addButton = document.getElementById('addButton');
+  function loadStudents() {
+    const id = localStorage.getItem("teacherId");
+    console.log(id);
+   
+    fetch('/api/teacher/students/getAll')
+              .then(response => response.json())
+              .then(students => {
+                  const studentsTable= document.getElementById('student-table');
+                  studentsTable.innerHTML = '';
+                  students.forEach(student => {
+                      const row = studentsTable.insertRow();
+                      const initialsCell  = row.insertCell();
+                      const loginCell  = row.insertCell();
+                      const actionCell = row.insertCell();
+                    
+                      initialsCell.textContent = student.studentInitials;
+                      loginCell.textContent = student.studentLogin;
+                      const editStudentButton = document.createElement('button');
+                      editStudentButton.textContent = "Изменить данные";
+                      editStudentButton.classList.add("form-button");
+                      editStudentButton.addEventListener('click', () => {
+                        localStorage.setItem('editStudentId', student.studentId);
+                        window.location.href = '/editStudent';
+                      });
+                      actionCell.appendChild(editStudentButton);    
+                  });
+              });
+  }
+
+  addButton.addEventListener('click', () => {
+
+    const studentName = document.getElementById('studentName').value;
+    const studentLogin = document.getElementById('studentLogin').value;
+    const studentPassword = document.getElementById('studentPassword').value;
+    if (!studentName || !studentLogin || !studentPassword) {
+        alert("Пожалуйста, заполните все поля!");
+        return; 
+    }
+    addStudent(studentName,studentLogin,studentPassword);
+
+})
+
+
+  loadStudents();
+
+  async function addStudent(studentName,studentLogin,studentPassword ) {
+    
+    const studentData = {
+      studentInitials: studentName, // убедитесь, что имена полей соответствуют бэкенду
+      studentLogin: studentLogin,
+      studentPassword: studentPassword,
+    };
+        const response = await fetch("/api/teacher/students", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(studentData),
+        });
+        loadStudents();
+
+  }
+</script>
+</body>
+</html>

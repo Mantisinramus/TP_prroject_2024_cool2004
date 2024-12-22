@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список учеников</title>
+    <style>
+        /* CSS для вертикального расположения */
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Выравниваем по левому краю */
+            padding: 20px; /* Добавляем отступы */
+            font-family: Arial, sans-serif; /* Изменяем шрифт */
+        }
+        h1, h2, table, .add-student-form {
+            margin-bottom: 20px; /* Отступы между элементами */
+            width: 80%; /* Занимают всю доступную ширину */
+        }
+       
+        table {
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Журнал</h1>
+    <table id="studentTable">
+      <thead>
+        <tr>
+          <th>ФИО/Название</th>
+          <th>Логин</th>
+          <th>Управление</th>
+        </tr>
+      </thead>
+      <tbody id="student-table">
+        <!-- Здесь будут динамически добавляться строки из базы данных -->
+      </tbody>
+    </table>
+
+<script>
+
+  function loadJournal() {
+
+  }
+
+
+
+
+  loadJournal();
+
+ 
+</script>
+</body>
+</html>

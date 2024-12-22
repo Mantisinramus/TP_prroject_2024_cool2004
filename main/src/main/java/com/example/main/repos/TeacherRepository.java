@@ -13,7 +13,7 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long>
 {
     //поиск id учителя по его логину
     @Transactional
-    @Query("SELECT t.teacherId FROM Teacher t WHERE t.teacherLogin = :login")
+    @Query(nativeQuery = true, value = "SELECT t.teacher_id FROM teacher t WHERE t.teacher_login = :login")
     Long findTeacherIdByLogin(@Param("login") String login);
 
 }

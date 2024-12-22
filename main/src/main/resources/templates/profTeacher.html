@@ -1,0 +1,156 @@
+<div class="container">
+  <h1 id = "FIO" class="title">ФИО</h1>
+  <h2 id = "loginTxt"  class="subtitle">ЛОГИН</h2>
+  <div class="buttons">
+    <button id="change-login" class="btn btn-primary">Изменить логин</button>
+    <button id="change-password" class="btn btn-primary">Изменить пароль</button>
+  </div>
+  <div id="login-form" class="form-container" style="display: none;">
+    <input type="text" id = "changeLoginLogin" class="form-control" placeholder="Введите новый логин" />
+    <input type="password" id = "changeLoginPassword" class="form-control" placeholder="Введите пароль" />
+    <button id="confirm-login" class="btn btn-success">Подтвердить</button>
+  </div>
+  <div id="password-form" class="form-container" style="display: none;">
+    <input type="newPassword" id = "changePasswordNew" class="form-control" placeholder="Введите новый пароль" />
+    <input type="oldPassword" id = "changePasswordOld" class="form-control" placeholder="Введите старый пароль" />
+    <button id="confirm-password" class="btn btn-success">Подтвердить</button>
+  </div>
+</div>
+
+<style>
+  .container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f2f2f2;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .title, .subtitle {
+    text-align: center;
+    color: #333;
+  }
+
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .btn {
+    background-color: #ff6b00;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .btn:hover {
+    background-color: #d95800;
+  }
+
+  .form-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .form-control {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+</style>
+
+<script>
+const changeLoginLogin = document.getElementById('changeLoginLogin');
+const changeLoginPassword = document.getElementById('changeLoginPassword');
+const changePasswordOld = document.getElementById('changePasswordOld');
+const changePasswordNew = document.getElementById('changePasswordNew');
+  // Логика для отображения/скрытия форм
+  document.getElementById('change-login').addEventListener('click', () => {
+    document.getElementById('password-form').style.display = 'none';
+    document.getElementById('login-form').style.display = 'block';
+  });
+
+  document.getElementById('confirm-login').addEventListener('click', async  () => {
+    // Логика для изменения логина
+    const newLogin = changeLoginLogin.value;
+    const password = changeLoginPassword.value;
+     changeLogin(newLogin,password);
+    
+
+  });
+
+  document.getElementById('change-password').addEventListener('click', () => {
+    document.getElementById('login-form').style.display = 'none';
+    document.getElementById('password-form').style.display = 'block';
+  });
+
+  document.getElementById('confirm-password').addEventListener('click', () => {
+    // Логика для изменения пароля
+    const oldPassword = changePasswordOld.value;
+    const newPassword = changePasswordNew.value;
+    changePassword(oldPassword,newPassword);
+  });
+
+
+  function load() {
+    const teacherId = localStorage.getItem("teacherId");
+    
+    fetch('api/teacher/info/'+teacherId).then(response => response.json()).then(data=>
+    {
+      let fioTxt = document.getElementById("FIO");
+      let loginTxtt= document.getElementById("loginTxt");
+      fioTxt.textContent = data.teacherInitials;
+      loginTxtt.textContent = data.teacherLogin;
+    
+    })
+  }
+
+  async function changeLogin(login, password) {
+    const teacherId = localStorage.getItem("teacherId");
+        const response = await fetch('/api/teacher/'+teacherId+'/login?newLogin=' + login + '&password=' + password, {
+          method: 'POST'
+        });
+        const res = await response.json();
+        console.log("ffff", res);
+        if (res === 0) {
+          alert("Введен неверный пароль");
+        } else {
+          loginChangeCheck = true;
+          console.log('Успешная смена логина. ID студента:', res);
+          load();
+          document.getElementById('login-form').style.display = 'none';
+          return true;;
+        }
+  }
+
+  async function changePassword(oldPassword, newPassword) {
+    const teacherId = localStorage.getItem("teacherId");
+        const response = await fetch('/api/teacher/'+teacherId+'/password?oldPassword=' + oldPassword + '&newPassword=' + newPassword, {
+          method: 'POST'
+        });
+        const res = await response.json();
+        console.log("ffff", res);
+        if (res === 0) {
+          alert("Введен неверный пароль");
+        } else {
+          console.log('Успешная смена пароля. ID студента:', res);
+          load();
+          document.getElementById('password-form').style.display = 'none';
+          return true;;
+        }
+}
+
+  load() ;
+
+
+</script>

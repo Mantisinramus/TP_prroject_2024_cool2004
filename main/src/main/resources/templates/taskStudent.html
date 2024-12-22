@@ -33,17 +33,39 @@
         /* Стиль для игрового поля */
         .game-field {
             background-color: #B7673C; /* Цвет игрового поля */
-            height: 400px; /* Высота игрового поля */
             width: 60%; /* Ширина игрового поля 60% */
             border-radius: 5px;
             margin-right: 20px; /* Отступ справа */
+            display: flex; /* Для центрирования таблицы */
+            align-items: center; /* Центрируем по вертикали */
+            justify-content: center; /* Центрируем по горизонтали */
         }
+   	.game-field table {
+       border-collapse: collapse; /* Объединить границы ячеек */
+       margin: 0; /* Убрать отступы */
+     	}
+     	.game-field table td {
+        padding: 0;
+        border: 1px solid white; /* Добавьте если нужны границы ячеек */
+     	}
+
         /* Стиль для блока ввода решения */
         .solution {
             background-color: #3A5154; /* Цвет фона блока ввода решения */
             padding: 15px;
             border-radius: 5px;
             width: 30%; /* Ширина блока ввода решения 30% */
+
+        }
+        /* Стиль для блока доступных графических примитивов */
+        .primitives {
+            background-color: #3A5154; /* Цвет фона блока примитивов */
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px; /* Отступ сверху */
+            display: flex; /* Используем flexbox для выравнивания */
+            flex-wrap: wrap; /* Позволяем оборачивать элементы */
+            justify-content: center; /* Центрируем содержимое */
         }
         /* Стиль для кнопок */
         .btn-custom {
@@ -63,24 +85,48 @@
             border-radius: 5px;
             margin-top: 20px; /* Отступ сверху */
         }
+        /* Стиль для таблицы */
+        table {
+            border-collapse: collapse; /* Убираем пробелы между ячейками */
+        }
+        th, td {
+            border: 1px solid #B9B0B2; /* Границы ячеек */
+            text-align: center; /* Центрируем текст */
+        }
+        /* Размеры графических примитивов */
+        .primitive-img {
+            width: 40px; /* Ширина изображения */
+            height: 40px; /* Высота изображения */
+            margin: 5px; /* Отступы между изображениями */
+        }
     </style>
 </head>
 <body>
 
-    <h1 id="taskName">Название задания</h1>
+    <h1 id ="taskName"></h1>
 
-    <div class="description" >
-        <p  id="task-description">Описание задания: Текст задания будет здесь...</p>
+    <div class="description">
+        <p id = "task-description"></p>
     </div>
 
     <div class="flex-container">
         <div class="game-field" id="gameField">
-            <!-- Игровое поле будет реализовано позже -->
+            <!-- Таблица будет динамически добавлена здесь -->
         </div>
 
-        <div class="solution">
+        <div class="solution" id="solutoin">
             <h5>Введите ваше решение:</h5>
             <textarea id="solutionInput" rows="4" class="form-control" style="width: 100%;"></textarea>
+            
+            <div class="primitives">
+                <h5>Доступные графические примитивы:</h5>
+                <!-- <img src="image5.png" alt="Повтори" class="primitive-img">
+                <img src="image1.png" alt="Вперед" class="primitive-img">
+                <img src="image2.png" alt="Назад" class="primitive-img">
+                <img src="image3.png" alt="Влево" class="primitive-img">
+                <img src="image4.png" alt="Вправо" class="primitive-img"> -->
+            </div>
+
             <button class="btn-custom" id="checkSolution">Проверить решение</button>
             <button class="btn-custom" id="clearSolution">Очистить решение</button>
             <button class="btn-custom" id="submitSolution">Отправить решение</button>
@@ -94,11 +140,70 @@
         <p id="userScore">Оценка будет отображена здесь...</p>
     </div>
 
-<script>
-  // Функция для добавления строки в таблицу
-  function load() {
+    <script>
+        // Задаем переменные для создания таблицы
+    
+        // Функция для создания таблицы
+        function createTable(y_s, x_s, cellSize) {
+            let table = '<table>';
+            for (let i = 0; i < y_s; i++) {
+                table += '<tr>';
+                for (let j = 0; j < x_s; j++) {
+                    table += `<td id="cell_${j}_${i}" style="width: ${cellSize}px; height: ${cellSize}px;"></td>`; // Ячейка таблицы
+                    console.log(j+' '+i);
+                }
+                table += '</tr>';
+            }
+            table += '</table>';
+            return table;
+        }
+
+        // Установка высоты игрового поля
+        // function setGameFieldHeight(rows) {
+        //     const gameField = document.getElementById('gameField');
+        //     const requiredHeight = (rows+1) * cellSize; // Высота равная количеству строк * размер ячейки
+        //     gameField.style.height = requiredHeight; // Устанавливаем высоту
+        // }
+
+        // Добавляем таблицу в блок игрового поля
+      // Устанавливаем высоту игрового поля
+
+        // // Примерный функционал для кнопок
+        // document.getElementById('checkSolution').addEventListener('click', function() {
+        //     // Логика проверки решения будет добавлена позже
+        // });
+
+        // document.getElementById('clearSolution').addEventListener('click', function() {
+        //     document.getElementById('solutionInput').value = '';
+        // });
+
+        // document.getElementById('submitSolution').addEventListener('click', function() {
+        //     // Логика отправки решения будет добавлена позже
+        //     alert("Решение отправлено на проверку.");
+        // });
+
+    
+
+ function load() {
+
     const taskId = localStorage.getItem("taskId");
     const solutionId = localStorage.getItem("solutionId");
+
+    let imgPlayer = document.createElement('img');
+    imgPlayer.src = 'hero.png'; // Замените на путь к вашему изображению
+    imgPlayer.style.width = '100%';  //  или другой нужный размер
+    imgPlayer.style.height = '100%';
+    imgPlayer.style.objectFit = 'cover';
+
+    let imgCauldron = document.createElement('img');
+    imgCauldron.src = 'kotyol.png'; // Замените на путь к вашему изображению
+    imgCauldron.style.width = '100%';  //  или другой нужный размер
+    imgCauldron.style.height = '100%';
+    imgCauldron.style.objectFit = 'cover';
+
+   
+
+   
     fetch('api/teacher/tasks/'+taskId).then(response => response.json()).then(data=>
     {
       let taskNameElement = document.getElementById("taskName");
@@ -106,6 +211,43 @@
 
       let taskDescElement = document.getElementById("task-description");
       taskDescElement.textContent = data.taskText;
+
+      const y_s = data.gridSize.y; // Количество строк
+      const x_s = data.gridSize.x; // Количество столбцов
+      const cellSize = 40; // Размер ячеек в пикселях
+
+      document.getElementById('gameField').innerHTML = createTable(y_s, x_s, cellSize);
+
+      let playerCell = document.getElementById('cell_'+data.player.x+'_'+data.player.y);
+      playerCell.appendChild(imgPlayer);
+
+      let cauldronCell = document.getElementById('cell_'+data.cauldron.x+'_'+data.cauldron.y);
+      cauldronCell.appendChild(imgCauldron);
+
+      data.walls.forEach(wall => {
+        let wallCell = document.getElementById('cell_'+wall.x+'_'+wall.y);
+        console.log('cell_'+wall.x+'_'+wall.y);
+        let imgWall = document.createElement('img');
+        imgWall.src = 'wall.png'; // Замените на путь к вашему изображению
+        imgWall.style.width = '100%';  //  или другой нужный размер
+        imgWall.style.height = '100%';
+        imgWall.style.objectFit = 'cover';
+        wallCell.appendChild(imgWall);
+      });
+
+      data.potions.forEach(potion => {
+        let potionCell = document.getElementById('cell_'+potion.x+'_'+potion.y);
+        console.log('cell_'+potion.x+'_'+potion.y);
+        let imgPotion = document.createElement('img');
+        imgPotion.src = 'posion1.png'; // Замените на путь к вашему изображению
+        imgPotion.style.width = '100%';  //  или другой нужный размер
+        imgPotion.style.height = '100%';
+        imgPotion.style.objectFit = 'cover';
+        potionCell.appendChild(imgPotion);
+      });
+
+
+
     })
 
     fetch('api/students/solutions/'+solutionId).then(response => response.json()).then(data=>
@@ -117,11 +259,23 @@
 
       let markArea = document.getElementById("userScore");
       markArea.textContent = data.mark;
+
+    
     })
 
-    ////api/students/solutions/{idSolution}
   }
 
   load();
 
-</script>
+
+
+    </script>
+
+</body>
+</html>
+
+
+    
+
+ 
+

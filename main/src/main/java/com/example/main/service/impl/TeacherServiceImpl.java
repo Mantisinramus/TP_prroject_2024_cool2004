@@ -2,6 +2,7 @@ package com.example.main.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -47,7 +48,7 @@ public class TeacherServiceImpl implements TeacherService {
     
         // Если учитель с таким логином не найден
         if (teacherId == null) {
-            // throw new StudentNotFoundException("Student not found with login: " + log);
+            return (long)0;
         }   
     
         // Если учитель найден, извлекаем его из базы
@@ -64,13 +65,7 @@ public class TeacherServiceImpl implements TeacherService {
         }
     }
 
-    @Override
-    public void changePassword(Long idTeacher, String newpassword) 
-    {
-        Teacher teacher = reposTeacher.findById(idTeacher).orElseThrow();
-        teacher.setTeacherPassword(newpassword);
-        reposTeacher.save(teacher);
-    }
+
 
 
     //Работа со студентом
@@ -106,13 +101,7 @@ public class TeacherServiceImpl implements TeacherService {
         return reposStudent.findAll();
     }
     
-    @Override
-    public void changePassStudent(Long idStudent, String password) 
-    {
-        Student student = reposStudent.findById(idStudent).get();
-        student.setStudentPassword(password);
-        reposStudent.save(student);
-    }
+   
     
 
     //Работа с тестом
@@ -227,4 +216,65 @@ public class TeacherServiceImpl implements TeacherService {
         reposSolut.save(editSolution);
     }
 
+    @Override
+    public Optional<Teacher> getTeacher(Long idTeacher) {
+      return  reposTeacher.findById(idTeacher);
+    }
+
+    @Override
+    public Long changeLogin(Long idTeacher, String password, String newLogin) {
+        
+        Teacher teacher = reposTeacher.findById(idTeacher).orElseThrow();
+        if(teacher.getTeacherPassword().equals(password))
+        {
+            teacher.setTeacherLogin(newLogin);
+            reposTeacher.save(teacher);
+            return teacher.getTeacherId();
+        }
+        else
+        {
+            return (long) 0;
+        }
+    }
+
+
+
+    @Override
+    public Long changePassword(Long idTeacher, String oldPassword, String newPassword) 
+    {
+        Teacher teacher = reposTeacher.findById(idTeacher).orElseThrow();
+        if(teacher.getTeacherPassword().equals(oldPassword))
+        {
+            teacher.setTeacherPassword(newPassword);
+            reposTeacher.save(teacher);
+            return teacher.getTeacherId();
+        }
+        else
+        {
+            return (long) 0;
+        }
+    }
+
+
+    @Override
+    public void changePassStudent(Long idStudent, String password) 
+    {
+        Student student = reposStudent.findById(idStudent).get();
+        student.setStudentPassword(password);
+        reposStudent.save(student);
+    }
+
+    @Override
+    public void changeInitialsStudent(Long idStudent, String initials) {
+        Student student = reposStudent.findById(idStudent).get();
+        student.setStudentInitials(initials);
+        reposStudent.save(student);
+    }
+
+    @Override
+    public void changeLoginStudent(Long idStudent, String login) {
+        Student student = reposStudent.findById(idStudent).get();
+        student.setStudentLogin(login);
+        reposStudent.save(student);   
+    }
 }    

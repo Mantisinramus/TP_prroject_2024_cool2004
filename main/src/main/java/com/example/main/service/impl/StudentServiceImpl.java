@@ -42,7 +42,7 @@ public class StudentServiceImpl implements StudentService
     
         // Если студент с таким логином не найден
         if (studentId == null) {
-            // throw new StudentNotFoundException("Student not found with login: " + log);
+            return (long)0;
         }   
     
         // Если студент найден, извлекаем его из базы
