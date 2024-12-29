@@ -34,8 +34,7 @@
       const id = localStorage.getItem("studentId");
       console.log(id);
      
-      
-
+    
         fetch('/api/students/'+id+'/solutions')
                 .then(response => response.json())
                 .then(solutions => {
@@ -52,9 +51,17 @@
                           {
                             const taskNameLink = document.createElement('a');
                             taskNameLink.href = '/taskStudent';
+
+
+                            
+                            taskNameLink.addEventListener('click', function(event) {
+                            localStorage.setItem('taskId', task.taskId);
+                            console.log('Ссылка на задание нажата:', task.taskName);
+                        });
+            
                             taskNameLink.textContent = task.taskName;
                             taskNameCell.appendChild(taskNameLink);
-                            localStorage.setItem('taskId', task.taskId);
+                            
                             
                             // console.log("sol" + localStorage.getItem("solutionId"));
                             // console.log("t" + localStorage.getItem("taskId"));
@@ -66,6 +73,9 @@
                 .catch(error => console.error('Error loading accounts:', error));
 
     }
+
+
+
   
     loadTasks();
     // Пример заполнения таблицы данными из базы данных

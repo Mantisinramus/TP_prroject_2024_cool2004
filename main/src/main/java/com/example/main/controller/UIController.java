@@ -43,4 +43,9 @@ public class UIController {
     public String editStudent() {
         return "editStudent";
     }
+
+    @GetMapping("/journalTeacher")
+    public String journalTeacher() {
+        return "journalTeacher";
+    }
 }

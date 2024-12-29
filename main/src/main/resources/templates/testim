@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Перетаскивание объектов</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px;
+        }
+        #dropArea {
+            width: 300px;
+            height: 200px;
+            border: 2px dashed #ccc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            margin-top: 20px;
+            position: relative;
+            overflow: auto;
+        }
+        .draggable {
+            width: 50px;
+            height: 50px;
+            cursor: grab;
+            margin: 5px;
+        }
+        .dragging {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <h1>Перетаскивайте изображения стрелок</h1>
+    <div>
+        <img src="arrow-right.png" alt="Arrow Right" class="draggable" draggable="true">
+        <img src="arrow-left.png" alt="Arrow Left" class="draggable" draggable="true">
+    </div>
+    <div id="dropArea">Перетащите сюда</div>
+
+    <script>
+        const draggables = document.querySelectorAll('.draggable');
+        const dropArea = document.getElementById('dropArea');
+
+        draggables.forEach(draggable => {
+            draggable.addEventListener('dragstart', () => {
+                draggable.classList.add('dragging');
+            });
+
+            draggable.addEventListener('dragend', () => {
+                draggable.classList.remove('dragging');
+            });
+        });
+
+        dropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+
+        dropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const dragging = document.querySelector('.dragging');
+            if (dragging) {
+                const newImage = document.createElement('img');
+                newImage.src = dragging.src;
+                newImage.alt = dragging.alt;
+                newImage.classList.add('draggable');
+                newImage.style.margin = '5px'; // Отступ между изображениями
+                newImage.draggable = true; // Делаем новое изображение перетаскиваемым
+
+                // Добавляем обработчики для нового изображения
+                newImage.addEventListener('dragstart', () => {
+                    newImage.classList.add('dragging');
+                });
+
+                newImage.addEventListener('dragend', () => {
+                    newImage.classList.remove('dragging');
+                });
+                
+                dropArea.appendChild(newImage);
+            }
+        });
+
+        dropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+
+        dropArea.addEventListener('dragleave', (e) => {
+            const dragging = document.querySelector('.dragging');
+            if (dragging) {
+                dragging.remove(); // Удаляем элемент при перетаскивании за пределами контейнера
+            }
+        });
+    </script>
+</body>
+</html>
