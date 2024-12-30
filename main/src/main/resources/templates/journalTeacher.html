@@ -74,7 +74,27 @@ function load()
           console.log('222');
           console.log(mark);
 
-          markCell.textContent = mark !== undefined ? mark : '-';
+          if (mark !== undefined) 
+          {
+            // localStorage.setItem("taskToCheck", task.taskId);
+            // localStorage.setItem("studentToCheck", student.studentId);
+
+            const link = document.createElement('a');
+            link.href = "/checkSolution";
+            
+            link.addEventListener('click', function(event) {
+              localStorage.setItem("taskToCheck", task.taskId);
+              localStorage.setItem("studentToCheck", student.studentId);
+                            console.log('Ссылка на задание нажата:', task.taskName);
+                        });
+
+            link.textContent = mark;
+            markCell.appendChild(link);
+          } 
+          else 
+          {
+        markCell.textContent = '-';
+        }
         })
       })
     });

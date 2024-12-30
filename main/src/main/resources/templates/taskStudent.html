@@ -43,6 +43,7 @@
    	.game-field table {
        border-collapse: collapse; /* Объединить границы ячеек */
        margin: 0; /* Убрать отступы */
+       
      	}
      	.game-field table td {
         padding: 0;
@@ -99,6 +100,81 @@
             height: 40px; /* Высота изображения */
             margin: 5px; /* Отступы между изображениями */
         }
+        .container {
+             background-color: #3A5154;
+            padding: 20px;
+             border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+             text-align: center;
+        }
+         .draggable-items {
+           display: flex;
+             justify-content: center;
+           margin-bottom: 20px;
+       }
+        .draggable-items img {
+            cursor: grab;
+             margin: 0 10px;
+            width: 60px;
+             height: auto;
+        }
+
+        .drop-area {
+             border: 2px dashed #ccc;
+             min-height: 200px;
+             width: 300px;
+             padding: 10px;
+           display: flex;
+             flex-direction: column;
+             align-items: flex-start;
+             margin-right: 20px;
+           position: relative;
+       }
+         .drop-area img {
+             width: 60px;
+            height: auto;
+            position: relative;
+            margin-bottom: 5px;
+        }
+         .drop-area .loop-container {
+            border: 2px dashed lightblue;
+            padding: 5px;
+            margin-bottom: 5px;
+            display: flex;
+            flex-direction: column;
+            width: fit-content;
+             min-width: 100px;
+           position: relative;
+           background-color: #3A5154;
+           border-radius: 5px;
+           align-items: center;
+        }
+        .drop-area .loop-container img {
+            margin-left: 20px;
+           margin-bottom: 5px;
+        }
+        .drop-area .loop-container input {
+            margin-bottom: 5px;
+             width: 40px;
+            height: 20px;
+            border: 1px solid #333;
+             border-radius: 3px;
+             text-align: center;
+             background-color: white;
+            font-size: 14px;
+            padding: 0;
+       }
+       .drop-area .loop-container .iterations-label {
+            display: none;
+       }
+        .trash-area {
+           border: 2px dashed red;
+            min-height: 100px;
+            width: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
@@ -114,23 +190,26 @@
             <!-- Таблица будет динамически добавлена здесь -->
         </div>
 
-        <div class="solution" id="solutoin">
-            <h5>Введите ваше решение:</h5>
-            <textarea id="solutionInput" rows="4" class="form-control" style="width: 100%;"></textarea>
-            
-            <div class="primitives">
-                <h5>Доступные графические примитивы:</h5>
-                <!-- <img src="image5.png" alt="Повтори" class="primitive-img">
-                <img src="image1.png" alt="Вперед" class="primitive-img">
-                <img src="image2.png" alt="Назад" class="primitive-img">
-                <img src="image3.png" alt="Влево" class="primitive-img">
-                <img src="image4.png" alt="Вправо" class="primitive-img"> -->
+        <div class="container">
+        <h1>Доступные объекты для перетаскивания</h1>
+        <div class="draggable-items">
+            <img src="up.png" alt="up" class="draggable" draggable="true" data-item="up">
+            <img src="down.png" alt="down" class="draggable" draggable="true" data-item="down">
+           <img src="left.png" alt="left" class="draggable" draggable="true" data-item="left">
+            <img src="right.png" alt="right" class="draggable" draggable="true" data-item="right">
+             <img src="loop.png" alt="loop" class="draggable" draggable="true" data-item="loop">
+       </div>
+        <h2>Перетащите объекты в область</h2>
+        <div style="display:flex;">
+            <div class="drop-area" id="dropArea">
             </div>
-
-            <button class="btn-custom" id="checkSolution">Проверить решение</button>
-            <button class="btn-custom" id="clearSolution">Очистить решение</button>
-            <button class="btn-custom" id="submitSolution">Отправить решение</button>
-        </div>
+            <div class="trash-area" id="trashArea">Корзина</div>
+       </div>
+       <div style="display:flex;">
+        <button class="btn-custom" onclick= "getDraggedItems()">Проверить решение</button>
+        <button class="btn-custom" onclick="sendSolution()">Отправить решение</button>
+    </div>
+    </div>
     </div>
 
     <div class="feedback">
@@ -142,7 +221,138 @@
 
     <script>
         // Задаем переменные для создания таблицы
-    
+        document.addEventListener('DOMContentLoaded', () => {
+           const draggableItems = document.querySelectorAll('.draggable');
+           const dropArea = document.getElementById('dropArea');
+           const trashArea = document.getElementById('trashArea');
+
+            let draggedItem = null;
+
+            draggableItems.forEach(item => {
+                item.addEventListener('dragstart', (e) => {
+                    draggedItem = e.target.cloneNode(true);
+                    e.dataTransfer.setData('text/plain', e.target.getAttribute('data-item'));
+                });
+           });
+
+             dropArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+            dropArea.addEventListener('drop', (e) => {
+               e.preventDefault();
+               const mouseY = e.clientY;
+
+
+               function findInsertionTarget(parent, mouseY) {
+                   for (let el of parent.children) {
+                       if (el.tagName === 'INPUT') continue;
+                       const elRect = el.getBoundingClientRect();
+                         if (mouseY < elRect.bottom) {
+                           return el;
+                       }
+                    }
+                      return null;
+                }
+
+                function findTargetParent(element, maxDepth = 3) {
+                    let parent = element.parentNode;
+                     let currentDepth = 0;
+                    while (parent) {
+                        if (parent === dropArea) return dropArea;
+                         if (parent.classList && parent.classList.contains('loop-container')) {
+                             if (currentDepth >= maxDepth) return null;
+                             return parent;
+                         }
+                         parent = parent.parentNode;
+                        currentDepth++;
+                   }
+                   return dropArea;
+               }
+                let targetParent = findTargetParent(e.target);
+
+               if (!targetParent) return;
+                let insertionTarget = findInsertionTarget(targetParent, mouseY);
+
+
+                 if (draggedItem.getAttribute('data-item') === 'loop') {
+                        let depth = 0;
+                        if (targetParent !== dropArea) {
+                          depth = parseInt(targetParent.getAttribute('data-depth')) + 1;
+                      }
+
+                     if (depth >= 3) return;
+                   const loopContainer = document.createElement('div');
+                        loopContainer.classList.add('loop-container');
+                       loopContainer.setAttribute('data-depth', depth);
+
+                    const input = document.createElement('input');
+                       input.type = 'number';
+                       input.min = 1;
+                       input.max = 10;
+                      input.value = 1;
+                        loopContainer.appendChild(input);
+                     if (insertionTarget) {
+                       targetParent.insertBefore(loopContainer, insertionTarget);
+                   } else {
+                       targetParent.appendChild(loopContainer);
+                    }
+                     input.addEventListener('change', (e) => {
+                         const parsedValue = parseInt(e.target.value);
+                       if (!isNaN(parsedValue) && parsedValue >= 1 && parsedValue <= 10) {
+                             loopContainer.setAttribute('data-iterations', parsedValue);
+                             input.value = parsedValue;
+                        } else {
+                           alert("Введите число от 1 до 10");
+                             input.value = loopContainer.getAttribute('data-iterations') || 1;
+                        }
+                    });
+
+                   loopContainer.addEventListener('click', (e) => {
+                         input.focus();
+                    });
+                  draggedItem = loopContainer;
+
+                } else {
+                  let depth = 0;
+                    if (targetParent !== dropArea && draggedItem.classList.contains('loop-container')) {
+                         depth = parseInt(targetParent.getAttribute('data-depth')) +1;
+                    } else if (targetParent !== dropArea) {
+                        depth = parseInt(targetParent.getAttribute('data-depth'));
+                   }
+
+                     if(depth >= 3) return;
+
+
+                     if (insertionTarget) {
+                       targetParent.insertBefore(draggedItem, insertionTarget);
+                    } else {
+                       targetParent.appendChild(draggedItem);
+                  }
+                }
+                 draggedItem.setAttribute('draggable', true);
+                draggedItem.addEventListener('dragstart', (e) => {
+                   draggedItem = e.target;
+                 });
+            });
+
+            dropArea.addEventListener('dragstart', (e) => {
+                 draggedItem = e.target;
+             });
+
+            trashArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+
+           trashArea.addEventListener('drop', (e) => {
+               e.preventDefault();
+                 if (draggedItem && (dropArea.contains(draggedItem) || trashArea.contains(draggedItem))) {
+                   if(draggedItem.querySelector('input')){
+                       draggedItem.querySelector('input').remove();
+                    }
+                    draggedItem.remove();
+                }
+           });
+       });
         // Функция для создания таблицы
         function createTable(y_s, x_s, cellSize) {
             let table = '<table>';
@@ -158,36 +368,11 @@
             return table;
         }
 
-        // Установка высоты игрового поля
-        // function setGameFieldHeight(rows) {
-        //     const gameField = document.getElementById('gameField');
-        //     const requiredHeight = (rows+1) * cellSize; // Высота равная количеству строк * размер ячейки
-        //     gameField.style.height = requiredHeight; // Устанавливаем высоту
-        // }
-
-        // Добавляем таблицу в блок игрового поля
-      // Устанавливаем высоту игрового поля
-
-        // // Примерный функционал для кнопок
-        // document.getElementById('checkSolution').addEventListener('click', function() {
-        //     // Логика проверки решения будет добавлена позже
-        // });
-
-        // document.getElementById('clearSolution').addEventListener('click', function() {
-        //     document.getElementById('solutionInput').value = '';
-        // });
-
-        // document.getElementById('submitSolution').addEventListener('click', function() {
-        //     // Логика отправки решения будет добавлена позже
-        //     alert("Решение отправлено на проверку.");
-        // });
-
-    
-
+        const taskId = localStorage.getItem("taskId");
+        const solutionId = localStorage.getItem("solutionId");
  function load() {
 
-    const taskId = localStorage.getItem("taskId");
-    const solutionId = localStorage.getItem("solutionId");
+  
 
     let imgPlayer = document.createElement('img');
     imgPlayer.src = 'hero.png'; // Замените на путь к вашему изображению
@@ -264,6 +449,121 @@
     })
 
   }
+
+    const dropArea = document.getElementById('dropArea');
+
+    function getDraggedItems() {
+    // 1. Получаем дочерние элементы dropArea
+    console.log(222);
+    const draggedItems = dropArea.children;
+    // 2. Преобразуем HTMLCollection в массив
+    const draggedItemsArray = Array.from(draggedItems);
+    console.log(draggedItemsArray);
+    let seq="";
+    draggedItemsArray.forEach(item=>
+    {
+        if(item.alt==undefined)
+        {
+            seq+='repeat '+item.children[0].value +'(';
+            
+           
+            for(let i =1;i<item.children.length; i++)
+            {
+                console.log('first' +item.children[i]);
+               if(item.children[i].alt==undefined) 
+               {
+                    seq+='repeat '+ item.children[i].children[0].value +  '(';
+                
+                    for(let j = 1; j<item.children[i].children.length;j++)
+                    {
+                        if(item.children[i].children[j].alt==undefined) 
+                        {
+                            seq+='repeat '+ item.children[i].children[j].children[0].value +  '(';
+                           for(let k = 1; k<item.children[i].children[j].children.length; k++)
+                           {
+                            seq+=item.children[i].children[j].children[k].alt+'; ';
+                            if(k==item.children[i].children[j].children.length-1)
+                            {
+                            seq=seq.slice(0,-2);
+                            }
+                           }
+                          
+                           seq+='); '; 
+                        }
+                        else
+                        {
+                            seq+=item.children[i].children[j].alt+'; ';
+                        }
+                        if(j==item.children[i].children.length-1)
+                        {
+                         seq=seq.slice(0,-2);
+                         }
+                        
+                    }
+                  
+                    seq+='); ';
+               }
+               else
+               {
+                seq+=item.children[i].alt+'; ';
+               }
+               if(i==item.children.length-1)
+               {
+                seq=seq.slice(0,-2);
+               }
+               
+            }
+            seq+='), ';
+        }
+        
+        else
+        {
+            seq+=item.alt+', ';
+        }
+       
+    }
+    
+    )
+    seq=seq.slice(0,-2);
+    console.log(seq);
+    return seq;
+}
+
+function checkSolution()
+{
+
+}
+
+async function sendSolution() {
+    let solutionToSend = getDraggedItems();
+    const idStudent = localStorage.getItem("studentId"); // Замените на фактический id студента
+    
+
+    try {
+        const response = await fetch(`/api/students/${idStudent}/tasks/${taskId}/answer?answerTask=${encodeURIComponent(solutionToSend)}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json' // Обычно не нужен для Query Parameter, но для ясности
+            },
+        });
+
+        if (!response.ok) {
+          // Обработка ошибок HTTP
+            const errorText = await response.text();
+            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+        }
+
+        const responseText = await response.text();
+        console.log('Ответ успешно отправлен:', responseText);
+
+         // Здесь можно добавить обработку успешного ответа, например, вывод сообщения пользователю
+    } catch (error) {
+        console.error('Ошибка при отправке ответа:', error);
+        // Здесь можно добавить обработку ошибки, например, вывод сообщения об ошибке пользователю
+    }
+}
+
+
 
   load();
 

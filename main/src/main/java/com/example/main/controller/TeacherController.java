@@ -164,13 +164,7 @@ public class TeacherController {
         return ResponseEntity.ok("Mark updated successfully");
     }
 
-    // получение решения студента
-    @GetMapping("/students/{idStudent}/solution/{idTask}")
-    public ResponseEntity<Solution> getSolutionStydent( @PathVariable Long idStudent, @PathVariable Long idTask)
-    {
-        return ResponseEntity.ok(teacherService.getSolutionStydent(idStudent, idTask));
-    }
-
+   
     // Установка ответа учителя на решение
     @PostMapping("/students/{idStudent}/tasks/{idTask}/answer")
     public ResponseEntity<String> setAnswerBySequence(@PathVariable Long idStudent, @PathVariable Long idTask, @RequestParam String answer)
@@ -233,5 +227,14 @@ public class TeacherController {
      teacherService.changeLoginStudent(idStudent, login);
      return ResponseEntity.ok("Student password updated");
  }
+
+
+
+  // получение решения студента
+  @GetMapping("/students/{idStudent}/solution/{idTask}")
+  public ResponseEntity<Solution> getSolutionStydent( @PathVariable Long idStudent, @PathVariable Long idTask)
+  {
+      return ResponseEntity.ok(teacherService.getSolutionStydent(idStudent, idTask));
+  }
 
 }
