@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Название задания</title>
+    <style>
+        body {
+            background-color: #929AA2; /* Цвет фона страницы */
+            color: #B9B0B2; /* Цвет текста */
+            font-family: Arial, sans-serif;
+            margin: 0; /* Убираем отступы по умолчанию */
+            padding: 20px; /* Отступы для общего оформления */
+        }
+        /* Стиль для заголовка */
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+        }
+        /* Стиль для блока с описанием задания */
+        .description {
+            background-color: #3A5154; /* Цвет фона блока описания */
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px; /* Отступ снизу */
+            width: 100%; /* Ширина 100% */
+        }
+        /* Контейнер для игрового поля и поля решения */
+        .flex-container {
+            display: flex; /* Используем flexbox для выравнивания */
+            margin-bottom: 20px; /* Отступ снизу */
+        }
+        /* Стиль для игрового поля */
+        .game-field {
+            background-color: #B7673C; /* Цвет игрового поля */
+            width: 60%; /* Ширина игрового поля 60% */
+            border-radius: 5px;
+            margin-right: 20px; /* Отступ справа */
+            display: flex; /* Для центрирования таблицы */
+            align-items: center; /* Центрируем по вертикали */
+            justify-content: center; /* Центрируем по горизонтали */
+        }
+   	.game-field table {
+       border-collapse: collapse; /* Объединить границы ячеек */
+       margin: 0; /* Убрать отступы */
+       
+     	}
+     	.game-field table td {
+        padding: 0;
+        border: 1px solid white; /* Добавьте если нужны границы ячеек */
+     	}
+
+        /* Стиль для блока ввода решения */
+        .solution {
+            background-color: #3A5154; /* Цвет фона блока ввода решения */
+            padding: 15px;
+            border-radius: 5px;
+            width: 30%; /* Ширина блока ввода решения 30% */
+
+        }
+        /* Стиль для блока доступных графических примитивов */
+        .primitives {
+            background-color: #3A5154; /* Цвет фона блока примитивов */
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px; /* Отступ сверху */
+            display: flex; /* Используем flexbox для выравнивания */
+            flex-wrap: wrap; /* Позволяем оборачивать элементы */
+            justify-content: center; /* Центрируем содержимое */
+        }
+        /* Стиль для кнопок */
+        .btn-custom {
+            background-color: #B7673C; /* Оранжевый фон для кнопок */
+            color: #B9B0B2; /* Цвет текста кнопок */
+            border: none;
+            padding: 10px;
+            margin: 5px; /* Отступы между кнопками */
+            cursor: pointer;
+            border-radius: 5px;
+            display: inline-block; /* Отображение кнопок в строку */
+        }
+        /* Стиль для блока ответов и оценок */
+        .feedback {
+            background-color: #3A5154; /* Цвет фона блока ответов */
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px; /* Отступ сверху */
+        }
+        /* Стиль для таблицы */
+        table {
+            border-collapse: collapse; /* Убираем пробелы между ячейками */
+        }
+        th, td {
+            border: 1px solid #B9B0B2; /* Границы ячеек */
+            text-align: center; /* Центрируем текст */
+        }
+        /* Размеры графических примитивов */
+        .primitive-img {
+            width: 40px; /* Ширина изображения */
+            height: 40px; /* Высота изображения */
+            margin: 5px; /* Отступы между изображениями */
+        }
+        .container {
+             background-color: #3A5154;
+            padding: 20px;
+             border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+             text-align: center;
+        }
+        
+        .drop-area {
+             border: 2px dashed #ccc;
+             min-height: 200px;
+             width: 300px;
+             padding: 10px;
+           display: flex;
+             flex-direction: column;
+             align-items: flex-start;
+             margin-right: 20px;
+           position: relative;
+       }
+         .drop-area img {
+             width: 60px;
+            height: auto;
+            position: relative;
+            margin-bottom: 5px;
+        }
+         .drop-area .loop-container {
+            border: 2px dashed lightblue;
+            padding: 5px;
+            margin-bottom: 5px;
+            display: flex;
+            flex-direction: column;
+            width: fit-content;
+             min-width: 100px;
+           position: relative;
+           background-color: #3A5154;
+           border-radius: 5px;
+           align-items: center;
+        }
+        .drop-area .loop-container img {
+            margin-left: 20px;
+           margin-bottom: 5px;
+        }
+        .drop-area .loop-container input {
+            margin-bottom: 5px;
+             width: 40px;
+            height: 20px;
+            border: 1px solid #333;
+             border-radius: 3px;
+             text-align: center;
+             background-color: white;
+            font-size: 14px;
+            padding: 0;
+       }
+       .drop-area .loop-container .iterations-label {
+            display: none;
+       }
+    </style>
+</head>
+<body>
+
+    <h1 id ="taskName"></h1>
+
+    <div class="description">
+        <p id = "task-description"></p>
+    </div>
+
+    <div class="flex-container">
+        <div class="game-field" id="gameField">
+            <!-- Таблица будет динамически добавлена здесь -->
+        </div>
+
+        <div class="container">
+            <h1>Доступные объекты для перетаскивания</h1>
+            <div class="draggable-items">
+                <img src="up.png" alt="up" class="draggable" draggable="true" data-item="up">
+                <img src="down.png" alt="down" class="draggable" draggable="true" data-item="down">
+               <img src="left.png" alt="left" class="draggable" draggable="true" data-item="left">
+                <img src="right.png" alt="right" class="draggable" draggable="true" data-item="right">
+                 <img src="loop.png" alt="loop" class="draggable" draggable="true" data-item="loop">
+           </div>
+            <h2>Перетащите объекты в область</h2>
+            <div style="display:flex;">
+                <div class="drop-area" id="dropArea">
+                </div>
+                <div class="trash-area" id="trashArea">Корзина</div>
+           </div>
+           <div style="display:flex;">
+            <button class="btn-custom" onclick= "getDraggedItems()">Проверить решение</button>
+            <button class="btn-custom" onclick="sendSolution()">Отправить решение</button>
+        </div>
+        </div>
+    </div>
+
+    <div class="feedback">
+        <h5>Ответ учителя:</h5>
+        <p id="teacherResponse">Ответ будет отображен здесь...</p>
+        <h5>Оценка:</h5>
+        <p id="userScore">Оценка будет отображена здесь...</p>
+    </div>
+
+    <script>
+        // Задаем переменные для создания таблицы
+       
+        // Функция для создания таблицы
+        function createTable(y_s, x_s, cellSize) {
+            let table = '<table>';
+            for (let i = 0; i < y_s; i++) {
+                table += '<tr>';
+                for (let j = 0; j < x_s; j++) {
+                    table += `<td id="cell_${j}_${i}" style="width: ${cellSize}px; height: ${cellSize}px;"></td>`; // Ячейка таблицы
+                    console.log(j+' '+i);
+                }
+                table += '</tr>';
+            }
+            table += '</table>';
+            return table;
+        }
+
+ function load() {
+
+    const taskToCheckId = localStorage.getItem("taskToCheck");
+    const studentToCheckId = localStorage.getItem("studentToCheck");
+
+    let imgPlayer = document.createElement('img');
+    imgPlayer.src = 'hero.png'; // Замените на путь к вашему изображению
+    imgPlayer.style.width = '100%';  //  или другой нужный размер
+    imgPlayer.style.height = '100%';
+    imgPlayer.style.objectFit = 'cover';
+
+    let imgCauldron = document.createElement('img');
+    imgCauldron.src = 'kotyol.png'; // Замените на путь к вашему изображению
+    imgCauldron.style.width = '100%';  //  или другой нужный размер
+    imgCauldron.style.height = '100%';
+    imgCauldron.style.objectFit = 'cover';
+
+   
+
+   
+    fetch('api/teacher/students/'+studentToCheckId+'/solution/'+taskToCheckId).then(response => response.json()).then(data=>
+    {
+
+        let feedbackArea = document.getElementById("teacherResponse");
+      feedbackArea.textContent = data.teacherAnswer;
+
+      let markArea = document.getElementById("userScore");
+      markArea.textContent = data.mark;
+
+      let taskNameElement = document.getElementById("taskName");
+      taskNameElement.textContent = data.task.taskName;
+
+      let taskDescElement = document.getElementById("task-description");
+      taskDescElement.textContent = data.task.taskText;
+
+      const y_s = data.task.gridSize.y; // Количество строк
+      const x_s = data.task.gridSize.x; // Количество столбцов
+      const cellSize = 40; // Размер ячеек в пикселях
+
+      document.getElementById('gameField').innerHTML = createTable(y_s, x_s, cellSize);
+
+      let playerCell = document.getElementById('cell_'+data.task.player.x+'_'+data.task.player.y);
+      playerCell.appendChild(imgPlayer);
+
+      let cauldronCell = document.getElementById('cell_'+data.task.cauldron.x+'_'+data.task.cauldron.y);
+      cauldronCell.appendChild(imgCauldron);
+
+      data.task.walls.forEach(wall => {
+        let wallCell = document.getElementById('cell_'+wall.x+'_'+wall.y);
+        console.log('cell_'+wall.x+'_'+wall.y);
+        let imgWall = document.createElement('img');
+        imgWall.src = 'wall.png'; // Замените на путь к вашему изображению
+        imgWall.style.width = '100%';  //  или другой нужный размер
+        imgWall.style.height = '100%';
+        imgWall.style.objectFit = 'cover';
+        wallCell.appendChild(imgWall);
+      });
+
+      data.task.potions.forEach(potion => {
+        let potionCell = document.getElementById('cell_'+potion.x+'_'+potion.y);
+        console.log('cell_'+potion.x+'_'+potion.y);
+        let imgPotion = document.createElement('img');
+        imgPotion.src = 'posion1.png'; // Замените на путь к вашему изображению
+        imgPotion.style.width = '100%';  //  или другой нужный размер
+        imgPotion.style.height = '100%';
+        imgPotion.style.objectFit = 'cover';
+        potionCell.appendChild(imgPotion);
+      });
+
+
+
+    })
+
+  }
+
+   
+
+
+  load();
+
+
+
+    </script>
+
+</body>
+</html>
+
+
+    
+
+ 
+

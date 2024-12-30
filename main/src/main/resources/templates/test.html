@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Перетаскивание объектов</title>
+    <style>
+         body {
+            font-family: Arial, sans-serif;
+             display: flex;
+            justify-content: center;
+             align-items: center;
+             min-height: 100vh;
+            margin: 0;
+             background-color: #f0f0f0;
+        }
+        .container {
+             background-color: #fff;
+            padding: 20px;
+             border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+             text-align: center;
+        }
+         .draggable-items {
+           display: flex;
+             justify-content: center;
+           margin-bottom: 20px;
+       }
+        .draggable-items img {
+            cursor: grab;
+             margin: 0 10px;
+            width: 60px;
+             height: auto;
+        }
+
+        .drop-area {
+             border: 2px dashed #ccc;
+             min-height: 200px;
+             width: 300px;
+             padding: 10px;
+           display: flex;
+             flex-direction: column;
+             align-items: flex-start;
+             margin-right: 20px;
+           position: relative;
+       }
+         .drop-area img {
+             width: 60px;
+            height: auto;
+            position: relative;
+            margin-bottom: 5px;
+        }
+         .drop-area .loop-container {
+            border: 2px dashed blue;
+            padding: 5px;
+            margin-bottom: 5px;
+            display: flex;
+            flex-direction: column;
+            width: fit-content;
+             min-width: 100px;
+           position: relative;
+           background-color: lightblue;
+           border-radius: 5px;
+           align-items: center;
+        }
+        .drop-area .loop-container img {
+            margin-left: 20px;
+           margin-bottom: 5px;
+        }
+        .drop-area .loop-container input {
+            margin-bottom: 5px;
+             width: 40px;
+            height: 20px;
+            border: 1px solid #333;
+             border-radius: 3px;
+             text-align: center;
+             background-color: white;
+            font-size: 14px;
+            padding: 0;
+       }
+       .drop-area .loop-container .iterations-label {
+            display: none;
+       }
+        .trash-area {
+           border: 2px dashed red;
+            min-height: 100px;
+            width: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Доступные объекты для перетаскивания</h1>
+        <div class="draggable-items">
+            <img src="up.png" alt="Up" class="draggable" draggable="true" data-item="up">
+            <img src="down.png" alt="Down" class="draggable" draggable="true" data-item="down">
+           <img src="left.png" alt="Left" class="draggable" draggable="true" data-item="left">
+            <img src="right.png" alt="Right" class="draggable" draggable="true" data-item="right">
+             <img src="loop.png" alt="Loop" class="draggable" draggable="true" data-item="loop">
+       </div>
+        <h2>Перетащите объекты в область</h2>
+        <div style="display:flex;">
+            <div class="drop-area" id="dropArea">
+            </div>
+            <div class="trash-area" id="trashArea">Корзина</div>
+       </div>
+    </div>
+   <script>
+        document.addEventListener('DOMContentLoaded', () => {
+           const draggableItems = document.querySelectorAll('.draggable');
+           const dropArea = document.getElementById('dropArea');
+           const trashArea = document.getElementById('trashArea');
+
+            let draggedItem = null;
+
+            draggableItems.forEach(item => {
+                item.addEventListener('dragstart', (e) => {
+                    draggedItem = e.target.cloneNode(true);
+                    e.dataTransfer.setData('text/plain', e.target.getAttribute('data-item'));
+                });
+           });
+
+             dropArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+            dropArea.addEventListener('drop', (e) => {
+               e.preventDefault();
+               const mouseY = e.clientY;
+
+
+               function findInsertionTarget(parent, mouseY) {
+                   for (let el of parent.children) {
+                       if (el.tagName === 'INPUT') continue;
+                       const elRect = el.getBoundingClientRect();
+                         if (mouseY < elRect.bottom) {
+                           return el;
+                       }
+                    }
+                      return null;
+                }
+
+                function findTargetParent(element, maxDepth = 3) {
+                    let parent = element.parentNode;
+                     let currentDepth = 0;
+                    while (parent) {
+                        if (parent === dropArea) return dropArea;
+                         if (parent.classList && parent.classList.contains('loop-container')) {
+                             if (currentDepth >= maxDepth) return null;
+                             return parent;
+                         }
+                         parent = parent.parentNode;
+                        currentDepth++;
+                   }
+                   return dropArea;
+               }
+                let targetParent = findTargetParent(e.target);
+
+               if (!targetParent) return;
+                let insertionTarget = findInsertionTarget(targetParent, mouseY);
+
+
+                 if (draggedItem.getAttribute('data-item') === 'loop') {
+                        let depth = 0;
+                        if (targetParent !== dropArea) {
+                          depth = parseInt(targetParent.getAttribute('data-depth')) + 1;
+                      }
+
+                     if (depth >= 3) return;
+                   const loopContainer = document.createElement('div');
+                        loopContainer.classList.add('loop-container');
+                       loopContainer.setAttribute('data-depth', depth);
+
+                    const input = document.createElement('input');
+                       input.type = 'number';
+                       input.min = 1;
+                       input.max = 10;
+                      input.value = 1;
+                        loopContainer.appendChild(input);
+                     if (insertionTarget) {
+                       targetParent.insertBefore(loopContainer, insertionTarget);
+                   } else {
+                       targetParent.appendChild(loopContainer);
+                    }
+                     input.addEventListener('change', (e) => {
+                         const parsedValue = parseInt(e.target.value);
+                       if (!isNaN(parsedValue) && parsedValue >= 1 && parsedValue <= 10) {
+                             loopContainer.setAttribute('data-iterations', parsedValue);
+                             input.value = parsedValue;
+                        } else {
+                           alert("Введите число от 1 до 10");
+                             input.value = loopContainer.getAttribute('data-iterations') || 1;
+                        }
+                    });
+
+                   loopContainer.addEventListener('click', (e) => {
+                         input.focus();
+                    });
+                  draggedItem = loopContainer;
+
+                } else {
+                  let depth = 0;
+                    if (targetParent !== dropArea && draggedItem.classList.contains('loop-container')) {
+                         depth = parseInt(targetParent.getAttribute('data-depth')) +1;
+                    } else if (targetParent !== dropArea) {
+                        depth = parseInt(targetParent.getAttribute('data-depth'));
+                   }
+
+                     if(depth >= 3) return;
+
+
+                     if (insertionTarget) {
+                       targetParent.insertBefore(draggedItem, insertionTarget);
+                    } else {
+                       targetParent.appendChild(draggedItem);
+                  }
+                }
+                 draggedItem.setAttribute('draggable', true);
+                draggedItem.addEventListener('dragstart', (e) => {
+                   draggedItem = e.target;
+                 });
+            });
+
+            dropArea.addEventListener('dragstart', (e) => {
+                 draggedItem = e.target;
+             });
+
+            trashArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+
+           trashArea.addEventListener('drop', (e) => {
+               e.preventDefault();
+                 if (draggedItem && (dropArea.contains(draggedItem) || trashArea.contains(draggedItem))) {
+                   if(draggedItem.querySelector('input')){
+                       draggedItem.querySelector('input').remove();
+                    }
+                    draggedItem.remove();
+                }
+           });
+       });
+    </script>
+</body>
+</html>
