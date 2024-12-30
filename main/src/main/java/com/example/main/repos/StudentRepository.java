@@ -2,10 +2,12 @@ package com.example.main.repos;
 
 
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
 import com.example.main.model.Student;
 
 import jakarta.transaction.Transactional;
@@ -21,5 +23,8 @@ public interface StudentRepository extends JpaRepository<Student, Long>
     @Transactional
     @Query("SELECT s.studentId FROM Student s WHERE s.studentLogin = :student")
     Long findStudentIdByLogin(@Param("student") String student);
+
+    // Метод для проверки, существует ли студент с таким логином
+    Optional<Student> findByStudentLogin(String studentLogin);
 }
 

@@ -17,6 +17,7 @@ import com.example.main.repos.TaskRepository;
 import com.example.main.repos.TeacherRepository;
 import com.example.main.service.TeacherService;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -76,16 +77,23 @@ public class TeacherServiceImpl implements TeacherService {
         return reposStudent.getIdStudentByInitials(Initial);
     }
 
-    @Override
+    @Transactional
     public void addStudent(Student student)
     {
+        if (reposStudent.findByStudentLogin(student.getStudentLogin()).isPresent()) {
+            throw new IllegalArgumentException("Логин уже занят!");
+        }
         reposStudent.save(student);
 
     }
 
-    @Override
+    @Transactional
     public void deleteStudentById(Long idStudent) 
     {
+        // Сначала удаляем все связанные решения
+        reposSolut.deleteByStudentId(idStudent);
+    
+        // Затем удаляем самого ученика
         reposStudent.deleteById(idStudent);
     }
 
@@ -121,12 +129,13 @@ public class TeacherServiceImpl implements TeacherService {
         reposSolut.save(sol);
     }
     
-    @Override
+    @Transactional
     public void deleteTestStudent(Long idStudent, Long idTask) 
     {
         Student student = reposStudent.findById(idStudent).orElseThrow(() -> new RuntimeException("Student not found"));
         student.getTasksId().remove(idTask);
         reposStudent.save(student);
+        reposSolut.deleteByStudentIdTaskId(idStudent, idTask);
     }
     
     @Override
@@ -147,14 +156,12 @@ public class TeacherServiceImpl implements TeacherService {
         reposTask.save(task);
     }
 
-    @Override
+    @Transactional
     public void deleteTask(Long idTask) 
     {
         reposTask.deleteById(idTask);
+        reposSolut.deleteByTaskId(idTask);
     }
-
-
-
 
     //Журнал
     @Override

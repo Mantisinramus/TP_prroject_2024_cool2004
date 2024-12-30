@@ -98,7 +98,7 @@ public class TeacherController {
     }
 
     // Удаление задачи у студента
-    @DeleteMapping("/students/{idStudent}/tasks/{idTask}")
+    @DeleteMapping("/students/{idStudent}/tasks/{idTask}/del")
     public ResponseEntity<String> removeTaskFromStudent(
             @PathVariable Long idStudent,
             @PathVariable Long idTask) {
