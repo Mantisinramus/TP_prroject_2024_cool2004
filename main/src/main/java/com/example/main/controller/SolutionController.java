@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.main.DataModel.GameStateDTO;
 import com.example.main.model.Task;
 import com.example.main.service.SolutionService;
 
@@ -21,9 +22,10 @@ public class SolutionController
     private final SolutionService solutionService;
 
     @GetMapping("/checkSequence/{idStudent}/{idTask}")
-    public ResponseEntity<Boolean> checkSequence(@PathVariable Long idStudent, @PathVariable Long idTask) 
+    public ResponseEntity<List<GameStateDTO>> checkSequence(@PathVariable Long idStudent, @PathVariable Long idTask) 
     {
-       return ResponseEntity.ok(solutionService.checkSequence(idStudent, idTask));
+      List<GameStateDTO> gameStates = solutionService.checkSequence(idStudent, idTask);
+      return ResponseEntity.ok(gameStates);
     }
 
 

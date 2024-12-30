@@ -7,7 +7,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
@@ -23,7 +22,6 @@ public class Solution {
     @Column(name = "mark")
     private int mark;
 
-    @Lob
     @Column(name = "sequnce_text")
     private String sequenceText;
 
