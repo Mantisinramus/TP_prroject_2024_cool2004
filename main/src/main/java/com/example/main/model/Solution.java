@@ -23,7 +23,7 @@ public class Solution {
     @Column(name = "mark")
     private int mark;
 
-    @Lob
+
     @Column(name = "sequnce_text")
     private String sequenceText;
 

@@ -48,4 +48,29 @@ public class UIController {
     public String journalTeacher() {
         return "journalTeacher";
     }
+
+    @GetMapping("/editTask")
+    public String editTask() {
+        return "editTask";
+    }
+
+    @GetMapping("/taskTeacher")
+    public String taskTeacher() {
+        return "taskTeacher";
+    }
+
+    @GetMapping("/checkSolution")
+    public String checkSolution() {
+        return "checkSolution";
+    }
+
+    @GetMapping("/test")
+    public String test() {
+        return "test";
+    }
+    
+    @GetMapping("/test11")
+    public String test11() {
+        return "test11";
+    }
 }

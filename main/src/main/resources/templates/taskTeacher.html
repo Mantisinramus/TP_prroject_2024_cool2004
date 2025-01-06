@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список учеников</title>
+    <style>
+        /* CSS для вертикального расположения */
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Выравниваем по левому краю */
+            padding: 20px; /* Добавляем отступы */
+            font-family: Arial, sans-serif; /* Изменяем шрифт */
+        }
+        h1, h2, table, .add-student-form {
+            margin-bottom: 20px; /* Отступы между элементами */
+            width: 80%; /* Занимают всю доступную ширину */
+        }
+        input {
+            display: block;
+            margin-bottom: 10px;
+            padding: 10px; /* Добавляем внутренние отступы */
+            font-size: 16px; /* Увеличиваем размер шрифта */
+            border: 1px solid #ccc; /* Цвет рамки */
+            border-radius: 5px; /* Скругление углов */
+            width: calc(40% - 22px); /* Ширина с учетом отступов */
+        }
+        button {
+            padding: 10px 20px; /* Внутренние отступы */
+            font-size: 16px; /* Увеличиваем размер шрифта */
+            background-color: green; /* Зеленый фон */
+            color: white; /* Белый текст */
+            border: none; /* Убираем рамку */
+            border-radius: 5px; /* Скругление углов */
+            cursor: pointer; /* Указатель при наведении */
+        }
+        button:hover {
+            background-color: darkgreen; /* Темно-зеленый фон при наведении */
+        }
+        table {
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Список заданий</h1>
+    <table id="studentTable">
+      <thead>
+        <tr>
+        </tr>
+      </thead>
+      <tbody id="task-table">
+        <!-- Здесь будут динамически добавляться строки из базы данных -->
+      </tbody>
+    </table>
+
+<script>
+ 
+ function loadTasks() {
+    
+    fetch('api/teacher/taskAll').then(responce => responce.json())
+    .then(tasks=> 
+    {
+      tasks.forEach(task => {
+        const row = taskTable.insertRow();
+       taskNameCell = row.insertCell();
+       const actionCell = row.insertCell();
+       taskNameCell.textContent = task.taskName;
+       const viewButton = document.createElement('button');
+       
+       viewButton.textContent = "Просмотр";
+       viewButton.addEventListener('click', () => {
+        localStorage.setItem('getTaskId', task.taskId);
+        window.location.href = '/editTask';
+        });
+        actionCell.appendChild(viewButton); 
+      });
+
+    }
+)
+  }
+const taskTable = document.getElementById('task-table');
+loadTasks();
+</script>
+</body>
+</html>
