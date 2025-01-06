@@ -206,7 +206,7 @@
             <div class="trash-area" id="trashArea">Корзина</div>
        </div>
        <div style="display:flex;">
-        <button class="btn-custom" onclick= "getDraggedItems()">Проверить решение</button>
+        <button class="btn-custom" onclick= "checkSequence()">Проверить решение</button>
         <button class="btn-custom" onclick="sendSolution()">Отправить решение</button>
     </div>
     </div>
@@ -220,6 +220,10 @@
     </div>
 
     <script>
+
+        const taskId = localStorage.getItem("taskId");
+        const dropArea = document.getElementById('dropArea');
+
         // Задаем переменные для создания таблицы
         document.addEventListener('DOMContentLoaded', () => {
            const draggableItems = document.querySelectorAll('.draggable');
@@ -368,7 +372,12 @@
             return table;
         }
 
-        const taskId = localStorage.getItem("taskId");
+
+
+
+
+
+
         const solutionId = localStorage.getItem("solutionId");
  function load() {
 
@@ -449,9 +458,6 @@
     })
 
   }
-
-    const dropArea = document.getElementById('dropArea');
-
     function getDraggedItems() {
     // 1. Получаем дочерние элементы dropArea
     console.log(222);
@@ -529,23 +535,21 @@
     return seq;
 }
 
-function checkSolution()
-{
-
-}
-
 async function sendSolution() {
-    let solutionToSend = getDraggedItems();
+    let solutionToSend = getDraggedItems(); // Получаем строку (например, "right, right, right")
     const idStudent = localStorage.getItem("studentId"); // Замените на фактический id студента
-    
+    const taskId = localStorage.getItem("taskId");
 
     try {
-        const response = await fetch(`/api/students/${idStudent}/tasks/${taskId}/answer?answerTask=${encodeURIComponent(solutionToSend)}`, {
+        const response = await fetch(`/api/students/${idStudent}/tasks/${taskId}/answer`, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json' // Обычно не нужен для Query Parameter, но для ясности
+                'Content-Type': 'application/json'
             },
+            body: JSON.stringify(solutionToSend) // Отправляем строку без лишних кавычек
         });
+
+
 
         if (!response.ok) {
           // Обработка ошибок HTTP

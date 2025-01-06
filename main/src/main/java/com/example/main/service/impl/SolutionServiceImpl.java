@@ -1,8 +1,9 @@
 package com.example.main.service.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -42,10 +43,16 @@ public class SolutionServiceImpl implements SolutionService
                     reposSolut.findSolutionIdByStudentIdAndTaskId(idStudent, idTask)
             ).orElseThrow();
             Task task = reposTask.findById(idTask).orElseThrow();
-        
+
+
             // Получаем команды из sequenceText
-            String[] commands = solution.getSequenceText().split(",");
-            System.out.println("хуярим это: "+ Arrays.toString(commands));
+            String сom = solution.getSequenceText();
+            System.out.println("Размер поля: " + сom);
+            // // int opIndex = сom.indexOf("\"");
+            // // int cloIndex = сom.lastIndexOf("\"");
+            // // String innerCommands = сom.substring(opIndex + 1, cloIndex).trim();
+            // System.out.println("Размер поля: " + innerCommands);
+            String[] commands = сom.split(",");
         
             // Начальные данные из задания
             player = task.getPlayer();
@@ -84,7 +91,6 @@ public class SolutionServiceImpl implements SolutionService
     command = command.trim();
     
     if (command.startsWith("repeat")) {
-        System.out.println("\nзалупа: " + command);
         // Обработка команды "repeat"
         int openIndex = command.indexOf("(");
         int closeIndex = command.lastIndexOf(")");
@@ -229,7 +235,6 @@ public class SolutionServiceImpl implements SolutionService
                 nestedLevel--;
                 currentCommand.append(c);
             } else if (c == ';' && nestedLevel == 0) {
-                // Команда завершена, добавляем её в результат
                 result.add(currentCommand.toString().trim());
                 currentCommand.setLength(0); // Очищаем текущую команду
             } else {
@@ -244,7 +249,25 @@ public class SolutionServiceImpl implements SolutionService
     
         return result;
     }
+
+
+
+
+
     
+
+        private static PositionDataModel getRandomPosition(int rows, int cols, Set<PositionDataModel> usedPositions, Random random) 
+        {
+        PositionDataModel posit = null;
+        do {
+            int x = random.nextInt(cols);
+            int y = random.nextInt(rows);
+            posit.setX(x);
+            posit.setY(y);
+        } while (usedPositions.contains(posit));
+        usedPositions.add(posit);
+        return posit;
+        }
 
     @Override
     public List<Task> findTaskBySolutionId(Long idSolution) {
