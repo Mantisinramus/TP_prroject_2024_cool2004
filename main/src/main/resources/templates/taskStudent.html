@@ -2,238 +2,105 @@
 <html lang="ru">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Название задания</title>
-  <style>
-    body {
-      background-color: #929AA2;
-      /* Цвет фона страницы */
-      color: #B9B0B2;
-      /* Цвет текста */
-      font-family: Arial, sans-serif;
-      margin: 0;
-      /* Убираем отступы по умолчанию */
-      padding: 20px;
-      /* Отступы для общего оформления */
-    }
-    /* Стиль для заголовка */
-    
-    h1 {
-      text-align: center;
-      margin: 20px 0;
-    }
-    /* Стиль для блока с описанием задания */
-    
-    .description {
-      background-color: #3A5154;
-      /* Цвет фона блока описания */
-      padding: 15px;
-      border-radius: 5px;
-      margin-bottom: 20px;
-      /* Отступ снизу */
-      width: 100%;
-      /* Ширина 100% */
-    }
-    /* Контейнер для игрового поля и поля решения */
-    
-    .flex-container {
-      display: flex;
-      /* Используем flexbox для выравнивания */
-      margin-bottom: 20px;
-      /* Отступ снизу */
-    }
-    /* Стиль для игрового поля */
-    
-    .game-field {
-      background-color: #B7673C;
-      /* Цвет игрового поля */
-      width: 60%;
-      /* Ширина игрового поля 60% */
-      border-radius: 5px;
-      margin-right: 20px;
-      /* Отступ справа */
-      display: flex;
-      /* Для центрирования таблицы */
-      align-items: center;
-      /* Центрируем по вертикали */
-      justify-content: center;
-      /* Центрируем по горизонтали */
-    }
-    
-    .game-field table {
-      border-collapse: collapse;
-      /* Объединить границы ячеек */
-      margin: 0;
-      /* Убрать отступы */
-    }
-    
-    .game-field table td {
-      padding: 0;
-      border: 1px solid white;
-      /* Добавьте если нужны границы ячеек */
-    }
-    /* Стиль для блока ввода решения */
-    
-    .solution {
-      background-color: #3A5154;
-      /* Цвет фона блока ввода решения */
-      padding: 15px;
-      border-radius: 5px;
-      width: 30%;
-      /* Ширина блока ввода решения 30% */
-    }
-    /* Стиль для блока доступных графических примитивов */
-    
-    .primitives {
-      background-color: #3A5154;
-      /* Цвет фона блока примитивов */
-      padding: 15px;
-      border-radius: 5px;
-      margin-top: 20px;
-      /* Отступ сверху */
-      display: flex;
-      /* Используем flexbox для выравнивания */
-      flex-wrap: wrap;
-      /* Позволяем оборачивать элементы */
-      justify-content: center;
-      /* Центрируем содержимое */
-    }
-    /* Стиль для кнопок */
-    
-    .btn-custom {
-      background-color: #B7673C;
-      /* Оранжевый фон для кнопок */
-      color: #B9B0B2;
-      /* Цвет текста кнопок */
-      border: none;
-      padding: 10px;
-      margin: 5px;
-      /* Отступы между кнопками */
-      cursor: pointer;
-      border-radius: 5px;
-      display: inline-block;
-      /* Отображение кнопок в строку */
-    }
-    /* Стиль для блока ответов и оценок */
-    
-    .feedback {
-      background-color: #3A5154;
-      /* Цвет фона блока ответов */
-      padding: 15px;
-      border-radius: 5px;
-      margin-top: 20px;
-      /* Отступ сверху */
-    }
-    /* Стиль для таблицы */
-    
-    table {
-      border-collapse: collapse;
-      /* Убираем пробелы между ячейками */
-    }
-    
-    th,
-    td {
-      border: 1px solid #B9B0B2;
-      /* Границы ячеек */
-      text-align: center;
-      /* Центрируем текст */
-    }
-    /* Размеры графических примитивов */
-    
-    .primitive-img {
-      width: 40px;
-      /* Ширина изображения */
-      height: 40px;
-      /* Высота изображения */
-      margin: 5px;
-      /* Отступы между изображениями */
-    }
-    
-    .container {
-      background-color: #3A5154;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
-    
-    .draggable-items {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-    
-    .draggable-items img {
-      cursor: grab;
-      margin: 0 10px;
-      width: 60px;
-      height: auto;
-    }
-    
-    .drop-area {
-      border: 2px dashed #ccc;
-      min-height: 200px;
-      width: 300px;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      margin-right: 20px;
-      position: relative;
-    }
-    
-    .drop-area img {
-      width: 60px;
-      height: auto;
-      position: relative;
-      margin-bottom: 5px;
-    }
-    
-    .drop-area .loop-container {
-      border: 2px dashed lightblue;
-      padding: 5px;
-      margin-bottom: 5px;
-      display: flex;
-      flex-direction: column;
-      width: fit-content;
-      min-width: 100px;
-      position: relative;
-      background-color: #3A5154;
-      border-radius: 5px;
-      align-items: center;
-    }
-    
-    .drop-area .loop-container img {
-      margin-left: 20px;
-      margin-bottom: 5px;
-    }
-    
-    .drop-area .loop-container input {
-      margin-bottom: 5px;
-      width: 40px;
-      height: 20px;
-      border: 1px solid #333;
-      border-radius: 3px;
-      text-align: center;
-      background-color: white;
-      font-size: 14px;
-      padding: 0;
-    }
-    
-    .drop-area .loop-container .iterations-label {
-      display: none;
-    }
-    
-    .trash-area {
-      border: 2px dashed red;
-      min-height: 100px;
-      width: 100px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Название задания</title>
+    <style>
+        body {
+            background-color: #929AA2; /* Цвет фона страницы */
+            color: #B9B0B2; /* Цвет текста */
+            font-family: Arial, sans-serif;
+            margin: 0; /* Убираем отступы по умолчанию */
+            padding: 20px; /* Отступы для общего оформления */
+        }
+        /* Стиль для заголовка */
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+        }
+        /* Стиль для блока с описанием задания */
+        .description {
+            background-color: #3A5154; /* Цвет фона блока описания */
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px; /* Отступ снизу */
+            width: 100%; /* Ширина 100% */
+        }
+        /* Контейнер для игрового поля и поля решения */
+        .flex-container {
+            display: flex; /* Используем flexbox для выравнивания */
+            margin-bottom: 20px; /* Отступ снизу */
+        }
+        /* Стиль для игрового поля */
+        .game-field {
+            background-color: #B7673C; /* Цвет игрового поля */
+            width: 60%; /* Ширина игрового поля 60% */
+            border-radius: 5px;
+            margin-right: 20px; /* Отступ справа */
+            display: flex; /* Для центрирования таблицы */
+            align-items: center; /* Центрируем по вертикали */
+            justify-content: center; /* Центрируем по горизонтали */
+        }
+   	.game-field table {
+       border-collapse: collapse; /* Объединить границы ячеек */
+       margin: 0; /* Убрать отступы */
+     	}
+     	.game-field table td {
+        padding: 0;
+        border: 1px solid white; /* Добавьте если нужны границы ячеек */
+     	}
+
+        /* Стиль для блока ввода решения */
+        .solution {
+            background-color: #3A5154; /* Цвет фона блока ввода решения */
+            padding: 15px;
+            border-radius: 5px;
+            width: 30%; /* Ширина блока ввода решения 30% */
+
+        }
+        /* Стиль для блока доступных графических примитивов */
+        .primitives {
+            background-color: #3A5154; /* Цвет фона блока примитивов */
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px; /* Отступ сверху */
+            display: flex; /* Используем flexbox для выравнивания */
+            flex-wrap: wrap; /* Позволяем оборачивать элементы */
+            justify-content: center; /* Центрируем содержимое */
+        }
+        /* Стиль для кнопок */
+        .btn-custom {
+            background-color: #B7673C; /* Оранжевый фон для кнопок */
+            color: #B9B0B2; /* Цвет текста кнопок */
+            border: none;
+            padding: 10px;
+            margin: 5px; /* Отступы между кнопками */
+            cursor: pointer;
+            border-radius: 5px;
+            display: inline-block; /* Отображение кнопок в строку */
+        }
+        /* Стиль для блока ответов и оценок */
+        .feedback {
+            background-color: #3A5154; /* Цвет фона блока ответов */
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px; /* Отступ сверху */
+        }
+        /* Стиль для таблицы */
+        table {
+            border-collapse: collapse; /* Убираем пробелы между ячейками */
+        }
+        th, td {
+            border: 1px solid #B9B0B2; /* Границы ячеек */
+            text-align: center; /* Центрируем текст */
+        }
+        /* Размеры графических примитивов */
+        .primitive-img {
+            width: 40px; /* Ширина изображения */
+            height: 40px; /* Высота изображения */
+            margin: 5px; /* Отступы между изображениями */
+        }
+    </style>
 </head>
 
 <body>
@@ -249,27 +116,24 @@
       <!-- Таблица будет динамически добавлена здесь -->
     </div>
 
-    <div class="container">
-      <h1>Доступные объекты для перетаскивания</h1>
-      <div class="draggable-items">
-        <img src="up.png" alt="up" class="draggable" draggable="true" data-item="up">
-        <img src="down.png" alt="down" class="draggable" draggable="true" data-item="down">
-        <img src="left.png" alt="left" class="draggable" draggable="true" data-item="left">
-        <img src="right.png" alt="right" class="draggable" draggable="true" data-item="right">
-        <img src="loop.png" alt="loop" class="draggable" draggable="true" data-item="loop">
-      </div>
-      <h2>Перетащите объекты в область</h2>
-      <div style="display:flex;">
-        <div class="drop-area" id="dropArea">
+        <div class="solution" id="solutoin">
+            <h5>Введите ваше решение:</h5>
+            <textarea id="solutionInput" rows="4" class="form-control" style="width: 100%;"></textarea>
+            
+            <div class="primitives">
+                <h5>Доступные графические примитивы:</h5>
+                <!-- <img src="image5.png" alt="Повтори" class="primitive-img">
+                <img src="image1.png" alt="Вперед" class="primitive-img">
+                <img src="image2.png" alt="Назад" class="primitive-img">
+                <img src="image3.png" alt="Влево" class="primitive-img">
+                <img src="image4.png" alt="Вправо" class="primitive-img"> -->
+            </div>
+
+            <button class="btn-custom" id="checkSolution">Проверить решение</button>
+            <button class="btn-custom" id="clearSolution">Очистить решение</button>
+            <button class="btn-custom" id="submitSolution">Отправить решение</button>
         </div>
-        <div class="trash-area" id="trashArea">Корзина</div>
-      </div>
-      <div style="display:flex;">
-        <button class="btn-custom" onclick="getDraggedItems()">Проверить решение</button>
-        <button class="btn-custom" onclick="sendSolution()">Отправить решение</button>
-      </div>
     </div>
-  </div>
 
   <div class="feedback">
     <h5>Ответ учителя:</h5>
@@ -278,407 +142,136 @@
     <p id="userScore">Оценка будет отображена здесь...</p>
   </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const draggableItems = document.querySelectorAll('.draggable');
-      const dropArea = document.getElementById('dropArea');
-      const trashArea = document.getElementById('trashArea');
-      let draggedItem = null;
-      let dragStartParentDepth = 0; // Глубина родителя элемента до перетаскивания
-      let dragStartElementDepth = 0; // Глубина самого элемента до перетаскивания
-      draggableItems.forEach(item => {
-        item.addEventListener('dragstart', (e) => {
-          draggedItem = e.target.cloneNode(true);
-          e.dataTransfer.setData('text/plain', e.target.getAttribute('data-item'));
-        });
-      });
-      dropArea.addEventListener('dragstart', (e) => {
-        draggedItem = e.target;
-        dragStartParentDepth = calculateDepth(e.target.parentNode);
-        dragStartElementDepth = calculateDepth(e.target);
-      });
-      dropArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-      });
-
-      function calculateDepth(element) {
-        let depth = 0;
-        let parent = element.parentNode;
-        while (parent && parent !== dropArea) {
-          if (parent.classList && parent.classList.contains('loop-container')) {
-            depth++;
-          }
-          parent = parent.parentNode;
-        }
-        return depth;
-      }
-
-      function calculateMaxDepth(element) {
-        let maxDepth = 0;
-        if (element.classList && element.classList.contains('loop-container')) {
-          maxDepth = 1;
-          const nestedLoops = element.querySelectorAll('.loop-container');
-          nestedLoops.forEach(loop => {
-            maxDepth = Math.max(maxDepth, 1 + calculateMaxDepth(loop));
-          });
-        }
-        return maxDepth;
-      }
-
-      function updateDepth(element) {
-        const depth = calculateDepth(element);
-        element.setAttribute('data-depth', depth);
-        const nestedLoops = element.querySelectorAll('.loop-container');
-        nestedLoops.forEach(loop => updateDepth(loop));
-      }
-      dropArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        const mouseY = e.clientY;
-
-        function findInsertionTarget(parent, mouseY) {
-          for (let el of parent.children) {
-            if (el.tagName === 'INPUT') continue;
-            const elRect = el.getBoundingClientRect();
-            if (mouseY < elRect.bottom) {
-              return el;
+    <script>
+        // Задаем переменные для создания таблицы
+    
+        // Функция для создания таблицы
+        function createTable(y_s, x_s, cellSize) {
+            let table = '<table>';
+            for (let i = 0; i < y_s; i++) {
+                table += '<tr>';
+                for (let j = 0; j < x_s; j++) {
+                    table += `<td id="cell_${j}_${i}" style="width: ${cellSize}px; height: ${cellSize}px;"></td>`; // Ячейка таблицы
+                    console.log(j+' '+i);
+                }
+                table += '</tr>';
             }
-          }
-          return null;
+            table += '</table>';
+            return table;
         }
 
-        function findTargetParent(element, maxDepth = 3) {
-          let parent = element.parentNode;
-          let currentDepth = 0;
-          while (parent) {
-            if (parent === dropArea) return dropArea;
-            if (parent.classList && parent.classList.contains('loop-container')) {
-              if (currentDepth >= maxDepth) return null;
-              return parent;
-            }
-            parent = parent.parentNode;
-            currentDepth++;
-          }
-          return dropArea;
-        }
-        let targetParent = findTargetParent(e.target);
-        if (!targetParent) return;
-        let currentDepth = calculateDepth(targetParent);
-        let maxDraggedDepth = calculateMaxDepth(draggedItem);
-        if (draggedItem.getAttribute('data-item') === 'loop' && currentDepth + 1 > 2) {
-          alert("Максимальная глубина вложенности циклов достигнута (3 уровня).");
-          return;
-        }
-        if (draggedItem.classList.contains('loop-container') && currentDepth + maxDraggedDepth > 2) {
-          alert("Максимальная глубина вложенности циклов достигнута (3 уровня).");
-          return;
-        }
-        if (!draggedItem.classList.contains('loop-container') && currentDepth > 2) {
-          alert("Максимальная глубина вложенности циклов достигнута (3 уровня).");
-          return;
-        }
-        let insertionTarget = findInsertionTarget(targetParent, mouseY);
-        if (draggedItem.getAttribute('data-item') === 'loop') {
-          const loopContainer = document.createElement('div');
-          loopContainer.classList.add('loop-container');
-          const input = document.createElement('input');
-          input.type = 'number';
-          input.min = 1;
-          input.max = 10;
-          input.value = 1;
-          loopContainer.appendChild(input);
-          if (insertionTarget) {
-            targetParent.insertBefore(loopContainer, insertionTarget);
-          } else {
-            targetParent.appendChild(loopContainer);
-          }
-          updateDepth(loopContainer);
-          input.addEventListener('change', (e) => {
-            const parsedValue = parseInt(e.target.value);
-            if (!isNaN(parsedValue) && parsedValue >= 1 && parsedValue <= 10) {
-              loopContainer.setAttribute('data-iterations', parsedValue);
-              input.value = parsedValue;
-            } else {
-              alert("Введите число от 1 до 10");
-              input.value = loopContainer.getAttribute('data-iterations') || 1;
-            }
-          });
-          loopContainer.addEventListener('click', (e) => {
-            input.focus();
-          });
-          draggedItem = loopContainer;
-        } else {
-          if (insertionTarget) {
-            targetParent.insertBefore(draggedItem, insertionTarget);
-          } else {
-            targetParent.appendChild(draggedItem);
-          }
-        }
-        draggedItem.setAttribute('draggable', true);
-        draggedItem.addEventListener('dragstart', (e) => {
-          draggedItem = e.target;
-          dragStartParentDepth = calculateDepth(e.target.parentNode);
-          dragStartElementDepth = calculateDepth(e.target);
-        });
-        updateDepth(draggedItem)
-      });
-      trashArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-      });
-      trashArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        if (draggedItem && (dropArea.contains(draggedItem) || trashArea.contains(draggedItem))) {
-          if (draggedItem.querySelector('input')) {
-            draggedItem.querySelector('input').remove();
-          }
-          draggedItem.remove();
-        }
-      });
-    });
-    // Функция для создания таблицы
-    function createTable(y_s, x_s, cellSize) {
-      let table = '<table>';
-      for (let i = 0; i < y_s; i++) {
-        table += '<tr>';
-        for (let j = 0; j < x_s; j++) {
-          table += `<td id="cell_${j}_${i}" style="width: ${cellSize}px; height: ${cellSize}px;"></td>`; // Ячейка таблицы
-          console.log(j + ' ' + i);
-        }
-        table += '</tr>';
-      }
-      table += '</table>';
-      return table;
-    }
+        // Установка высоты игрового поля
+        // function setGameFieldHeight(rows) {
+        //     const gameField = document.getElementById('gameField');
+        //     const requiredHeight = (rows+1) * cellSize; // Высота равная количеству строк * размер ячейки
+        //     gameField.style.height = requiredHeight; // Устанавливаем высоту
+        // }
+
+        // Добавляем таблицу в блок игрового поля
+      // Устанавливаем высоту игрового поля
+
+        // // Примерный функционал для кнопок
+        // document.getElementById('checkSolution').addEventListener('click', function() {
+        //     // Логика проверки решения будет добавлена позже
+        // });
+
+        // document.getElementById('clearSolution').addEventListener('click', function() {
+        //     document.getElementById('solutionInput').value = '';
+        // });
+
+        // document.getElementById('submitSolution').addEventListener('click', function() {
+        //     // Логика отправки решения будет добавлена позже
+        //     alert("Решение отправлено на проверку.");
+        // });
+
+    
+
+ function load() {
+
     const taskId = localStorage.getItem("taskId");
     const solutionId = localStorage.getItem("solutionId");
 
-    function load() {
-      let imgPlayer = document.createElement('img');
-      imgPlayer.src = 'hero.png'; // Замените на путь к вашему изображению
-      imgPlayer.style.width = '100%'; //  или другой нужный размер
-      imgPlayer.style.height = '100%';
-      imgPlayer.style.objectFit = 'cover';
-      let imgCauldron = document.createElement('img');
-      imgCauldron.src = 'kotyol.png'; // Замените на путь к вашему изображению
-      imgCauldron.style.width = '100%'; //  или другой нужный размер
-      imgCauldron.style.height = '100%';
-      imgCauldron.style.objectFit = 'cover';
-      fetch('api/teacher/tasks/' + taskId).then(response => response.json()).then(data => {
-        let taskNameElement = document.getElementById("taskName");
-        taskNameElement.textContent = data.taskName;
-        let taskDescElement = document.getElementById("task-description");
-        taskDescElement.textContent = data.taskText;
-        const y_s = data.gridSize.y; // Количество строк
-        const x_s = data.gridSize.x; // Количество столбцов
-        const cellSize = 40; // Размер ячеек в пикселях
-        document.getElementById('gameField').innerHTML = createTable(y_s, x_s, cellSize);
-        let playerCell = document.getElementById('cell_' + data.player.x + '_' + data.player.y);
-        playerCell.appendChild(imgPlayer);
-        let cauldronCell = document.getElementById('cell_' + data.cauldron.x + '_' + data.cauldron.y);
-        cauldronCell.appendChild(imgCauldron);
-        data.walls.forEach(wall => {
-          let wallCell = document.getElementById('cell_' + wall.x + '_' + wall.y);
-          console.log('cell_' + wall.x + '_' + wall.y);
-          let imgWall = document.createElement('img');
-          imgWall.src = 'wall.png'; // Замените на путь к вашему изображению
-          imgWall.style.width = '100%'; //  или другой нужный размер
-          imgWall.style.height = '100%';
-          imgWall.style.objectFit = 'cover';
-          wallCell.appendChild(imgWall);
-        });
-        data.potions.forEach(potion => {
-          let potionCell = document.getElementById('cell_' + potion.x + '_' + potion.y);
-          console.log('cell_' + potion.x + '_' + potion.y);
-          let imgPotion = document.createElement('img');
-          imgPotion.src = 'posion1.png'; // Замените на путь к вашему изображению
-          imgPotion.style.width = '100%'; //  или другой нужный размер
-          imgPotion.style.height = '100%';
-          imgPotion.style.objectFit = 'cover';
-          potionCell.appendChild(imgPotion);
-        });
-      })
-      fetch('api/students/solutions/' + solutionId).then(response => response.json()).then(data => {
-        console.log(solutionId);
-        console.log(data);
-        let feedbackArea = document.getElementById("teacherResponse");
-        feedbackArea.textContent = data.teacherAnswer;
-        let markArea = document.getElementById("userScore");
-        markArea.textContent = data.mark;
-        let str = data.sequenceText;
-        let seq = str.split(/\s*,\s*/).filter(item => item !== "");
-        loadSequence(seq);
-      })
-    }
-    const dropArea = document.getElementById('dropArea');
+    let imgPlayer = document.createElement('img');
+    imgPlayer.src = 'hero.png'; // Замените на путь к вашему изображению
+    imgPlayer.style.width = '100%';  //  или другой нужный размер
+    imgPlayer.style.height = '100%';
+    imgPlayer.style.objectFit = 'cover';
 
-    function getDraggedItems() {
-      // 1. Получаем дочерние элементы dropArea
-      console.log(222);
-      const draggedItems = dropArea.children;
-      // 2. Преобразуем HTMLCollection в массив
-      const draggedItemsArray = Array.from(draggedItems);
-      console.log(draggedItemsArray);
-      let seq = "";
-      draggedItemsArray.forEach(item => {
-          if (item.alt == undefined) {
-            seq += 'repeat ' + item.children[0].value + '(';
-            for (let i = 1; i < item.children.length; i++) {
-              console.log('first' + item.children[i]);
-              if (item.children[i].alt == undefined) {
-                seq += 'repeat ' + item.children[i].children[0].value + '(';
-                for (let j = 1; j < item.children[i].children.length; j++) {
-                  if (item.children[i].children[j].alt == undefined) {
-                    seq += 'repeat ' + item.children[i].children[j].children[0].value + '(';
-                    for (let k = 1; k < item.children[i].children[j].children.length; k++) {
-                      seq += item.children[i].children[j].children[k].alt + '; ';
-                      if (k == item.children[i].children[j].children.length - 1) {
-                        seq = seq.slice(0, -2);
-                      }
-                    }
-                    seq += '); ';
-                  } else {
-                    seq += item.children[i].children[j].alt + '; ';
-                  }
-                  if (j == item.children[i].children.length - 1) {
-                    seq = seq.slice(0, -2);
-                  }
-                }
-                seq += '); ';
-              } else {
-                seq += item.children[i].alt + '; ';
-              }
-              if (i == item.children.length - 1) {
-                seq = seq.slice(0, -2);
-              }
-            }
-            seq += '), ';
-          } else {
-            seq += item.alt + ', ';
-          }
-        }
-      )
-      seq = seq.slice(0, -2);
-      console.log(seq);
-      return seq;
-    }
+    let imgCauldron = document.createElement('img');
+    imgCauldron.src = 'kotyol.png'; // Замените на путь к вашему изображению
+    imgCauldron.style.width = '100%';  //  или другой нужный размер
+    imgCauldron.style.height = '100%';
+    imgCauldron.style.objectFit = 'cover';
 
-    function checkSolution() {
-    }
-    async function sendSolution() {
-      let solutionToSend = getDraggedItems();
-      const idStudent = localStorage.getItem("studentId"); // Замените на фактический id студента
-      try {
-        const response = await fetch(`/api/students/${idStudent}/tasks/${taskId}/answer?answerTask=${encodeURIComponent(solutionToSend)}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json' // Обычно не нужен для Query Parameter, но для ясности
-          },
-        });
-        if (!response.ok) {
-          // Обработка ошибок HTTP
-          const errorText = await response.text();
-          throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-        }
-        const responseText = await response.text();
-        console.log('Ответ успешно отправлен:', responseText);
-        // Здесь можно добавить обработку успешного ответа, например, вывод сообщения пользователю
-      } catch (error) {
-        console.error('Ошибка при отправке ответа:', error);
-        // Здесь можно добавить обработку ошибки, например, вывод сообщения об ошибке пользователю
-      }
-    }
+   
 
-    function addElementToDropArea(elementToAdd, placeToAdd) {
-      const imgElement = document.createElement('img');
-      imgElement.src = elementToAdd + ".png"; // Убедитесь, что у вас есть все изображения
-      imgElement.alt = elementToAdd.charAt(0).toUpperCase() + elementToAdd.slice(1);
-      imgElement.className = 'draggable';
-      imgElement.draggable = true;
-      imgElement.setAttribute('data-item', elementToAdd);
-      placeToAdd.appendChild(imgElement);
-    }
+   
+    fetch('api/teacher/tasks/'+taskId).then(response => response.json()).then(data=>
+    {
+      let taskNameElement = document.getElementById("taskName");
+      taskNameElement.textContent = data.taskName;
 
-    function addLoopToDropArea(iterations, placeToAdd, depth) {
-      const loopContainer = document.createElement('div');
-      loopContainer.classList.add('loop-container');
-      loopContainer.setAttribute('data-depth', depth);
-      loopContainer.setAttribute('draggable', 'true');
-      const input = document.createElement('input');
-      input.type = 'number';
-      input.min = 1;
-      input.max = 10;
-      input.value = iterations;
-      loopContainer.appendChild(input);
-      placeToAdd.appendChild(loopContainer);
-      return loopContainer;
-    }
+      let taskDescElement = document.getElementById("task-description");
+      taskDescElement.textContent = data.taskText;
 
-    function loadSequence(finStr) {
-      let depth = 0;
-      finStr.forEach(ss => {
-        console.log(ss);
-        if (ss.startsWith('repeat ')) {
-          let loopContainer = addLoopToDropArea(ss[7], dropArea, depth);
-          ss = workRepeat(ss);
-          ss = splitString(ss);
-          finForLoop(ss, loopContainer, depth + 1);
-        } else {
-          addElementToDropArea(ss, dropArea);
-        }
+      const y_s = data.gridSize.y; // Количество строк
+      const x_s = data.gridSize.x; // Количество столбцов
+      const cellSize = 40; // Размер ячеек в пикселях
+
+      document.getElementById('gameField').innerHTML = createTable(y_s, x_s, cellSize);
+
+      let playerCell = document.getElementById('cell_'+data.player.x+'_'+data.player.y);
+      playerCell.appendChild(imgPlayer);
+
+      let cauldronCell = document.getElementById('cell_'+data.cauldron.x+'_'+data.cauldron.y);
+      cauldronCell.appendChild(imgCauldron);
+
+      data.walls.forEach(wall => {
+        let wallCell = document.getElementById('cell_'+wall.x+'_'+wall.y);
+        console.log('cell_'+wall.x+'_'+wall.y);
+        let imgWall = document.createElement('img');
+        imgWall.src = 'wall.png'; // Замените на путь к вашему изображению
+        imgWall.style.width = '100%';  //  или другой нужный размер
+        imgWall.style.height = '100%';
+        imgWall.style.objectFit = 'cover';
+        wallCell.appendChild(imgWall);
       });
-    }
 
-    function finForLoop(loopString, loopContainer, depth) {
-      loopString.forEach(ss => {
-        console.log(ss);
-        if (ss.startsWith('repeat ')) {
-          let downLoopContainer = addLoopToDropArea(ss[7], loopContainer, depth);
-          ss = workRepeat(ss);
-          ss = splitString(ss);
-          finForLoop(ss, downLoopContainer, depth + 1);
-        } else {
-          addElementToDropArea(ss, loopContainer);
-        }
+      data.potions.forEach(potion => {
+        let potionCell = document.getElementById('cell_'+potion.x+'_'+potion.y);
+        console.log('cell_'+potion.x+'_'+potion.y);
+        let imgPotion = document.createElement('img');
+        imgPotion.src = 'posion1.png'; // Замените на путь к вашему изображению
+        imgPotion.style.width = '100%';  //  или другой нужный размер
+        imgPotion.style.height = '100%';
+        imgPotion.style.objectFit = 'cover';
+        potionCell.appendChild(imgPotion);
       });
-    }
 
-    function workRepeat(subStr) {
-      let seq1 = subStr.slice(9);
-      seq1 = seq1.slice(0, -1);
-      return seq1;
-    }
 
-    function splitString(inputString) {
-      const result = [];
-      let currentString = "";
-      let level = 0;
-      let ignoreLevel = 0;
-      for (let i = 0; i < inputString.length; i++) {
-        const char = inputString[i];
-        if (char === '(') {
-          level++;
-        } else if (char === ')') {
-          level--;
-        }
-        if (char === ';' && level === 0 && ignoreLevel === 0) {
-          result.push(currentString.trim());
-          currentString = "";
-        } else if (char === '(') {
-          currentString += char;
-          ignoreLevel++;
-        } else if (char === ')') {
-          currentString += char;
-          ignoreLevel--;
-        } else {
-          currentString += char;
-        }
-      }
-      if (currentString.trim() !== "") {
-        result.push(currentString.trim());
-      }
-      return result;
-    }
-    load();
-  </script>
+
+    })
+
+    fetch('api/students/solutions/'+solutionId).then(response => response.json()).then(data=>
+    {
+      console.log(solutionId);
+      console.log(data);
+      let feedbackArea = document.getElementById("teacherResponse");
+      feedbackArea.textContent = data.teacherAnswer;
+
+      let markArea = document.getElementById("userScore");
+      markArea.textContent = data.mark;
+
+    
+    })
+
+  }
+
+  load();
+
+
+
+    </script>
 
 </body>
 

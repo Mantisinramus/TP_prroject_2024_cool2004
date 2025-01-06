@@ -22,10 +22,10 @@ public class Student{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long studentId;
 	
-    @Column(name = "student_initials")
+    @Column(name = "student_initials") 
     private String studentInitials;
 	
-	@Column(name = "student_login")
+	@Column(name = "student_login",unique = true)// Устанавливаем уникальность на уровне базы данных)
     private String studentLogin;
 	
 	@Column(name = "student_password")

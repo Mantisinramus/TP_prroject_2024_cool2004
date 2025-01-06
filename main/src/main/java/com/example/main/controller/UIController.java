@@ -1,10 +1,7 @@
 package com.example.main.controller;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class UIController {
@@ -68,9 +65,10 @@ public class UIController {
     public String test() {
         return "test";
     }
-    
-    @GetMapping("/test11")
-    public String test11() {
-        return "test11";
+
+    @GetMapping("/testArt")
+    public String testArt() {
+        return "testart";
     }
+    
 }

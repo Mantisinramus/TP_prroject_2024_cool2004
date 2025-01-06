@@ -2,18 +2,19 @@ package com.example.main.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
-import com.example.main.DataModel.Action;
+import com.example.main.DataModel.GameStateDTO;
 import com.example.main.DataModel.PositionDataModel;
 import com.example.main.model.Solution;
 import com.example.main.model.Task;
 import com.example.main.repos.SolutionRepository;
 import com.example.main.repos.TaskRepository;
 import com.example.main.service.SolutionService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
 
@@ -26,160 +27,248 @@ public class SolutionServiceImpl implements SolutionService
     private final SolutionRepository reposSolut;
 
     private final TaskRepository reposTask;
-
+    
+    private PositionDataModel player;
+    private List<PositionDataModel> potions;
+    private PositionDataModel cauldron;
+    private List<PositionDataModel> walls;
+    private PositionDataModel gridSize;
+    private List<GameStateDTO> gameStates = new ArrayList<>(); // Хранилище состояний игры
 
     @Override
-    public Boolean checkSequence(Long idStudent, Long idTask) 
+    public List<GameStateDTO> checkSequence(Long idStudent, Long idTask) 
     {
-        // try {
+        try {
+            Solution solution = reposSolut.findById(
+                    reposSolut.findSolutionIdByStudentIdAndTaskId(idStudent, idTask)
+            ).orElseThrow();
+            Task task = reposTask.findById(idTask).orElseThrow();
 
-        //     Solution solution = reposSolut.findById(reposSolut.findSolutionIdByStudentIdAndTaskId(idStudent, idTask)).orElseThrow();
-        //     Task task = reposTask.findById(idTask).orElseThrow();
 
-        //     String sequenceText = solution.getSequenceText();
-        //     String[] commands = sequenceText.split(",");
+            // Получаем команды из sequenceText
+            String сom = solution.getSequenceText();
+            System.out.println("Размер поля: " + сom);
+            // // int opIndex = сom.indexOf("\"");
+            // // int cloIndex = сom.lastIndexOf("\"");
+            // // String innerCommands = сom.substring(opIndex + 1, cloIndex).trim();
+            // System.out.println("Размер поля: " + innerCommands);
+            String[] commands = сom.split(",");
+        
+            // Начальные данные из задания
+            player = task.getPlayer();
+            potions = task.getPotions();
+            cauldron = task.getCauldron();
+            walls = task.getWalls();
+            gridSize = task.getGridSize();
             
-        //     // Начальные данные из задания
-        //     PositionDataModel player = task.getPlayer();
-        //     List<PositionDataModel> potions = task.getPotions();
-        //     Integer potionsCount = task.getPotions().size();
-        //     PositionDataModel cauldron = task.getCauldron();
-        //     List<PositionDataModel> walls = task.getWalls();
-        //     PositionDataModel gridSize = task.getGridSize();
 
-        //     //выполнение шагов
-        //     for (Action command : commands) 
-        //     {   
-        //         if (command.startsWith(""))
-        //         {
-
-        //             // Выполнение повторяющихся действий
-        //             for (int i = 0; i < action.getTimes(); i++)
-        //             {
-        //                 if (!performActions(action.getActions(), player, potions, cauldron, walls, gridSize, potionsCount)) {
-        //                     return false;  // Если что-то пошло не так в процессе повторений
-        //                 }
-        //             }
-                    
-        //         } else {
-        //             //одиночка
-        //             if (!performAction(action, player, potions, cauldron, walls, gridSize, potionsCount)) {
-        //                 return false;  // Если что-то пошло не так в процессе повторений
-        //             }
-        //         }
-        //     }
-        //     if(potionsCount == 0) return true;
-        // } catch (Exception e) {
-        // }
-                return false;
+            System.out.println("=== Начальные параметры ===");
+            System.out.println("Игрок: " + player);
+            System.out.println("Зелья: " + potions);
+            System.out.println("Котёл: " + cauldron);
+            System.out.println("Стены: " + walls);
+            System.out.println("Размер поля: " + gridSize);
+            System.out.println("============================");
+        
+            // Выполнение шагов
+            for (String command : commands) 
+            {
+                executeCommand(command);
+                System.out.println("Игрок: " + player);
+                System.out.println("Зелья: " + potions);
+                System.out.println("Осталось зелий: " + potions.size());
+            }
+            boolean success = potions.size() == 0;
+            System.out.println("\nРезультат выполнения: " + (success ? "Успех" : "Неудача"));
+            return gameStates;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return gameStates;
+        }
     }
+
+    private void executeCommand(String command) {
+    command = command.trim();
+    
+    if (command.startsWith("repeat")) {
+        // Обработка команды "repeat"
+        int openIndex = command.indexOf("(");
+        int closeIndex = command.lastIndexOf(")");
+        
+        if (openIndex == -1 || closeIndex == -1 || closeIndex <= openIndex) {
+            throw new IllegalArgumentException("Некорректный формат команды: отсутствуют скобки или порядок неверный.");
+        }
+        
+        // Извлечение числа повторений
+        String repeatPart = command.substring(0, openIndex).replaceAll("\\D+", "").trim();
+        if (repeatPart.isEmpty()) {
+            throw new IllegalArgumentException("Некорректный формат команды: число повторений отсутствует.");
+        }
+        int repeatCount = Integer.parseInt(repeatPart);
+        
+        // Извлечение команд внутри скобок
+        String innerCommands = command.substring(openIndex + 1, closeIndex).trim();
+        List<String> parsedCommands = parseCommands(innerCommands);
+        
+        // Выполняем повторение
+        for (int i = 0; i < repeatCount; i++) {
+            for (String parsedCommand : parsedCommands) {
+                executeCommand(parsedCommand); // Рекурсивно выполняем команды
+            }
+        }
+    } else {
+        // Разбор и выполнение отдельных команд
+        List<String> commands = parseCommands(command); // Используем парсер для корректного разбора
+        for (String singleCommand : commands) {
+            performAction(singleCommand.trim());
+            // Сохраняем текущее состояние
+            PositionDataModel playerCopy = new PositionDataModel();
+            playerCopy.setX(player.getX());
+            playerCopy.setY(player.getY());
+            boolean success = potions.size() == 0;
+            gameStates.add(new GameStateDTO(
+                playerCopy, // Копия позиции игрока
+                new ArrayList<>(potions), // Копия списка зелий
+                success
+            ));
+        }
+    }
+}
     // Метод для выполнения одиночного действия
-    private boolean performAction(Action action, PositionDataModel player, List<PositionDataModel> potions, PositionDataModel cauldron, List<PositionDataModel> walls, PositionDataModel gridSize, Integer countPos) {
-        switch (action.getAction()) {
-            case "move_up":
-                player.setY(player.getY() - action.getSteps());
+    private boolean performAction(String command) {
+        System.out.println("Выполнение команды: " + command);
+        switch (command) {
+            case "up":
+                System.out.println("До: " + player);
+                player.setY(player.getY() - 1);
+                System.out.println("Игрок после выполнения команды: " + player);
+                if (walls.contains(player)) {
+                    System.out.println("Столкновение со стеной!");
+                    player.setY(player.getY() + 1);
+                }
                 for (PositionDataModel potion : potions) {
                     if (player.getX() == potion.getX() && player.getY() == potion.getY()) 
                     {
-                        potion.setY(potion.getY() - action.getSteps());
+                        potion.setY(potion.getY() -1);
+                        System.out.println("Зелье после выполнения команды: " + potion);
                     }
                 }
                 break;
-            case "move_down":
-                player.setY(player.getY() + action.getSteps());
+            case "down":
+                System.out.println("До: " + player);
+                player.setY(player.getY() + 1);
+                System.out.println("Теперь: " + player);
+                if (walls.contains(player)) {
+                    System.out.println("Столкновение со стеной!");
+                    player.setY(player.getY() - 1);
+                }
                 for (PositionDataModel potion : potions) {
                     if (player.getX() == potion.getX() && player.getY() == potion.getY()) 
                     {
-                        potion.setY(potion.getY() + action.getSteps());
+                        potion.setY(potion.getY() + 1);
+                        System.out.println("Зелье после выполнения команды: " + potion);
                     }
                 }
                 break;
-            case "move_left":
-                player.setX(player.getX() - action.getSteps());
+            case "left":
+                player.setX(player.getX() - 1);
+                System.out.println("Игрок после выполнения команды: " + player);
+
+                if (walls.contains(player)) {
+                    System.out.println("Столкновение со стеной!");
+                    player.setX(player.getX() + 1);
+                }
+                System.out.println("Игрок после выполнения команды: " + player);
+
                 for (PositionDataModel potion : potions) {
                     if (player.getX() == potion.getX() && player.getY() == potion.getY()) 
                     {
-                        potion.setX(potion.getX() - action.getSteps());
+                        potion.setX(potion.getX() - 1);
+                        System.out.println("Зелье после выполнения команды: " + potion);
                     }
                 }
                 break;
-            case "move_right":
-                player.setX(player.getX() + action.getSteps());
+            case "right":
+                player.setX(player.getX() + 1);
+                if (walls.contains(player)) {
+                    System.out.println("Столкновение со стеной!");
+                    player.setX(player.getX() - 1);
+                }
                 for (PositionDataModel potion : potions) {
                     if (player.getX() == potion.getX() && player.getY() == potion.getY()) 
                     {
-                        potion.setX(potion.getX() + action.getSteps());
+                        potion.setX(potion.getX() + 1);
+                        System.out.println("Зелье после выполнения команды: " + potion);
                     }
                 }
                 break;
             default:
                 return false;  // Неизвестное действие
         }
-
-        // Проверка на столкновение со стеной
-        if (walls.contains(player)) {
-            return false;
-        }
+        System.out.println("Игрок после выполнения команды: " + player);
 
         // Проверка на выход за пределы поля
         if (player.getX() < 0 || player.getX() >= gridSize.getX() || player.getY() < 0 || player.getY() >= gridSize.getY()) {
+            System.out.println("Выход за границы поля!");
             return false;
         }
 
-        // Проверка на уничтожение зелий при попадании в котёл
-        for (PositionDataModel potion : potions) {
-            if (potion.equals(cauldron)) {
-                potions.remove(potion);
-                countPos--;  // уменьшаем зелья))))))) пися попа
-                break;
-            }
+        for (PositionDataModel potion : new ArrayList<>(potions)) { // Копируем список для избежания ошибок
+        if (potion.equals(cauldron)) {
+            potions.remove(potion);
+        }
         }
 
         return true;
-    }
+    } 
 
-    // Метод для выполнения набора действий
-    private boolean performActions(List<Action> actions, PositionDataModel player, List<PositionDataModel> potions, PositionDataModel cauldron, List<PositionDataModel> walls, PositionDataModel gridSize, Integer countPos) {
-        for (Action action : actions) {
-            if (!performAction(action, player, potions, cauldron, walls, gridSize, countPos)) {
-                return false;  // Если одно из действий не удалось выполнить
+    private List<String> parseCommands(String command) {
+        List<String> result = new ArrayList<>();
+        StringBuilder currentCommand = new StringBuilder();
+        int nestedLevel = 0;
+    
+        for (char c : command.toCharArray()) {
+            if (c == '(') {
+                nestedLevel++;
+                currentCommand.append(c);
+            } else if (c == ')') {
+                nestedLevel--;
+                currentCommand.append(c);
+            } else if (c == ';' && nestedLevel == 0) {
+                result.add(currentCommand.toString().trim());
+                currentCommand.setLength(0); // Очищаем текущую команду
+            } else {
+                currentCommand.append(c);
             }
         }
-        return true;
+    
+        // Добавляем последнюю команду, если она не пустая
+        if (currentCommand.length() > 0) {
+            result.add(currentCommand.toString().trim());
+        }
+    
+        return result;
     }
 
-    private List<Action> parseSequence(String sequenceText) {
-    // List<Action> actions = new ArrayList<>();
-    // String[] commands = sequenceText.split(",");
 
-    // for (String command : commands) {
-    //     command = command.trim();
-    //     if (command.startsWith("повторить")) {
-    //         Pattern repeatPattern = Pattern.compile("повторить (\\d+)\\((.+)\\)");
-    //         Matcher matcher = repeatPattern.matcher(command);
-    //         if (matcher.matches()) {
-    //             int repeatCount = Integer.parseInt(matcher.group(1));
-    //             String innerCommands = matcher.group(2);
 
-    //             // Рекурсивный вызов для вложенных команд
-    //             List<Action> subActions = parseSequence(innerCommands);
-    //             actions.add(new Action("repeat", repeatCount, subActions));
-    //         }
-    //     } else {
-    //         // Простая команда
-    //         String[] parts = command.split(" ");
-    //         if (parts.length == 2) {
-    //             String actionName = parts[0];
-    //             int steps = Integer.parseInt(parts[1]);
-    //             actions.add(new Action(actionName, steps));
-    //         } else {
-    //             throw new IllegalArgumentException("Некорректная команда: " + command);
-    //         }
-    //     }
-    // }
-    return null;
-   // return actions;
-}
+
+
+    
+
+        private static PositionDataModel getRandomPosition(int rows, int cols, Set<PositionDataModel> usedPositions, Random random) 
+        {
+        PositionDataModel posit = null;
+        do {
+            int x = random.nextInt(cols);
+            int y = random.nextInt(rows);
+            posit.setX(x);
+            posit.setY(y);
+        } while (usedPositions.contains(posit));
+        usedPositions.add(posit);
+        return posit;
+        }
+
     @Override
     public List<Task> findTaskBySolutionId(Long idSolution) {
         return reposTask.findTaskBySolutionId(idSolution);
