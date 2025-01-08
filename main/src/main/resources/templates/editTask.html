@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактор игрового поля (Изображения)</title>
+    <style>
+        body {
+            background-color: #929AA2;
+            color: #B9B0B2;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .description {
+            background-color: #3A5154;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .flex-container {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .game-field {
+            background-color: #B7673C;
+            width: 100%;
+            border-radius: 5px;
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .game-field table {
+            border-collapse: collapse;
+             margin: 0;
+        }
+        .game-field table tr {
+             padding: 0;
+            margin: 0;
+        }
+        .game-field table td {
+            padding: 0;
+            border: 1px solid white;
+            position: relative;
+        }
+        .solution {
+            background-color: #3A5154;
+            padding: 15px;
+            border-radius: 5px;
+            width: 30%;
+        }
+         .primitives {
+             background-color: #3A5154;
+             padding: 15px;
+             border-radius: 5px;
+             margin-top: 20px;
+             display: flex;
+             flex-wrap: wrap;
+            justify-content: center;
+         }
+        .btn-custom {
+            background-color: #B7673C;
+            color: #B9B0B2;
+            border: none;
+            padding: 10px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            display: inline-block;
+        }
+         .feedback {
+            background-color: #3A5154;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #B9B0B2;
+            text-align: center;
+        }
+        .primitive-img {
+            width: 40px;
+            height: 40px;
+            margin: 5px;
+        }
+        .container {
+             background-color: #3A5154;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+         }
+         /* Стили для редактора */
+        .editor-container {
+            display: flex;
+             height: 100vh;
+        }
+        .editor-sidebar {
+            background-color: #f1f1f1;
+            padding: 20px;
+            width: 200px;
+        }
+        .editor-form-group {
+             margin-bottom: 10px;
+        }
+         .editor-elements {
+            display: flex;
+            flex-wrap: wrap;
+           justify-content: space-between;
+            margin-top: 20px;
+        }
+         .editor-element-image {
+            width: 40px;
+            height: 40px;
+         }
+        .game-field table td .editor-element {
+           width: 100%;
+             height: 100%;
+             display: block;
+        }
+         .editor-element.selected {
+            outline: none;
+        }
+         #trash-bin {
+            background-color: #666;
+            width: 60px;
+            height: 60px;
+            border: 2px dashed #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+             cursor: grab;
+        }
+       .task-form {
+    margin-bottom: 30px; /* Увеличен отступ снизу */
+    width: 100%; /* Занимает всю ширину родителя */
+    padding: 20px; /* Увеличен padding */
+    background-color: #4A6164; /* Более темный фон */
+    border-radius: 10px; /* Увеличены радиусы углов */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Добавлена тень */
+    display: flex; /* Добавляем flexbox */
+    flex-direction: column; /* Располагаем элементы вертикально */
+    box-sizing: border-box;
+}
+
+.task-form label {
+    display: block;
+    margin-bottom: 8px; /* Увеличен отступ снизу */
+    color: #e8e6e6; /* Светлый цвет текста */
+    font-weight: bold; /* Жирный текст для label */
+}
+
+
+.task-form select,
+.task-form input[type="text"],
+.task-form textarea {
+    width: 100%; /* Занимают всю ширину */
+    padding: 10px; /* Увеличен padding */
+    margin-bottom: 15px; /* Увеличен отступ снизу */
+    border: 1px solid #5f787c; /* Более темный цвет рамки */
+    border-radius: 6px; /* Слегка увеличены радиусы углов */
+    background-color: #5f787c; /* Чуть более светлый фон */
+    color: #B9B0B2;
+    box-sizing: border-box; /* Включаем padding и border в ширину элемента */
+    transition: border-color 0.3s ease; /* Плавная смена цвета рамки при фокусе */
+}
+
+.task-form select:focus,
+.task-form input[type="text"]:focus,
+.task-form textarea:focus {
+    border-color: #6e8d94; /* Более светлый цвет рамки при фокусе */
+    outline: none; /* Убираем стандартный outline при фокусе */
+}
+
+.task-form textarea {
+    resize: vertical;
+    min-height: 120px; /* Увеличена минимальная высота */
+}
+
+.task-form button {
+    background-color: #C7774C; /* Изменен цвет кнопки */
+    color: #f0f0f0; /* Светлый цвет текста */
+    border: none;
+    padding: 12px 20px; /* Увеличен padding */
+    border-radius: 8px; /* Увеличен радиус */
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Плавная смена цвета фона при наведении */
+    align-self: flex-start;/* Расположение кнопки слева */
+}
+
+.task-form button:hover {
+    background-color: #d6875c; /* Более светлый фон при наведении */
+}
+    .container {
+  background-color: #3A5154;
+  padding: 30px;
+  width: 70%;
+  max-width: 800px;
+  margin: 30px auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  font-family: 'Arial', sans-serif;
+}
+
+.student-form {
+  margin-bottom: 30px;
+  width: 90%;
+  padding: 20px;
+  background-color: #3A5154; /* Возвращаем исходный цвет */
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  /* Убираю из student-form  используя flex */
+}
+
+.student-form input,
+.student-form textarea {
+  margin: 10px 0;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  /* Добавлен resize для textarea*/
+  background-color: #fff; /* Добавляем фон для лучшей видимости */
+}
+
+.element-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* Растягивает элементы на всю ширину контейнера */
+  margin-top: 25px;
+  width: 90%;
+}
+
+.element {
+  background-color: #f1f1f1;
+  padding: 18px 20px;
+  margin: 10px 0;
+  cursor: pointer;
+  position: relative;
+  border-radius: 8px;
+  width: 100%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+  border: 1px solid #eee;
+  text-align: left;
+  /* Удаляем overflow: hidden; */
+}
+
+.element:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.element.selected {
+  background-color: #e0e0e0;
+  border: 1px solid #ccc;
+}
+
+.element .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  background-color: #ddd;
+  color: #666;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.element .close-btn:hover {
+  background-color: #999;
+  color: white;
+}
+    </style>
+</head>
+<body>
+
+  <h1 id="taskName"></h1>
+
+  <div class="description">
+    <p id="task-description"></p>
+  </div>
+    <div class="editor-container">
+        <div class="editor-sidebar">
+        
+        
+            <h2>Введите размер</h2>
+            <div class="editor-form-group">
+                <label for="width">Ширина:</label>
+                <input type="number" id="width" min="1" value="5">
+            </div>
+            <div class="editor-form-group">
+                <label for="height">Высота:</label>
+                <input type="number" id="height" min="1" value="5">
+            </div>
+             <button class="btn-custom" id="confirm-btn">Подтвердить</button>
+            <div class="editor-elements">
+                 <img class="editor-element-image editor-element" draggable="true" src="hero.png" alt="Hero">
+                 <img class="editor-element-image editor-element" draggable="true" src="wall.png" alt="Wall">
+                 <img class="editor-element-image editor-element" draggable="true" src="posion1.png" alt="Poison">
+                <img class="editor-element-image editor-element" draggable="true" src="kotyol.png" alt="Kotyol">
+            </div>
+             <div id="trash-bin">🗑️</div>
+        </div>
+        <div class="game-field" id="game-board">
+        
+        </div>
+        
+  
+  </div>
+   <div class="container">
+    <form class="student-form">
+      <label for="element-select" style="color: white;">Отправить задание ученикам</label>
+      <select id="element-select" style="width: 100%; padding: 5px; border-radius: 5px;">
+        <option value="">Выберите ученика</option>
+        <option value="selectAll">Выбрать всех</option>
+        <option value="element1">Элемент 1</option>
+        <option value="element2">Элемент 2</option>
+        <option value="element3">Элемент 3</option>
+      </select>
+    </form>
+
+    <div class="element-container" id="element-container">
+      <!-- Сюда будут добавляться выбранные элементы -->
+    </div>
+  </div>
+    <script>
+    
+     const elementSelect = document.getElementById('element-select');
+    const elementContainer = document.getElementById('element-container');
+
+    elementSelect.addEventListener('change', (event) => {
+      const selectedValue = event.target.value;
+      if (selectedValue === 'selectAll') {
+        // Очищаем контейнер с выбранными элементами
+        elementContainer.innerHTML = '';
+
+        // Добавляем все элементы в контейнер, кроме "Выбрать всех"
+        const options = event.target.options;
+        for (let i = 2; i < options.length; i++) {
+          const option = options[i];
+          if (option.value) {
+            const newElement = document.createElement('div');
+            newElement.textContent = option.value;
+            newElement.classList.add('element');
+
+            // Добавляем крестик для удаления элемента
+            const closeBtn = document.createElement('div');
+            closeBtn.classList.add('close-btn');
+            closeBtn.textContent = 'x';
+            closeBtn.addEventListener('click', () => {
+              newElement.remove();
+              // Возвращаем выбранный элемент в список
+              option.style.display = 'block';
+            });
+            newElement.appendChild(closeBtn);
+
+            elementContainer.prepend(newElement);
+
+            // Скрываем выбранный элемент из списка
+            option.style.display = 'none';
+          }
+        }
+        event.target.value = '';
+      } else if (selectedValue) {
+        const newElement = document.createElement('div');
+        newElement.textContent = selectedValue;
+        newElement.classList.add('element');
+
+        // Добавляем крестик для удаления элемента
+        const closeBtn = document.createElement('div');
+        closeBtn.classList.add('close-btn');
+        closeBtn.textContent = 'x';
+        closeBtn.addEventListener('click', () => {
+          newElement.remove();
+          // Возвращаем выбранный элемент в список
+          const selectedOption = event.target.querySelector(`option[value="${selectedValue}"]`);
+          selectedOption.style.display = 'block';
+        });
+        newElement.appendChild(closeBtn);
+
+        elementContainer.prepend(newElement);
+
+        // Удаляем выбранный элемент из списка
+        const selectedOption = event.target.querySelector(`option[value="${selectedValue}"]`);
+        selectedOption.style.display = 'none';
+
+        event.target.value = '';
+      }
+    });
+    
+        const widthInput = document.getElementById('width');
+        const heightInput = document.getElementById('height');
+        const confirmBtn = document.getElementById('confirm-btn');
+        const gameBoard = document.getElementById('game-board');
+        const trashBin = document.getElementById('trash-bin');
+        let draggedElement = null;
+         let gameFieldRect = null;
+
+
+        confirmBtn.addEventListener('click', () => {
+             const width = parseInt(widthInput.value);
+             const height = parseInt(heightInput.value);
+             gameBoard.innerHTML = '';
+             gameBoard.appendChild(createTable(height, width, 40));
+             gameFieldRect = gameBoard.getBoundingClientRect();
+              const gameCells = document.querySelectorAll('.game-field table td');
+            gameCells.forEach(cell => {
+                cell.addEventListener('dragover', dragOver);
+                cell.addEventListener('drop', drop);
+            });
+        });
+
+        function createTable(y_s, x_s, cellSize) {
+              let table = document.createElement('table');
+              table.setAttribute('cellpadding', '0');
+              table.setAttribute('cellspacing', '0');
+            for (let i = 0; i < y_s; i++) {
+                const row = document.createElement('tr');
+                 for (let j = 0; j < x_s; j++) {
+                    const cell = document.createElement('td');
+                     cell.id = `cell_${j}_${i}`;
+                    cell.style.width = cellSize + 'px';
+                    cell.style.height = cellSize + 'px';
+                    row.appendChild(cell);
+                }
+                table.appendChild(row);
+            }
+           return table;
+        }
+       const elements = document.querySelectorAll('.editor-elements .editor-element');
+          elements.forEach(element => {
+              element.addEventListener('dragstart', (e) => {
+                  draggedElement = e.target;
+              });
+                element.addEventListener('click', (e) => {
+                  elements.forEach(el => el.classList.remove('selected'));
+                  e.target.classList.add('selected');
+                });
+            });
+
+         
+        function dragOver(e) {
+            e.preventDefault();
+        }
+
+
+      function drop(e) {
+    e.preventDefault();
+    if (draggedElement) {
+        const target = e.target;
+          if (target === trashBin && draggedElement.parentNode &&  !draggedElement.parentNode.classList.contains('editor-elements'))
+            {
+               if (draggedElement.parentNode) {
+                 draggedElement.parentNode.removeChild(draggedElement);
+                }
+            }
+            else if (draggedElement.classList.contains('editor-element-image') && draggedElement.parentNode.classList.contains('editor-elements'))
+            {
+               const newElement = draggedElement.cloneNode(true);
+                newElement.setAttribute('draggable', true);
+                  newElement.addEventListener('dragstart', (e) => {
+                  draggedElement = e.target;
+                });
+                if (target.classList.contains('editor-element-image')) {
+                console.log(target);
+                target.parentNode.appendChild(newElement);
+                console.log(target.parentNode);
+                target.remove();
+               }
+              else{
+                target.appendChild(newElement);
+                }
+                 
+             } else {
+                if (target.classList.contains('editor-element-image')) {
+      
+                    console.log(target);
+                    draggedElement.parentNode.removeChild(draggedElement);
+                    target.parentNode.appendChild(draggedElement);
+                    console.log(target.parentNode);
+                     target.remove();
+                 }
+                 else{
+                       draggedElement.parentNode.removeChild(draggedElement);
+                       target.appendChild(draggedElement);
+                  }
+                    
+            }
+
+    }
+    draggedElement = null;
+}
+     trashBin.addEventListener('dragover', dragOver);
+        trashBin.addEventListener('drop', drop);
+
+        function load()
+        {
+        const getTaskId=  localStorage.getItem('getTaskId');
+        fetch('/api/teacher/tasks/'+ getTaskId).then(response=> response.json())
+        .then(data =>
+        {
+          let taskNameElement = document.getElementById("taskName");
+        taskNameElement.textContent = data.taskName;
+        let taskDescElement = document.getElementById("task-description");
+        taskDescElement.textContent = data.taskText;
+        })
+        }
+load();
+    </script>
+</body>
+</html>

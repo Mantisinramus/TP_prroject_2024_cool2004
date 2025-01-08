@@ -70,5 +70,10 @@ public class UIController {
     public String testArt() {
         return "testart";
     }
+
+    @GetMapping("/test11")
+    public String test11() {
+        return "test11";
+    }
     
 }
