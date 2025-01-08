@@ -237,4 +237,10 @@ public class TeacherController {
       return ResponseEntity.ok(teacherService.getSolutionStydent(idStudent, idTask));
   }
 
+  
+
+
+
+
+
 }
