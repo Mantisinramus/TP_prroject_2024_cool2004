@@ -37,6 +37,21 @@ public class StudentServiceImpl implements StudentService
     @Override
     public Long auth(String log, String password) 
     {
+
+        // Проверка длины пароля
+        if (log == null || log.length() < 4 || log.length() > 8) 
+        {
+        // Возвращаем 0, если пароль не соответствует требованиям
+        return (long) 0;
+        }        
+
+        // Проверка длины пароля
+        if (password == null || password.length() < 4 || password.length() > 12) 
+        {
+        // Возвращаем 0, если пароль не соответствует требованиям
+        return (long) 0;
+        }
+
         // Ищем ID студента по логину
         Long studentId = reposStudent.findStudentIdByLogin(log);
     
@@ -115,5 +130,12 @@ public class StudentServiceImpl implements StudentService
     @Override
     public Optional<Solution> getSolution(Long idSolution) {
         return reposSolut.findById(idSolution);
+  
+  
+    }
+
+    @Override
+    public List<Student> getStudentsWithoutTask(Long taskId) {
+        return reposStudent.findStudentsWithoutTask(taskId);
     }
 }

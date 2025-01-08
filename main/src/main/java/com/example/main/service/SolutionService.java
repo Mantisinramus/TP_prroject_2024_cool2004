@@ -10,5 +10,7 @@ public interface SolutionService
     List<GameStateDTO> checkSequence(Long idStudent, Long idTask);
 
     List<Task> findTaskBySolutionId(Long idSolution);
+
+    Task randomGenerateTask(int rows, int cols, int numPotions, Long idTeacher);
 }
 

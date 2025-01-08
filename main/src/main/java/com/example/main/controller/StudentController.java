@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.main.model.Solution;
+import com.example.main.model.Student;
 import com.example.main.model.Task;
 import com.example.main.service.StudentService;
 
@@ -109,5 +110,12 @@ public class StudentController
      public ResponseEntity<Optional<Solution>> getSolution(@PathVariable Long idSolution) {
          return ResponseEntity.ok(studentService.getSolution(idSolution));
      }
+
+    //студенты у которых нет такой задачи
+    @GetMapping("/without-task/{taskId}")
+    public ResponseEntity<List<Student>> getStudentsWithoutTask(@PathVariable Long taskId) {
+        List<Student> students = studentService.getStudentsWithoutTask(taskId);
+        return ResponseEntity.ok(students);
+    }
 
 }
