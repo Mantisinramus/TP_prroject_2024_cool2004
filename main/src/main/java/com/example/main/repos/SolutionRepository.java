@@ -34,5 +34,7 @@ public interface SolutionRepository extends JpaRepository<Solution, Long>
     @Modifying
     @Query("DELETE FROM Solution s WHERE s.task.taskId = :idTask")
     void deleteByTaskId(@Param("idTask") Long idTask);
+
+
 }
 

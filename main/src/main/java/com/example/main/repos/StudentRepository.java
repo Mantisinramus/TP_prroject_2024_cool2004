@@ -2,6 +2,7 @@ package com.example.main.repos;
 
 
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,5 +27,8 @@ public interface StudentRepository extends JpaRepository<Student, Long>
 
     // Метод для проверки, существует ли студент с таким логином
     Optional<Student> findByStudentLogin(String studentLogin);
+
+    @Query("SELECT s FROM Student s WHERE s.id NOT IN " + "(SELECT sol.student.id FROM Solution sol WHERE sol.task.id = :taskId)")
+    List<Student> findStudentsWithoutTask(@Param("taskId") Long taskId);
 }
 

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.example.main.model.Solution;
+import com.example.main.model.Student;
 import com.example.main.model.Task;
 
 public interface StudentService 
@@ -29,5 +30,7 @@ public interface StudentService
     List<Solution> getAllSolutions(Long idStudent);
 
     Optional<Solution> getSolution(Long idSolution);
+
+    List<Student> getStudentsWithoutTask(Long taskId);
 
 }

@@ -1,6 +1,7 @@
 package com.example.main.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -14,6 +15,7 @@ import com.example.main.model.Solution;
 import com.example.main.model.Task;
 import com.example.main.repos.SolutionRepository;
 import com.example.main.repos.TaskRepository;
+import com.example.main.repos.TeacherRepository;
 import com.example.main.service.SolutionService;
 
 import lombok.AllArgsConstructor;
@@ -27,7 +29,9 @@ public class SolutionServiceImpl implements SolutionService
     private final SolutionRepository reposSolut;
 
     private final TaskRepository reposTask;
-    
+
+    private final TeacherRepository reposTeacher;
+
     private PositionDataModel player;
     private List<PositionDataModel> potions;
     private PositionDataModel cauldron;
@@ -250,28 +254,70 @@ public class SolutionServiceImpl implements SolutionService
         return result;
     }
 
+    @Override
+    public Task randomGenerateTask(int rows, int cols, int numPotions, Long idTeacher) 
+    {
+        Random random = new Random();
+        Set<PositionDataModel> usedPositions = new HashSet<>();
 
+        // Генерация позиции игрока
+        PositionDataModel player = getRandomPosition(rows, cols, usedPositions, random);
+
+        // Генерация позиции котла
+        PositionDataModel cauldron = getRandomPosition(rows, cols, usedPositions, random);
+
+        // Генерация зелий
+        List<PositionDataModel> potions = new ArrayList<>();
+        for (int i = 0; i < numPotions; i++) {
+            potions.add(getRandomPosition(rows, cols, usedPositions, random));
+        }
+
+        // Генерация стен (случайное число стен до 1/4 от общего числа клеток)
+        List<PositionDataModel> walls = new ArrayList<>();
+        int maxWalls = (rows * cols) / 4;
+        int numWalls = random.nextInt(maxWalls + 1);
+        for (int i = 0; i < numWalls; i++) 
+        {
+            walls.add(getRandomPosition(rows, cols, usedPositions, random));
+        }
+
+        Task newTask = new Task();
+        newTask.setTeacher(reposTeacher.findById(idTeacher).get());
+        newTask.setTaskText("Перемести игрока, чтобы собрать " + potions.size() + " зелья и достичь котла.");
+        newTask.setTaskName("Собери зелья");
+        newTask.setWalls(walls);
+        newTask.setGridSize(gridSize);
+        newTask.setCauldron(cauldron);
+        newTask.setPlayer(player);
+        newTask.setPotions(potions);
+
+        return newTask;
+    }
 
 
 
     
 
-        private static PositionDataModel getRandomPosition(int rows, int cols, Set<PositionDataModel> usedPositions, Random random) 
-        {
-        PositionDataModel posit = null;
-        do {
-            int x = random.nextInt(cols);
-            int y = random.nextInt(rows);
-            posit.setX(x);
-            posit.setY(y);
-        } while (usedPositions.contains(posit));
-        usedPositions.add(posit);
-        return posit;
-        }
+    private static PositionDataModel getRandomPosition(int rows, int cols, Set<PositionDataModel> usedPositions, Random random) 
+    {
+    PositionDataModel posit = null;
+    do {
+        int x = random.nextInt(cols);
+        int y = random.nextInt(rows);
+        posit = new PositionDataModel();
+        posit.setX(x);
+        posit.setY(y);
+    } while (usedPositions.contains(posit));
+    usedPositions.add(posit);
+    return posit;
+    }
 
     @Override
     public List<Task> findTaskBySolutionId(Long idSolution) {
         return reposTask.findTaskBySolutionId(idSolution);
     }
+
+
+
 
 }
