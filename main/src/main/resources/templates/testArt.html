@@ -3,153 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Собери Зелья</title>
+    <title>Генерация задания</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        table {
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        td {
+            width: 30px;
+            height: 30px;
             text-align: center;
-            margin: 20px;
+            border: 1px solid #000;
         }
-        .form-container {
-            margin: 20px 0;
+        .player {
+            background-color: lightblue;
         }
-        .form-container input {
-            margin: 0 5px;
-            padding: 5px;
-            width: 50px;
+        .cauldron {
+            background-color: orange;
         }
-        .game-container {
-            display: inline-block;
-            position: relative;
+        .potion {
+            background-color: green;
         }
-        .grid {
-            display: grid;
-            border: 2px solid #333;
-        }
-        .cell {
-            width: 40px;
-            height: 40px;
-            border: 1px solid #ccc;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        img {
-            max-width: 100%;
-            max-height: 100%;
-        }
-        .btn-custom {
-            margin: 10px;
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        .btn-custom:hover {
-            background-color: #45a049;
+        .wall {
+            background-color: gray;
         }
     </style>
 </head>
 <body>
-    <h1>Собери Зелья</h1>
+    <h1>Генерация задания</h1>
+    <form id="taskForm">
+        <label for="rows">Количество строк:</label>
+        <input type="number" id="rows" name="rows" min="5" max="15" required><br><br>
+        
+        <label for="cols">Количество столбцов:</label>
+        <input type="number" id="cols" name="cols" min="5" max="15" required><br><br>
+        
+        <label for="numPotions">Количество зелий:</label>
+        <input type="number" id="numPotions" name="numPotions" min="1" max="2" required><br><br>
+        
+        <label for="idTeacher">ID учителя:</label>
+        <input type="number" id="idTeacher" name="idTeacher" required><br><br>
+        
+        <button type="button" id="generateButton">Сгенерировать задание</button>
+    </form>
 
-    <div class="form-container">
-        <label>Размер поля:</label>
-        <input id="rowsInput" type="number" placeholder="Строки" min="3" max="20">
-        <input id="colsInput" type="number" placeholder="Столбцы" min="3" max="20">
-        <label>Количество зелий:</label>
-        <input id="potionsInput" type="number" placeholder="Зелья" min="1" max="10">
-        <button class="btn-custom" onclick="generateTask()">Сгенерировать задание</button>
-    </div>
-
-    <div class="game-container">
-        <div id="gameField" class="grid"></div>
+    <div id="visualization">
+        <h2>Визуализация игрового поля</h2>
+        <div id="taskOutput"></div>
+        <table id="gameField"></table>
     </div>
 
     <script>
-        async function generateTask() {
-    const rows = parseInt(document.getElementById("rowsInput").value, 10);
-    const cols = parseInt(document.getElementById("colsInput").value, 10);
-    const potions = parseInt(document.getElementById("potionsInput").value, 10);
+        document.getElementById('generateButton').addEventListener('click', async () => {
+            const rows = document.getElementById('rows').value;
+            const cols = document.getElementById('cols').value;
+            const numPotions = document.getElementById('numPotions').value;
+            const idTeacher = document.getElementById('idTeacher').value;
 
-    // Проверяем корректность ввода
-    if (!rows || !cols || !potions) {
-        alert("Пожалуйста, заполните все поля корректно!");
-        return;
-    }
-
-    try {
-        // Отправка данных на сервер для генерации задания
-        const response = await fetch('http://localhost:8080/api/task', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ rows, cols, potions })
+            try {
+                const response = await fetch(`http://localhost:8080/api/solution/generate-random?rows=${rows}&cols=${cols}&numPotions=${numPotions}&idTeacher=${idTeacher}`);
+                if (!response.ok) {
+                    throw new Error(`Ошибка: ${response.statusText}`);
+                }
+                const task = await response.json();
+                console.log(task); // Проверить данные задачи
+                renderGameField(task);
+            } catch (error) {
+                alert(`Не удалось сгенерировать задание: ${error.message}`);
+            }
         });
 
-        if (!response.ok) {
-            throw new Error("Не удалось получить задание с сервера.");
+        function renderGameField(task) {
+    const gridSize = task.gridSize;
+    const rows = gridSize.x;
+    const cols = gridSize.y;
+
+    // Очистить предыдущую визуализацию
+    const gameField = document.getElementById('gameField');
+    gameField.innerHTML = '';
+
+    // Создать таблицу
+    for (let i = 0; i < rows; i++) {
+        const row = document.createElement('tr');
+        for (let j = 0; j < cols; j++) {
+            const cell = document.createElement('td');
+            row.appendChild(cell);
         }
-
-        const data = await response.json();
-        renderGameField(data);
-
-    } catch (error) {
-        console.error("Ошибка при генерации задания:", error);
-        alert("Ошибка при генерации задания. Проверьте соединение с сервером.");
-    }
-}
-
-function renderGameField(task) {
-    const gameField = document.getElementById("gameField");
-
-    // Очистка старого поля
-    gameField.innerHTML = "";
-
-    // Установка размеров сетки
-    gameField.style.gridTemplateRows = `repeat(${task.rows}, 40px)`;
-    gameField.style.gridTemplateColumns = `repeat(${task.cols}, 40px)`;
-
-    // Заполнение ячеек
-    for (let y = 0; y < task.rows; y++) {
-        for (let x = 0; x < task.cols; x++) {
-            const cell = document.createElement("div");
-            cell.className = "cell";
-            cell.id = `cell_${x}_${y}`;
-            gameField.appendChild(cell);
-        }
+        gameField.appendChild(row);
     }
 
-    // Размещение игрока
-    const playerCell = document.getElementById(`cell_${task.player.x}_${task.player.y}`);
-    const imgPlayer = document.createElement("img");
-    imgPlayer.src = "player.png"; // Замените на путь к изображению игрока
-    playerCell.appendChild(imgPlayer);
+    // Добавить игрока
+    const player = task.player;
+    if (isValidPosition(player, rows, cols)) {
+        setCellClass(player.x, player.y, 'player');
+    }
 
-    // Размещение котла
-    const cauldronCell = document.getElementById(`cell_${task.cauldron.x}_${task.cauldron.y}`);
-    const imgCauldron = document.createElement("img");
-    imgCauldron.src = "cauldron.png"; // Замените на путь к изображению котла
-    cauldronCell.appendChild(imgCauldron);
+    // Добавить котёл
+    const cauldron = task.cauldron;
+    if (isValidPosition(cauldron, rows, cols)) {
+        setCellClass(cauldron.x, cauldron.y, 'cauldron');
+    }
 
-    // Размещение зелий
+    // Добавить зелья
     task.potions.forEach(potion => {
-        const potionCell = document.getElementById(`cell_${potion.x}_${potion.y}`);
-        const imgPotion = document.createElement("img");
-        imgPotion.src = "potion.png"; // Замените на путь к изображению зелья
-        potionCell.appendChild(imgPotion);
+        if (isValidPosition(potion, rows, cols)) {
+            setCellClass(potion.x, potion.y, 'potion');
+        }
     });
 
-    // Размещение стен
+    // Добавить стены
     task.walls.forEach(wall => {
-        const wallCell = document.getElementById(`cell_${wall.x}_${wall.y}`);
-        const imgWall = document.createElement("img");
-        imgWall.src = "wall.png"; // Замените на путь к изображению стены
-        wallCell.appendChild(imgWall);
+        if (isValidPosition(wall, rows, cols)) {
+            setCellClass(wall.x, wall.y, 'wall');
+        }
     });
 }
 
+function isValidPosition(position, rows, cols) {
+    const isValid = position.x >= 0 && position.x < rows && position.y >= 0 && position.y < cols;
+    if (!isValid) {
+        console.error(`Позиция вне игрового поля: (${position.x}, ${position.y})`);
+    }
+    return isValid;
+}
+        function setCellClass(x, y, className) {
+    const table = document.getElementById('gameField');
+
+    if (x < 0 || x >= table.rows.length || y < 0 || y >= table.rows[0].cells.length) {
+        console.error(`Некорректная позиция: (${x}, ${y}). Игнорируется.`);
+        return; // Если координаты некорректны, просто игнорируем
+    }
+
+    const cell = table.rows[x].cells[y];
+    cell.classList.add(className);
+}
     </script>
 </body>
 </html>

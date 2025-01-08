@@ -266,19 +266,31 @@ public class SolutionServiceImpl implements SolutionService
         // Генерация позиции котла
         PositionDataModel cauldron = getRandomPosition(rows, cols, usedPositions, random);
 
-        // Генерация зелий
+        PositionDataModel gridSize = new PositionDataModel();
+
+        gridSize.setX(cols);
+        gridSize.setY(rows);
+
+         // Генерация зелий
         List<PositionDataModel> potions = new ArrayList<>();
         for (int i = 0; i < numPotions; i++) {
-            potions.add(getRandomPosition(rows, cols, usedPositions, random));
+        PositionDataModel potion;
+        do {
+            potion = getRandomInnerPosition(rows, cols, usedPositions, random); // Только внутренние позиции
+        } while (!isPotionAccessible(potion, usedPositions, rows, cols)); // Проверка доступности
+        potions.add(potion);
         }
 
         // Генерация стен (случайное число стен до 1/4 от общего числа клеток)
         List<PositionDataModel> walls = new ArrayList<>();
         int maxWalls = (rows * cols) / 4;
         int numWalls = random.nextInt(maxWalls + 1);
-        for (int i = 0; i < numWalls; i++) 
-        {
-            walls.add(getRandomPosition(rows, cols, usedPositions, random));
+        for (int i = 0; i < numWalls; i++) {
+            PositionDataModel wall;
+            do {
+                wall = getRandomPosition(rows, cols, usedPositions, random);
+            } while (isBlockingPotionAccess(wall, potions, usedPositions, rows, cols)); // Проверка блокировки
+            walls.add(wall);
         }
 
         Task newTask = new Task();
@@ -295,8 +307,52 @@ public class SolutionServiceImpl implements SolutionService
     }
 
 
+    /**
+     * Возвращает случайную позицию, исключая края.
+     */
+    private PositionDataModel getRandomInnerPosition(int rows, int cols, Set<PositionDataModel> usedPositions, Random random) {
+        PositionDataModel position;
+        do {
+            position = new PositionDataModel();
+            position.setY(random.nextInt(rows - 2) + 1);// Диапазон от 1 до rows - 2
+            position.setX(random.nextInt(cols - 2) + 1);// Диапазон от 1 до cols - 2
+        } while (usedPositions.contains(position));
+        usedPositions.add(position);
+        return position;
+    }
 
-    
+    /**
+     * Проверяет, имеет ли зелье хотя бы одну свободную соседнюю клетку.
+     */
+    private boolean isPotionAccessible(PositionDataModel potion, Set<PositionDataModel> usedPositions, int rows, int cols) {
+        int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}}; // Вправо, вниз, влево, вверх
+        for (int[] dir : directions) {
+            int newX = potion.getX() + dir[0];
+            int newY = potion.getY() + dir[1];
+            PositionDataModel neighbor = new PositionDataModel();
+            neighbor.setX(newX);
+            neighbor.setY(newY);
+            if (newX >= 0 && newX < rows && newY >= 0 && newY < cols && !usedPositions.contains(neighbor)) {
+                return true; // Есть хотя бы одна доступная клетка
+            }
+        }
+        return false; // Все соседние клетки заняты
+    }
+
+    /**
+     * Проверяет, блокирует ли стена доступ к зелью.
+     */
+    private boolean isBlockingPotionAccess(PositionDataModel wall, List<PositionDataModel> potions, Set<PositionDataModel> usedPositions, int rows, int cols) {
+        usedPositions.add(wall);
+        for (PositionDataModel potion : potions) {
+            if (!isPotionAccessible(potion, usedPositions, rows, cols)) {
+                usedPositions.remove(wall); // Убираем стену из списка использованных, если она блокирует
+                return true; // Блокирует доступ
+            }
+        }
+        return false; // Не блокирует
+    }
+        
 
     private static PositionDataModel getRandomPosition(int rows, int cols, Set<PositionDataModel> usedPositions, Random random) 
     {

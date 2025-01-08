@@ -516,7 +516,7 @@ public class TeacherServiceImpl implements TeacherService {
             throw new IllegalArgumentException("Логин уже занят!");
         }
         // Проверка логина пароля
-        if (student.getStudentLogin() == null || student.getStudentLogin().length() < 4 || student.getStudentLogin().length() > 8) {
+        if (login == null || login.length() < 4 || login.length() > 8) {
             throw new IllegalArgumentException("Логин от 4 до 8 символов!");
         }    
         student.setStudentLogin(login);
