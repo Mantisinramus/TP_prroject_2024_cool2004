@@ -299,7 +299,6 @@ public class SolutionServiceImpl implements SolutionService
         if (!isTaskSolvable(rows, cols, player, cauldron, potions, walls)) {
             System.out.println("Начало секса" + counter);
             Task newTask = randomGenerateTask(rows, cols, numPotions, idTeacher, counter + 1);
-            System.out.println("Начало секса" + newTask);
             return newTask; // Повторить генерацию
         }
         
@@ -321,33 +320,97 @@ public class SolutionServiceImpl implements SolutionService
      * Возвращает случайную позицию, исключая края.
      */
     private PositionDataModel getRandomInnerPosition(int rows, int cols, Set<PositionDataModel> usedPositions, Random random) {
-        PositionDataModel position;
-        do {
-            position = new PositionDataModel();
-            position.setY(random.nextInt(rows - 2) + 1);// Диапазон от 1 до rows - 2
-            position.setX(random.nextInt(cols - 2) + 1);// Диапазон от 1 до cols - 2
-        } while (usedPositions.contains(position));
-        usedPositions.add(position);
-        return position;
-    }
-
-    /**
-     * Проверяет, имеет ли зелье хотя бы одну свободную соседнюю клетку.
-     */
-    private boolean isPotionAccessible(PositionDataModel potion, Set<PositionDataModel> usedPositions, int rows, int cols) {
-        int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}}; // Вправо, вниз, влево, вверх
-        for (int[] dir : directions) {
-            int newX = potion.getX() + dir[0];
-            int newY = potion.getY() + dir[1];
-            PositionDataModel neighbor = new PositionDataModel();
-            neighbor.setX(newX);
-            neighbor.setY(newY);
-            if (newX >= 0 && newX < rows && newY >= 0 && newY < cols && !usedPositions.contains(neighbor)) {
-                return true; // Есть хотя бы одна доступная клетка
+        final int MAX_ATTEMPTS = 100; // Ограничение количества попыток
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            PositionDataModel position = new PositionDataModel();
+            position.setY(random.nextInt(rows - 2) + 1); // Диапазон от 1 до rows - 2
+            position.setX(random.nextInt(cols - 2) + 1); // Диапазон от 1 до cols - 2
+            if (!usedPositions.contains(position)) {
+                usedPositions.add(position);
+                return position;
             }
         }
-        return false; // Все соседние клетки заняты
+        throw new IllegalStateException("Не удалось найти свободную позицию за " + MAX_ATTEMPTS + " попыток");
     }
+    /**
+ * Проверка, достижимо ли зелье.
+ */
+private boolean isPotionAccessible(PositionDataModel potion, Set<PositionDataModel> usedPositions, int rows, int cols) {
+    Queue<PositionDataModel> queue = new LinkedList<>();
+    Set<PositionDataModel> visited = new HashSet<>();
+
+    // Добавляем начальную позицию игрока
+    queue.add(potion);
+    visited.add(potion);
+
+    int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}}; // Вправо, вниз, влево, вверх
+
+    while (!queue.isEmpty()) {
+        PositionDataModel current = queue.poll();
+
+        // Проверяем соседние клетки
+        for (int[] dir : directions) {
+            int newX = current.getX() + dir[0];
+            int newY = current.getY() + dir[1];
+            PositionDataModel neighbor = new PositionDataModel();
+            neighbor.setY(newY); // Диапазон от 1 до rows - 2
+            neighbor.setX(newX); // Диапазон от 1 до cols - 2
+            
+
+            if (newX >= 0 && newX < rows && newY >= 0 && newY < cols &&
+                    !usedPositions.contains(neighbor) && !visited.contains(neighbor)) {
+                visited.add(neighbor);
+                queue.add(neighbor);
+
+                // Если нашли свободное место — значит достижимо
+                return true;
+            }
+        }
+    }
+
+    // Если не нашли свободное место
+    return false;
+}
+
+/**
+ * Генерация игрового поля.
+ */
+public void generateField(int rows, int cols, int numPotions, int numWalls, Random random) {
+    Set<PositionDataModel> usedPositions = new HashSet<>();
+
+    // Генерация игрока
+    PositionDataModel player = getRandomInnerPosition(rows, cols, usedPositions, random);
+
+    // Генерация котла
+    PositionDataModel cauldron = getRandomInnerPosition(rows, cols, usedPositions, random);
+
+    // Генерация зелий
+    List<PositionDataModel> potions = new ArrayList<>();
+    for (int i = 0; i < numPotions; i++) {
+        PositionDataModel potion = getRandomInnerPosition(rows, cols, usedPositions, random);
+
+        if (!isPotionAccessible(potion, usedPositions, rows, cols)) {
+            throw new IllegalStateException("Позиция зелья недостижима");
+        }
+
+        potions.add(potion);
+    }
+
+    // Генерация стен
+    for (int i = 0; i < numWalls; i++) {
+        getRandomInnerPosition(rows, cols, usedPositions, random);
+    }
+
+    // Вывод результатов
+    System.out.println("Игрок: " + player);
+    System.out.println("Котёл: " + cauldron);
+    System.out.println("Зелья: " + potions);
+}
+
+
+
+
+
 
     /**
      * Проверяет, блокирует ли стена доступ к зелью.

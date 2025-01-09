@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Field</title>
+    <style>
+        .grid {
+            display: grid;
+            gap: 1px;
+            background-color: #ddd;
+            width: fit-content; /* Автоматический размер по содержимому */
+            height: fit-content;
+        }
+
+        .cell {
+            width: 40px; /* Фиксированный размер клетки */
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+            border: 1px solid #aaa; /* Обрамление для отладки */
+        }
+        .player {
+            background-color: blue;
+        }
+        .potion {
+            background-color: green;
+        }
+        .cauldron {
+            background-color: red;
+        }
+        .wall {
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <h1>Game Field</h1>
+    <div id="gameContainer"></div>
+    <br>
+    <label for="commandInput">Enter Command:</label>
+    <input type="text" id="commandInput" placeholder="Move command (e.g., 'UP')">
+    <button id="sendCommand">Check Sequence</button>
+    <div id="gameLog"></div>
+
+    <script>
+        const gameContainer = document.getElementById("gameContainer");
+        const commandInput = document.getElementById("commandInput");
+        const sendCommandButton = document.getElementById("sendCommand");
+        const gameLog = document.getElementById("gameLog");
+
+        let gameState = {};
+        let gridSize = { x: 0, y: 0 };
+
+        // Fetch and display the task
+        async function loadTask(taskId) {
+            try {
+                const response = await fetch(`http://localhost:8080/api/teacher/tasks/${taskId}`);
+                if (!response.ok) throw new Error("Failed to fetch task");
+                const task = await response.json();
+
+                // Set up the game state
+                gameState = {
+                    player: task.player,
+                    potions: task.potions,
+                    cauldron: task.cauldron,
+                    walls: task.walls,
+                };
+                gridSize = task.gridSize;
+
+                createGrid(gridSize.y, gridSize.x);
+                renderGame(gameState);
+            } catch (error) {
+                console.error("Error loading task:", error);
+            }
+        }
+
+        // Create the grid
+        function createGrid(rows, cols) {
+        gameContainer.style.display = "grid";
+
+        gameContainer.style.gridTemplateColumns = `repeat(${cols}, 40px)`;
+
+        gameContainer.innerHTML = ""; // Очистка
+
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+                const cell = document.createElement("div");
+                cell.classList.add("cell");
+                cell.dataset.row = row;
+                cell.dataset.col = col;
+                gameContainer.appendChild(cell);
+            }
+        }
+}
+
+        // Render the game state
+        function renderGame(state) {
+            const cells = document.querySelectorAll(".cell");
+            cells.forEach(cell => cell.className = "cell");
+
+            // Render player
+            const playerCell = document.querySelector(`[data-row="${state.player.y}"][data-col="${state.player.x}"]`);
+            if (playerCell) playerCell.classList.add("player");
+
+            // Render potions
+            state.potions.forEach(potion => {
+                const potionCell = document.querySelector(`[data-row="${potion.y}"][data-col="${potion.x}"]`);
+                if (potionCell) potionCell.classList.add("potion");
+            });
+
+            // Render cauldron
+            const cauldronCell = document.querySelector(`[data-row="${state.cauldron.y}"][data-col="${state.cauldron.x}"]`);
+            if (cauldronCell) cauldronCell.classList.add("cauldron");
+
+            // Render walls
+            state.walls.forEach(wall => {
+                const wallCell = document.querySelector(`[data-row="${wall.y}"][data-col="${wall.x}"]`);
+                if (wallCell) wallCell.classList.add("wall");
+            });
+        }
+
+        // Check sequence through backend
+        sendCommandButton.addEventListener("click", async () => {
+            const taskId = 1; // Example task ID
+            const answerId = 1; // Example answer ID
+            try {
+                const response = await fetch(`http://localhost:8080/api/solution/checkSequence/${taskId}/${answerId}`);
+                if (!response.ok) throw new Error("Failed to check sequence");
+                const sequence = await response.json();
+
+                // Update game state for each step
+                updateGameLog(sequence);
+                sequence.forEach(step => {
+                    gameState.player = step.playerPosition;
+                    gameState.potions = step.potions;
+                    renderGame(gameState);
+                });
+            } catch (error) {
+                console.error("Error checking sequence:", error);
+            }
+        });
+
+        // Update game log
+        function updateGameLog(log) {
+            gameLog.innerHTML = "<h2>Game Log:</h2>";
+            log.forEach((step, index) => {
+                const logEntry = document.createElement("div");
+                logEntry.textContent = `Step ${index + 1}: Player at (${step.playerPosition.x}, ${step.playerPosition.y}), Potions: ${JSON.stringify(step.potions)}, Answer: ${step.answer}`;
+                gameLog.appendChild(logEntry);
+            });
+        }
+
+        // Initial load
+        
+        loadTask(1); // Load task with ID 1
+        console.log(gameContainer.innerHTML);
+    </script>
+</body>
+</html>

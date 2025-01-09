@@ -71,6 +71,15 @@ public class UIController {
         return "testart";
     }
 
+    @GetMapping("/testArt2")
+    public String testArt2() {
+        return "testart2";
+    }
+    @GetMapping("/testArt3")
+    public String testArt3() {
+        return "testart3";
+    }
+
     @GetMapping("/test11")
     public String test11() {
         return "test11";
