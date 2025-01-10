@@ -154,7 +154,7 @@
         }
        .task-form {
     margin-bottom: 30px; /* Увеличен отступ снизу */
-    width: 100%; /* Занимает всю ширину родителя */
+  width: fit-content; /* Занимает всю ширину родителя */
     padding: 20px; /* Увеличен padding */
     background-color: #4A6164; /* Более темный фон */
     border-radius: 10px; /* Увеличены радиусы углов */
@@ -187,6 +187,7 @@
 }
  .task-form input {
            display: none;
+            width: 100%;
          }
 
 .task-form select:focus,
@@ -199,6 +200,7 @@
 .task-form textarea {
     resize: vertical;
     min-height: 120px; /* Увеличена минимальная высота */
+      display: none;
 }
 
 .task-form button {
@@ -317,14 +319,24 @@
   <div class="description">
     <p id="task-description"></p>
   </div>
+  
+   <div class ="task-form" id = "editNameForm" >
+        <input class = "task-form input" id = "editTaskNameInputForm" >
+        <textarea class = "task-form textarea" id = "editTaskDescriptionInputForm" ></textarea>
+        <div>
+        <button class = "btn-custom" id = "editTaskNameButton">Редактировать название</button>
+         <button class = "btn-custom" id = "editTaskDescriptionButton">Редактировать описание</button>
+        </div>
+        <div display>
+        <button class = "invBtn" id = "saveTaskNameButton">Сохранить</button>
+        <button class = "invBtn" id = "cancelButton">Отменить</button>
+        </div>
+        </div>
+        
+        
     <div class="editor-container">
         <div class="editor-sidebar">
-        <div class ="task-form">
-        <input class = "task-form input" id = "editTaskNameInputForm" >
-        <button class = "btn-custom" id = "editTaskNameButton">Редактировать название</button>
-        <button class = "invBtn" id = "editTaskNameButton">Сохранить</button>
-        <button class = "invBtn" id = "editTaskNameButton">Отменить</button>
-        </div>
+       
             <h2>Введите размер</h2>
             <div class="editor-form-group">
                 <label for="width">Ширина:</label>
@@ -355,34 +367,88 @@
       <select id="element-select" style="width: 100%; padding: 5px; border-radius: 5px;">
         <option value="">Выберите ученика</option>
         <option value="selectAll">Выбрать всех</option>
-        <option value="element1">Элемент 1</option>
-        <option value="element2">Элемент 2</option>
-        <option value="element3">Элемент 3</option>
       </select>
     </form>
 
-    <div class="element-container" id="element-container">
+    <div class="element-container" id="studentContainer">
       <!-- Сюда будут добавляться выбранные элементы -->
     </div>
+    <button class="btn-custom" id="sendBtn">Отправить</button>
   </div>
     <script>
     
-    const editTaskNameButton = document.getElementById("editTaskNameButton");
+    const sendBtn = document.getElementById("sendBtn");
+    const studentContainer  = document.getElementById("studentContainer");
+
+    sendBtn.addEventListener('click', () => {
+  let studentList = Array.from(studentContainer.children);
+  studentList.forEach(student => {
+    let studentLogin = student.textContent.slice(0,-1);
+    fetch(`/api/teacher/students/searchLogin/${studentLogin}`)
+      .then(response => response.json())
+      .then(data => {
+       
+        fetch(`/api/teacher/students/${data}/tasks/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+      })
+      .catch(error => {
+        console.error(`Error fetching student ID for ${studentLogin}: ${error}`);
+      });
+  });
+});
+
+   
     const editTaskNameInputForm = document.getElementById("editTaskNameInputForm");
+     const saveTaskNameButton = document.getElementById("saveTaskNameButton");
+    const cancelButton = document.getElementById("cancelButton");
+     const editTaskDescriptionButton = document.getElementById("editTaskDescriptionButton");
+     const editNameForm = document.getElementById("editNameForm");
+      const editTaskDescriptionInputForm = document.getElementById("editTaskDescriptionInputForm");
+     
        editTaskNameButton.addEventListener('click', () => {
          editTaskNameInputForm.style.display = 'flex';
-         
+          saveTaskNameButton.style.display = 'inline-block';
+           cancelButton.style.display = 'inline-block';
+         editTaskNameButton.style.display = 'none';
+          editTaskDescriptionButton.style.display = 'none';
+          editNameForm.style.width = '100%';
             });
+            
+            
+              editTaskDescriptionButton.addEventListener('click', () => {
+         editTaskDescriptionInputForm.style.display = 'flex';
+          saveTaskNameButton.style.display = 'inline-block';
+           cancelButton.style.display = 'inline-block';
+         editTaskNameButton.style.display = 'none';
+          editTaskDescriptionButton.style.display = 'none';
+          editNameForm.style.width = '100%';
+            });
+            
+                   cancelButton.addEventListener('click', () => {
+         editTaskDescriptionInputForm.style.display = 'none';
+          editTaskNameInputForm.style.display = 'none';
+          saveTaskNameButton.style.display = 'none';
+           cancelButton.style.display = 'none';
+         editTaskNameButton.style.display = 'inline-block';
+          editTaskDescriptionButton.style.display = 'inline-block';
+          editNameForm.style.width = '100%';
+            });
+       
  
      
      const elementSelect = document.getElementById('element-select');
-    const elementContainer = document.getElementById('element-container');
+  
 
     elementSelect.addEventListener('change', (event) => {
       const selectedValue = event.target.value;
+    console.log(selectedValue);
       if (selectedValue === 'selectAll') {
         // Очищаем контейнер с выбранными элементами
-        elementContainer.innerHTML = '';
+        studentContainer.innerHTML = '';
 
         // Добавляем все элементы в контейнер, кроме "Выбрать всех"
         const options = event.target.options;
@@ -390,7 +456,7 @@
           const option = options[i];
           if (option.value) {
             const newElement = document.createElement('div');
-            newElement.textContent = option.value;
+            newElement.textContent = option.text;
             newElement.classList.add('element');
 
             // Добавляем крестик для удаления элемента
@@ -404,7 +470,7 @@
             });
             newElement.appendChild(closeBtn);
 
-            elementContainer.prepend(newElement);
+            studentContainer.prepend(newElement);
 
             // Скрываем выбранный элемент из списка
             option.style.display = 'none';
@@ -412,9 +478,11 @@
         }
         event.target.value = '';
       } else if (selectedValue) {
+        console.log(selectedValue);
         const newElement = document.createElement('div');
-        newElement.textContent = selectedValue;
+        newElement.textContent = event.target.options[event.target.selectedIndex].text;
         newElement.classList.add('element');
+        console.log(newElement);
 
         // Добавляем крестик для удаления элемента
         const closeBtn = document.createElement('div');
@@ -425,13 +493,18 @@
           // Возвращаем выбранный элемент в список
           const selectedOption = event.target.querySelector(`option[value="${selectedValue}"]`);
           selectedOption.style.display = 'block';
+          
         });
+       
         newElement.appendChild(closeBtn);
 
-        elementContainer.prepend(newElement);
+        studentContainer.prepend(newElement);
 
         // Удаляем выбранный элемент из списка
         const selectedOption = event.target.querySelector(`option[value="${selectedValue}"]`);
+        console.log(selectedValue);
+        console.log(selectedOption);
+        console.log(event.target);
         selectedOption.style.display = 'none';
 
         event.target.value = '';
@@ -603,7 +676,19 @@
   
             
 
-        })
+        });
+
+        fetch('/api/students/without-task/'+2 ).then(responce => responce.json())
+        .then(students => students.forEach(student => 
+        {
+          let studentLogin = student.studentLogin;
+          const studentToSendOption = document.createElement('option');
+          studentToSendOption.text = studentLogin;
+          studentToSendOption.value = studentLogin;
+          elementSelect.add(studentToSendOption);
+        })) 
+
+
         }
 load();
     </script>

@@ -237,4 +237,11 @@ public class TeacherController {
       return ResponseEntity.ok(teacherService.getSolutionStydent(idStudent, idTask));
   }
 
+    // найти айди студента по логину
+    // Поиск студента по инициалам
+    @GetMapping("/students/searchLogin/{login}")
+    public ResponseEntity<Long> getStudentIdByLogin(@PathVariable String login) {
+        return ResponseEntity.ok(teacherService.getStudentIdByLogin(login));
+    }
+
 }

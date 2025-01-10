@@ -74,6 +74,16 @@
             border-radius: 5px;
             display: inline-block;
         }
+        .invBtn {
+            background-color: #B7673C;
+            color: #B9B0B2;
+            border: none;
+            padding: 10px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            display: none;
+        }
          .feedback {
             background-color: #3A5154;
             padding: 15px;
@@ -144,7 +154,7 @@
         }
        .task-form {
     margin-bottom: 30px; /* Увеличен отступ снизу */
-    width: 100%; /* Занимает всю ширину родителя */
+  width: fit-content; /* Занимает всю ширину родителя */
     padding: 20px; /* Увеличен padding */
     background-color: #4A6164; /* Более темный фон */
     border-radius: 10px; /* Увеличены радиусы углов */
@@ -175,6 +185,10 @@
     box-sizing: border-box; /* Включаем padding и border в ширину элемента */
     transition: border-color 0.3s ease; /* Плавная смена цвета рамки при фокусе */
 }
+ .task-form input {
+           display: none;
+            width: 100%;
+         }
 
 .task-form select:focus,
 .task-form input[type="text"]:focus,
@@ -186,6 +200,7 @@
 .task-form textarea {
     resize: vertical;
     min-height: 120px; /* Увеличена минимальная высота */
+      display: none;
 }
 
 .task-form button {
@@ -304,10 +319,24 @@
   <div class="description">
     <p id="task-description"></p>
   </div>
+  
+   <div class ="task-form" id = "editNameForm" >
+        <input class = "task-form input" id = "editTaskNameInputForm" >
+        <textarea class = "task-form textarea" id = "editTaskDescriptionInputForm" ></textarea>
+        <div>
+        <button class = "btn-custom" id = "editTaskNameButton">Редактировать название</button>
+         <button class = "btn-custom" id = "editTaskDescriptionButton">Редактировать описание</button>
+        </div>
+        <div display>
+        <button class = "invBtn" id = "saveTaskNameButton">Сохранить</button>
+        <button class = "invBtn" id = "cancelButton">Отменить</button>
+        </div>
+        </div>
+        
+        
     <div class="editor-container">
         <div class="editor-sidebar">
-        
-        
+       
             <h2>Введите размер</h2>
             <div class="editor-form-group">
                 <label for="width">Ширина:</label>
@@ -319,10 +348,10 @@
             </div>
              <button class="btn-custom" id="confirm-btn">Подтвердить</button>
             <div class="editor-elements">
-                 <img class="editor-element-image editor-element" draggable="true" src="hero.png" alt="Hero">
-                 <img class="editor-element-image editor-element" draggable="true" src="wall.png" alt="Wall">
-                 <img class="editor-element-image editor-element" draggable="true" src="posion1.png" alt="Poison">
-                <img class="editor-element-image editor-element" draggable="true" src="kotyol.png" alt="Kotyol">
+                 <img class="editor-element-image editor-element" id = "imgPlayer" draggable="true" src="hero.png" alt="Hero">
+                 <img class="editor-element-image editor-element" id = "imgWall" draggable="true" src="wall.png" alt="Wall">
+                 <img class="editor-element-image editor-element" id = "imgPotion" draggable="true" src="posion1.png" alt="Poison">
+                 <img class="editor-element-image editor-element"  id = "imgCauldron" draggable="true" src="kotyol.png" alt="Kotyol">
             </div>
              <div id="trash-bin">🗑️</div>
         </div>
@@ -338,26 +367,90 @@
       <select id="element-select" style="width: 100%; padding: 5px; border-radius: 5px;">
         <option value="">Выберите ученика</option>
         <option value="selectAll">Выбрать всех</option>
-        <option value="element1">Элемент 1</option>
-        <option value="element2">Элемент 2</option>
-        <option value="element3">Элемент 3</option>
       </select>
     </form>
 
-    <div class="element-container" id="element-container">
+    <div class="element-container" id="studentContainer">
       <!-- Сюда будут добавляться выбранные элементы -->
     </div>
+    <button class="btn-custom" id="sendBtn">Отправить</button>
   </div>
     <script>
-    
+    const getTaskId=  localStorage.getItem('getTaskId');
+
+    const sendBtn = document.getElementById("sendBtn");
+    const studentContainer  = document.getElementById("studentContainer");
+
+    sendBtn.addEventListener('click', () => {
+  let studentList = Array.from(studentContainer.children);
+  studentList.forEach(student => {
+    let studentLogin = student.textContent.slice(0,-1);
+    fetch(`/api/teacher/students/searchLogin/${studentLogin}`)
+      .then(response => response.json())
+      .then(data => {
+       
+        fetch(`/api/teacher/students/${data}/tasks/${getTaskId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+      })
+      .catch(error => {
+        console.error(`Error fetching student ID for ${studentLogin}: ${error}`);
+      });
+  });
+  location.reload();
+});
+
+   
+    const editTaskNameInputForm = document.getElementById("editTaskNameInputForm");
+     const saveTaskNameButton = document.getElementById("saveTaskNameButton");
+    const cancelButton = document.getElementById("cancelButton");
+     const editTaskDescriptionButton = document.getElementById("editTaskDescriptionButton");
+     const editNameForm = document.getElementById("editNameForm");
+      const editTaskDescriptionInputForm = document.getElementById("editTaskDescriptionInputForm");
+     
+       editTaskNameButton.addEventListener('click', () => {
+         editTaskNameInputForm.style.display = 'flex';
+          saveTaskNameButton.style.display = 'inline-block';
+           cancelButton.style.display = 'inline-block';
+         editTaskNameButton.style.display = 'none';
+          editTaskDescriptionButton.style.display = 'none';
+          editNameForm.style.width = '100%';
+            });
+            
+            
+              editTaskDescriptionButton.addEventListener('click', () => {
+         editTaskDescriptionInputForm.style.display = 'flex';
+          saveTaskNameButton.style.display = 'inline-block';
+           cancelButton.style.display = 'inline-block';
+         editTaskNameButton.style.display = 'none';
+          editTaskDescriptionButton.style.display = 'none';
+          editNameForm.style.width = '100%';
+            });
+            
+                   cancelButton.addEventListener('click', () => {
+         editTaskDescriptionInputForm.style.display = 'none';
+          editTaskNameInputForm.style.display = 'none';
+          saveTaskNameButton.style.display = 'none';
+           cancelButton.style.display = 'none';
+         editTaskNameButton.style.display = 'inline-block';
+          editTaskDescriptionButton.style.display = 'inline-block';
+          editNameForm.style.width = '100%';
+            });
+       
+ 
+     
      const elementSelect = document.getElementById('element-select');
-    const elementContainer = document.getElementById('element-container');
+  
 
     elementSelect.addEventListener('change', (event) => {
       const selectedValue = event.target.value;
+    console.log(selectedValue);
       if (selectedValue === 'selectAll') {
         // Очищаем контейнер с выбранными элементами
-        elementContainer.innerHTML = '';
+        studentContainer.innerHTML = '';
 
         // Добавляем все элементы в контейнер, кроме "Выбрать всех"
         const options = event.target.options;
@@ -365,7 +458,7 @@
           const option = options[i];
           if (option.value) {
             const newElement = document.createElement('div');
-            newElement.textContent = option.value;
+            newElement.textContent = option.text;
             newElement.classList.add('element');
 
             // Добавляем крестик для удаления элемента
@@ -379,7 +472,7 @@
             });
             newElement.appendChild(closeBtn);
 
-            elementContainer.prepend(newElement);
+            studentContainer.prepend(newElement);
 
             // Скрываем выбранный элемент из списка
             option.style.display = 'none';
@@ -387,9 +480,11 @@
         }
         event.target.value = '';
       } else if (selectedValue) {
+        console.log(selectedValue);
         const newElement = document.createElement('div');
-        newElement.textContent = selectedValue;
+        newElement.textContent = event.target.options[event.target.selectedIndex].text;
         newElement.classList.add('element');
+        console.log(newElement);
 
         // Добавляем крестик для удаления элемента
         const closeBtn = document.createElement('div');
@@ -400,13 +495,18 @@
           // Возвращаем выбранный элемент в список
           const selectedOption = event.target.querySelector(`option[value="${selectedValue}"]`);
           selectedOption.style.display = 'block';
+          
         });
+       
         newElement.appendChild(closeBtn);
 
-        elementContainer.prepend(newElement);
+        studentContainer.prepend(newElement);
 
         // Удаляем выбранный элемент из списка
         const selectedOption = event.target.querySelector(`option[value="${selectedValue}"]`);
+        console.log(selectedValue);
+        console.log(selectedOption);
+        console.log(event.target);
         selectedOption.style.display = 'none';
 
         event.target.value = '';
@@ -520,7 +620,7 @@
 
         function load()
         {
-        const getTaskId=  localStorage.getItem('getTaskId');
+        
         fetch('/api/teacher/tasks/'+ getTaskId).then(response=> response.json())
         .then(data =>
         {
@@ -528,7 +628,69 @@
         taskNameElement.textContent = data.taskName;
         let taskDescElement = document.getElementById("task-description");
         taskDescElement.textContent = data.taskText;
-        })
+        const y_s = data.gridSize.y; // Количество строк
+        const x_s = data.gridSize.x; // Количество столбцов
+        const cellSize = 40; // Размер ячеек в пикселях
+        
+        gameBoard.innerHTML = '';
+             gameBoard.appendChild(createTable(y_s, x_s, 40));
+             gameFieldRect = gameBoard.getBoundingClientRect();
+              const gameCells = document.querySelectorAll('.game-field table td');
+            gameCells.forEach(cell => {
+                cell.addEventListener('dragover', dragOver);
+                cell.addEventListener('drop', drop);
+              });
+                let playerCell = document.getElementById('cell_' + data.player.x + '_' + data.player.y);
+                let newElement = imgPlayer.cloneNode(true);
+                playerCell.appendChild(newElement);
+                newElement.addEventListener('dragstart', (e) => {
+                  draggedElement = e.target;
+                });
+
+                let cauldronCell = document.getElementById('cell_' + data.cauldron.x + '_' + data.cauldron.y);
+                newElement = imgCauldron.cloneNode(true);
+                cauldronCell.appendChild(newElement);
+                newElement.addEventListener('dragstart', (e) => {
+                  draggedElement = e.target;
+                });
+
+                data.walls.forEach(wall => {
+                  let wallCell = document.getElementById('cell_' + wall.x + '_' + wall.y);
+                  let elementToAdd = document.getElementById('imgWall');
+               let newWall = elementToAdd.cloneNode(true);
+                wallCell.appendChild(newWall);
+                newWall.addEventListener('dragstart', (e) => {
+                  draggedElement = e.target;
+                });
+               });
+               
+               data.potions.forEach(potion => {
+
+                let potionCell = document.getElementById('cell_' + potion.x + '_' + potion.y);
+                  let elementToAdd = document.getElementById('imgPotion');
+               let newPotion = elementToAdd.cloneNode(true);
+               potionCell.appendChild(newPotion);
+                newPotion.addEventListener('dragstart', (e) => {
+                  draggedElement = e.target;
+                });
+
+               });
+  
+            
+
+        });
+
+        fetch('/api/students/without-task/'+getTaskId ).then(responce => responce.json())
+        .then(students => students.forEach(student => 
+        {
+          let studentLogin = student.studentLogin;
+          let studentToSendOption = document.createElement('option');
+          studentToSendOption.text = studentLogin;
+          studentToSendOption.value = studentLogin;
+          elementSelect.add(studentToSendOption);
+        })) 
+
+
         }
 load();
     </script>

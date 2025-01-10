@@ -523,6 +523,11 @@ public class TeacherServiceImpl implements TeacherService {
         reposStudent.save(student);   
     }
 
+    @Override
+    public Long getStudentIdByLogin(String login) {
+       return reposStudent.findStudentIdByLogin(login);
+    }
+
 
 
     

@@ -73,5 +73,8 @@ public interface TeacherService
 
     void changeLoginStudent(Long idStudent, String login);
 
+    //найти id студента по логину
+    Long getStudentIdByLogin(String login);
+
 }
 
