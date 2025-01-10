@@ -1,50 +1,87 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Список учеников</title>
     <style>
-        /* CSS для вертикального расположения */
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start; /* Выравниваем по левому краю */
-            padding: 20px; /* Добавляем отступы */
-            font-family: Arial, sans-serif; /* Изменяем шрифт */
+        :root {
+            --gray: #929AA2;
+            --beige: #B9B0B2;
+            --green: #3A5154;
+            --orange: #B7673C;
+            --white: white;
+            --radius: 5px;
         }
-        h1, h2, table, .add-student-form {
-            margin-bottom: 20px; /* Отступы между элементами */
-            width: 80%; /* Занимают всю доступную ширину */
+         body {
+            background-color: var(--gray);
+            color: var(--beige);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
         }
-        input {
-            display: block;
-            margin-bottom: 10px;
-            padding: 10px; /* Добавляем внутренние отступы */
-            font-size: 16px; /* Увеличиваем размер шрифта */
-            border: 1px solid #ccc; /* Цвет рамки */
-            border-radius: 5px; /* Скругление углов */
-            width: calc(40% - 22px); /* Ширина с учетом отступов */
-        }
-        button {
-            padding: 10px 20px; /* Внутренние отступы */
-            font-size: 16px; /* Увеличиваем размер шрифта */
-            background-color: green; /* Зеленый фон */
-            color: white; /* Белый текст */
-            border: none; /* Убираем рамку */
-            border-radius: 5px; /* Скругление углов */
-            cursor: pointer; /* Указатель при наведении */
-        }
-        button:hover {
-            background-color: darkgreen; /* Темно-зеленый фон при наведении */
+
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--green);
         }
         table {
+            width: 100%;
             border-collapse: collapse;
+            margin-bottom: 20px;
+             box-sizing: border-box;
         }
+
         th, td {
-            border: 1px solid #ddd;
+            border: 1px solid var(--beige);
             padding: 8px;
             text-align: left;
+            box-sizing: border-box;
+        }
+        th {
+            background-color: var(--green);
+        }
+
+        .add-student-form {
+            background-color: var(--green);
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        input {
+           background-color: var(--beige);
+           color: var(--green);
+           border: 1px solid var(--green);
+           border-radius: var(--radius);
+           padding: 10px;
+           margin-bottom: 10px;
+           width: calc(50% - 22px);
+           box-sizing: border-box;
+           font-size: 16px;
+            display: inline-block;
+        }
+       
+        button {
+             background-color: var(--orange);
+             color: var(--green);
+             border: none;
+             padding: 10px;
+             margin: 5px;
+             cursor: pointer;
+             border-radius: var(--radius);
+             display: inline-block;
+        }
+
+        button:hover {
+            background-color: #915131;
         }
     </style>
 </head>
@@ -76,7 +113,7 @@
   function loadStudents() {
     const id = localStorage.getItem("teacherId");
     console.log(id);
-   
+
     fetch('/api/teacher/students/getAll')
               .then(response => response.json())
               .then(students => {
@@ -87,7 +124,7 @@
                       const initialsCell  = row.insertCell();
                       const loginCell  = row.insertCell();
                       const actionCell = row.insertCell();
-                    
+
                       initialsCell.textContent = student.studentInitials;
                       loginCell.textContent = student.studentLogin;
                       const editStudentButton = document.createElement('button');
@@ -97,7 +134,7 @@
                         localStorage.setItem('editStudentId', student.studentId);
                         window.location.href = '/editStudent';
                       });
-                      actionCell.appendChild(editStudentButton);    
+                      actionCell.appendChild(editStudentButton);
                   });
               });
   }
@@ -109,7 +146,7 @@
     const studentPassword = document.getElementById('studentPassword').value;
     if (!studentName || !studentLogin || !studentPassword) {
         alert("Пожалуйста, заполните все поля!");
-        return; 
+        return;
     }
     addStudent(studentName,studentLogin,studentPassword);
 
@@ -119,7 +156,7 @@
   loadStudents();
 
   async function addStudent(studentName,studentLogin,studentPassword ) {
-    
+
     const studentData = {
       studentInitials: studentName, // убедитесь, что имена полей соответствуют бэкенду
       studentLogin: studentLogin,

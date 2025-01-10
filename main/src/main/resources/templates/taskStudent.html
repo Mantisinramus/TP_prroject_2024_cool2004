@@ -249,24 +249,27 @@
       <!-- Таблица будет динамически добавлена здесь -->
     </div>
 
-        <div class="solution" id="solutoin">
-            <h5>Введите ваше решение:</h5>
-            <textarea id="solutionInput" rows="4" class="form-control" style="width: 100%;"></textarea>
-            
-            <div class="primitives">
-                <h5>Доступные графические примитивы:</h5>
-                <!-- <img src="image5.png" alt="Повтори" class="primitive-img">
-                <img src="image1.png" alt="Вперед" class="primitive-img">
-                <img src="image2.png" alt="Назад" class="primitive-img">
-                <img src="image3.png" alt="Влево" class="primitive-img">
-                <img src="image4.png" alt="Вправо" class="primitive-img"> -->
-            </div>
-
-            <button class="btn-custom" id="checkSolution">Проверить решение</button>
-            <button class="btn-custom" id="clearSolution">Очистить решение</button>
-            <button class="btn-custom" id="submitSolution">Отправить решение</button>
+    <div class="container">
+      <h1>Доступные объекты для перетаскивания</h1>
+      <div class="draggable-items">
+        <img src="up.png" alt="up" class="draggable" draggable="true" data-item="up">
+        <img src="down.png" alt="down" class="draggable" draggable="true" data-item="down">
+        <img src="left.png" alt="left" class="draggable" draggable="true" data-item="left">
+        <img src="right.png" alt="right" class="draggable" draggable="true" data-item="right">
+        <img src="loop.png" alt="loop" class="draggable" draggable="true" data-item="loop">
+      </div>
+      <h2>Перетащите объекты в область</h2>
+      <div style="display:flex;">
+        <div class="drop-area" id="dropArea">
         </div>
+        <div class="trash-area" id="trashArea">Корзина</div>
+      </div>
+      <div style="display:flex;">
+        <button class="btn-custom" onclick="getDraggedItems()">Проверить решение</button>
+        <button class="btn-custom" onclick="sendSolution()">Отправить решение</button>
+      </div>
     </div>
+  </div>
 
   <div class="feedback">
     <h5>Ответ учителя:</h5>
@@ -448,87 +451,234 @@
     const taskId = localStorage.getItem("taskId");
     const solutionId = localStorage.getItem("solutionId");
 
-    let imgPlayer = document.createElement('img');
-    imgPlayer.src = 'hero.png'; // Замените на путь к вашему изображению
-    imgPlayer.style.width = '100%';  //  или другой нужный размер
-    imgPlayer.style.height = '100%';
-    imgPlayer.style.objectFit = 'cover';
+    function load() {
+      let imgPlayer = document.createElement('img');
+      imgPlayer.src = 'hero.png'; // Замените на путь к вашему изображению
+      imgPlayer.style.width = '100%'; //  или другой нужный размер
+      imgPlayer.style.height = '100%';
+      imgPlayer.style.objectFit = 'cover';
+      let imgCauldron = document.createElement('img');
+      imgCauldron.src = 'kotyol.png'; // Замените на путь к вашему изображению
+      imgCauldron.style.width = '100%'; //  или другой нужный размер
+      imgCauldron.style.height = '100%';
+      imgCauldron.style.objectFit = 'cover';
+      fetch('api/teacher/tasks/' + taskId).then(response => response.json()).then(data => {
+        let taskNameElement = document.getElementById("taskName");
+        taskNameElement.textContent = data.taskName;
+        let taskDescElement = document.getElementById("task-description");
+        taskDescElement.textContent = data.taskText;
+        const y_s = data.gridSize.y; // Количество строк
+        const x_s = data.gridSize.x; // Количество столбцов
+        const cellSize = 40; // Размер ячеек в пикселях
+        document.getElementById('gameField').innerHTML = createTable(y_s, x_s, cellSize);
+        let playerCell = document.getElementById('cell_' + data.player.x + '_' + data.player.y);
+        playerCell.appendChild(imgPlayer);
+        let cauldronCell = document.getElementById('cell_' + data.cauldron.x + '_' + data.cauldron.y);
+        cauldronCell.appendChild(imgCauldron);
+        data.walls.forEach(wall => {
+          let wallCell = document.getElementById('cell_' + wall.x + '_' + wall.y);
+          console.log('cell_' + wall.x + '_' + wall.y);
+          let imgWall = document.createElement('img');
+          imgWall.src = 'wall.png'; // Замените на путь к вашему изображению
+          imgWall.style.width = '100%'; //  или другой нужный размер
+          imgWall.style.height = '100%';
+          imgWall.style.objectFit = 'cover';
+          wallCell.appendChild(imgWall);
+        });
+        data.potions.forEach(potion => {
+          let potionCell = document.getElementById('cell_' + potion.x + '_' + potion.y);
+          console.log('cell_' + potion.x + '_' + potion.y);
+          let imgPotion = document.createElement('img');
+          imgPotion.src = 'posion1.png'; // Замените на путь к вашему изображению
+          imgPotion.style.width = '100%'; //  или другой нужный размер
+          imgPotion.style.height = '100%';
+          imgPotion.style.objectFit = 'cover';
+          potionCell.appendChild(imgPotion);
+        });
+      })
+      fetch('api/students/solutions/' + solutionId).then(response => response.json()).then(data => {
+        console.log(solutionId);
+        console.log(data);
+        let feedbackArea = document.getElementById("teacherResponse");
+        feedbackArea.textContent = data.teacherAnswer;
+        let markArea = document.getElementById("userScore");
+        markArea.textContent = data.mark;
+        let str = data.sequenceText;
+        let seq = str.split(/\s*,\s*/).filter(item => item !== "");
+        loadSequence(seq);
+      })
+    }
+    const dropArea = document.getElementById('dropArea');
 
-    let imgCauldron = document.createElement('img');
-    imgCauldron.src = 'kotyol.png'; // Замените на путь к вашему изображению
-    imgCauldron.style.width = '100%';  //  или другой нужный размер
-    imgCauldron.style.height = '100%';
-    imgCauldron.style.objectFit = 'cover';
+    function getDraggedItems() {
+      // 1. Получаем дочерние элементы dropArea
+      console.log(222);
+      const draggedItems = dropArea.children;
+      // 2. Преобразуем HTMLCollection в массив
+      const draggedItemsArray = Array.from(draggedItems);
+      console.log(draggedItemsArray);
+      let seq = "";
+      draggedItemsArray.forEach(item => {
+          if (item.alt == undefined) {
+            seq += 'repeat ' + item.children[0].value + '(';
+            for (let i = 1; i < item.children.length; i++) {
+              console.log('first' + item.children[i]);
+              if (item.children[i].alt == undefined) {
+                seq += 'repeat ' + item.children[i].children[0].value + '(';
+                for (let j = 1; j < item.children[i].children.length; j++) {
+                  if (item.children[i].children[j].alt == undefined) {
+                    seq += 'repeat ' + item.children[i].children[j].children[0].value + '(';
+                    for (let k = 1; k < item.children[i].children[j].children.length; k++) {
+                      seq += item.children[i].children[j].children[k].alt + '; ';
+                      if (k == item.children[i].children[j].children.length - 1) {
+                        seq = seq.slice(0, -2);
+                      }
+                    }
+                    seq += '); ';
+                  } else {
+                    seq += item.children[i].children[j].alt + '; ';
+                  }
+                  if (j == item.children[i].children.length - 1) {
+                    seq = seq.slice(0, -2);
+                  }
+                }
+                seq += '); ';
+              } else {
+                seq += item.children[i].alt + '; ';
+              }
+              if (i == item.children.length - 1) {
+                seq = seq.slice(0, -2);
+              }
+            }
+            seq += '), ';
+          } else {
+            seq += item.alt + ', ';
+          }
+        }
+      )
+      seq = seq.slice(0, -2);
+      console.log(seq);
+      return seq;
+    }
 
-   
+    function checkSolution() {
+    }
+    async function sendSolution() {
+      let solutionToSend = getDraggedItems();
+      const idStudent = localStorage.getItem("studentId"); // Замените на фактический id студента
+      try {
+        const response = await fetch(`/api/students/${idStudent}/tasks/${taskId}/answer?answerTask=${encodeURIComponent(solutionToSend)}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json' // Обычно не нужен для Query Parameter, но для ясности
+          },
+        });
+        if (!response.ok) {
+          // Обработка ошибок HTTP
+          const errorText = await response.text();
+          throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+        }
+        const responseText = await response.text();
+        console.log('Ответ успешно отправлен:', responseText);
+        // Здесь можно добавить обработку успешного ответа, например, вывод сообщения пользователю
+      } catch (error) {
+        console.error('Ошибка при отправке ответа:', error);
+        // Здесь можно добавить обработку ошибки, например, вывод сообщения об ошибке пользователю
+      }
+    }
 
-   
-    fetch('api/teacher/tasks/'+taskId).then(response => response.json()).then(data=>
-    {
-      let taskNameElement = document.getElementById("taskName");
-      taskNameElement.textContent = data.taskName;
+    function addElementToDropArea(elementToAdd, placeToAdd) {
+      const imgElement = document.createElement('img');
+      imgElement.src = elementToAdd + ".png"; // Убедитесь, что у вас есть все изображения
+      imgElement.alt = elementToAdd.charAt(0).toUpperCase() + elementToAdd.slice(1);
+      imgElement.className = 'draggable';
+      imgElement.draggable = true;
+      imgElement.setAttribute('data-item', elementToAdd);
+      placeToAdd.appendChild(imgElement);
+    }
 
-      let taskDescElement = document.getElementById("task-description");
-      taskDescElement.textContent = data.taskText;
+    function addLoopToDropArea(iterations, placeToAdd, depth) {
+      const loopContainer = document.createElement('div');
+      loopContainer.classList.add('loop-container');
+      loopContainer.setAttribute('data-depth', depth);
+      loopContainer.setAttribute('draggable', 'true');
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.min = 1;
+      input.max = 10;
+      input.value = iterations;
+      loopContainer.appendChild(input);
+      placeToAdd.appendChild(loopContainer);
+      return loopContainer;
+    }
 
-      const y_s = data.gridSize.y; // Количество строк
-      const x_s = data.gridSize.x; // Количество столбцов
-      const cellSize = 40; // Размер ячеек в пикселях
-
-      document.getElementById('gameField').innerHTML = createTable(y_s, x_s, cellSize);
-
-      let playerCell = document.getElementById('cell_'+data.player.x+'_'+data.player.y);
-      playerCell.appendChild(imgPlayer);
-
-      let cauldronCell = document.getElementById('cell_'+data.cauldron.x+'_'+data.cauldron.y);
-      cauldronCell.appendChild(imgCauldron);
-
-      data.walls.forEach(wall => {
-        let wallCell = document.getElementById('cell_'+wall.x+'_'+wall.y);
-        console.log('cell_'+wall.x+'_'+wall.y);
-        let imgWall = document.createElement('img');
-        imgWall.src = 'wall.png'; // Замените на путь к вашему изображению
-        imgWall.style.width = '100%';  //  или другой нужный размер
-        imgWall.style.height = '100%';
-        imgWall.style.objectFit = 'cover';
-        wallCell.appendChild(imgWall);
+    function loadSequence(finStr) {
+      let depth = 0;
+      finStr.forEach(ss => {
+        console.log(ss);
+        if (ss.startsWith('repeat ')) {
+          let loopContainer = addLoopToDropArea(ss[7], dropArea, depth);
+          ss = workRepeat(ss);
+          ss = splitString(ss);
+          finForLoop(ss, loopContainer, depth + 1);
+        } else {
+          addElementToDropArea(ss, dropArea);
+        }
       });
+    }
 
-      data.potions.forEach(potion => {
-        let potionCell = document.getElementById('cell_'+potion.x+'_'+potion.y);
-        console.log('cell_'+potion.x+'_'+potion.y);
-        let imgPotion = document.createElement('img');
-        imgPotion.src = 'posion1.png'; // Замените на путь к вашему изображению
-        imgPotion.style.width = '100%';  //  или другой нужный размер
-        imgPotion.style.height = '100%';
-        imgPotion.style.objectFit = 'cover';
-        potionCell.appendChild(imgPotion);
+    function finForLoop(loopString, loopContainer, depth) {
+      loopString.forEach(ss => {
+        console.log(ss);
+        if (ss.startsWith('repeat ')) {
+          let downLoopContainer = addLoopToDropArea(ss[7], loopContainer, depth);
+          ss = workRepeat(ss);
+          ss = splitString(ss);
+          finForLoop(ss, downLoopContainer, depth + 1);
+        } else {
+          addElementToDropArea(ss, loopContainer);
+        }
       });
+    }
 
+    function workRepeat(subStr) {
+      let seq1 = subStr.slice(9);
+      seq1 = seq1.slice(0, -1);
+      return seq1;
+    }
 
-
-    })
-
-    fetch('api/students/solutions/'+solutionId).then(response => response.json()).then(data=>
-    {
-      console.log(solutionId);
-      console.log(data);
-      let feedbackArea = document.getElementById("teacherResponse");
-      feedbackArea.textContent = data.teacherAnswer;
-
-      let markArea = document.getElementById("userScore");
-      markArea.textContent = data.mark;
-
-    
-    })
-
-  }
-
-  load();
-
-
-
-    </script>
+    function splitString(inputString) {
+      const result = [];
+      let currentString = "";
+      let level = 0;
+      let ignoreLevel = 0;
+      for (let i = 0; i < inputString.length; i++) {
+        const char = inputString[i];
+        if (char === '(') {
+          level++;
+        } else if (char === ')') {
+          level--;
+        }
+        if (char === ';' && level === 0 && ignoreLevel === 0) {
+          result.push(currentString.trim());
+          currentString = "";
+        } else if (char === '(') {
+          currentString += char;
+          ignoreLevel++;
+        } else if (char === ')') {
+          currentString += char;
+          ignoreLevel--;
+        } else {
+          currentString += char;
+        }
+      }
+      if (currentString.trim() !== "") {
+        result.push(currentString.trim());
+      }
+      return result;
+    }
+    load();
+  </script>
 
 </body>
 

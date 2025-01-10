@@ -1,32 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-  <title>Профиль</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль</title>
+    <style>
+        :root {
+            --gray: #929AA2;
+            --beige: #B9B0B2;
+            --green: #3A5154;
+            --orange: #B7673C;
+            --white: white;
+            --radius: 5px;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+         .sidebar {
+            background-color: var(--green);
+            color: var(--beige);
+            padding: 20px;
+            width: 200px;
+            height: 100vh;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+          .sidebar a {
+            color: var(--beige);
+            text-decoration: none;
+            padding: 10px 0;
+            display: block;
+        }
 
-    .sidebar {
-      background-color: #4d5b62;
-      color: #fff;
-      padding: 20px;
-      width: 200px;
-      height: 100vh;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .sidebar a {
-      color: #fff;
-      text-decoration: none;
-      padding: 10px 0;
-      display: block;
-    }
-  </style>
+        .sidebar a:hover {
+            color: var(--orange);
+        }
+    </style>
 </head>
 <body>
   <div class="sidebar">
@@ -37,3 +50,4 @@
   </div>
 </body>
 </html>
+
