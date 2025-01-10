@@ -1,166 +1,194 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-  <title>Страница входа</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #f2f2f2;
-    }
-    
-    .login-box {
-      background-color: white;
-      padding: 30px;
-      border-radius: 5px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
-    
-    .login-box h2 {
-      margin-top: 0;
-    }
-    
-    .login-box input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 20px;
-      border: 1px solid #ccc;
-      border-radius: 3px;
-    }
-    
-    .login-box button {
-      width: 100%;
-      padding: 10px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
-    }
-    
-    .login-box button:hover {
-      background-color: #45a049;
-    }
-    
-    .login-box .role-buttons {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-    }
-    
-    .login-box .role-buttons button {
-      width: 48%;
-      background-color: #ccc;
-      color: #333;
-    }
-    
-    .login-box .role-buttons button.active {
-      background-color: #4CAF50;
-      color: white;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Страница входа</title>
+    <style>
+        :root {
+            --gray: #929AA2;
+            --beige: #B9B0B2;
+            --green: #3A5154;
+            --orange: #B7673C;
+            --white: white;
+            --radius: 5px;
+        }
+        body {
+            background-color: var(--gray);
+            color: var(--beige);
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+             box-sizing: border-box;
+        }
+       .login-box {
+            background-color: var(--green);
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+            box-sizing: border-box;
+        }
+        .login-box h2 {
+           margin-top: 0;
+           color: var(--beige);
+       }
+
+      .login-box label {
+           display: block;
+           margin-bottom: 5px;
+           color: var(--beige);
+           text-align: left;
+       }
+        .login-box input {
+             width: calc(100% - 22px);
+             padding: 10px;
+             margin-bottom: 20px;
+             border: 1px solid var(--beige);
+              border-radius: var(--radius);
+             background-color: var(--beige);
+             color: var(--green);
+             box-sizing: border-box;
+            display: inline-block;
+        }
+        .login-box button {
+             width: 100%;
+             padding: 10px;
+              background-color: var(--orange);
+             color: var(--green);
+              border: none;
+             border-radius: var(--radius);
+             cursor: pointer;
+             box-sizing: border-box;
+        }
+
+        .login-box button:hover {
+            background-color: #915131;
+        }
+        .login-box .role-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            box-sizing: border-box;
+        }
+
+        .login-box .role-buttons button {
+             width: 48%;
+             background-color: var(--beige);
+             color: var(--green);
+              border: none;
+             border-radius: var(--radius);
+              box-sizing: border-box;
+        }
+        .login-box .role-buttons button:hover {
+            background-color: #c2b7b9;
+        }
+
+        .login-box .role-buttons button.active {
+            background-color: var(--orange);
+            color: var(--green);
+        }
+    </style>
 </head>
 <body>
     <div class="login-box">
-      <h2>Вход в систему</h2>
-      <label for="login">Введите логин:</label>
-      <input type="text" id="login" name="login" required>
-      <label for="password">Введите пароль:</label>
-      <input type="password" id="password" name="password" required>
-      <button type="submit" id="login-btn" >Войти</button>
-      <div class="role-buttons">
-        <button class="" id="teacher-btn">Учитель</button>
-        <button class="" id="student-btn">Ученик</button>
-      </div>
+        <h2>Вход в систему</h2>
+        <label for="login">Введите логин:</label>
+        <input type="text" id="login" name="login" required>
+        <label for="password">Введите пароль:</label>
+        <input type="password" id="password" name="password" required>
+        <button type="submit" id="login-btn">Войти</button>
+        <div class="role-buttons">
+            <button class="" id="teacher-btn">Учитель</button>
+            <button class="" id="student-btn">Ученик</button>
+        </div>
     </div>
-    
+
     <script>
         let isTeacher = true;
-      const teacherBtn = document.getElementById('teacher-btn');
-      const studentBtn = document.getElementById('student-btn');
-      const loginBtn = document.getElementById('login-btn');
-      const loginInput = document.getElementById('login');
-      const passwordInput = document.getElementById('password');
-      teacherBtn.classList.add('active');
-
-
-      teacherBtn.addEventListener('click', () => {
-        isTeacher = true;
+        const teacherBtn = document.getElementById('teacher-btn');
+        const studentBtn = document.getElementById('student-btn');
+        const loginBtn = document.getElementById('login-btn');
+        const loginInput = document.getElementById('login');
+        const passwordInput = document.getElementById('password');
         teacherBtn.classList.add('active');
-        studentBtn.classList.remove('active');
-      });
-  
-      studentBtn.addEventListener('click', () => {
-        studentBtn.classList.add('active');
-        isTeacher = false;
-        teacherBtn.classList.remove('active');
-      });
-  
-      loginInput.addEventListener('input', () => {
-        updateLoginButtonState();
-      });
-  
-      passwordInput.addEventListener('input', () => {
-        updateLoginButtonState();
-      });
-  
-      function updateLoginButtonState() {
-        if (loginInput.value.trim() !== '' && passwordInput.value.trim() !== '') {
-          loginBtn.disabled = false;
-        } else {
-          loginBtn.disabled = true;
-        }
-      }
-  
-      loginBtn.addEventListener('click', () => {
 
-    const login = loginInput.value;
-    const password = passwordInput.value;
-    console.log('ккк');
-    authenticateStudent(login, password);
-  
-});
 
-      async function authenticateStudent(login, password) {
-      try {
-        if(!isTeacher){
-        const response = await fetch('/api/students/auth?log=' + login + '&password=' + password, {
-          method: 'POST'
+        teacherBtn.addEventListener('click', () => {
+            isTeacher = true;
+            teacherBtn.classList.add('active');
+            studentBtn.classList.remove('active');
         });
-        const studentId = await response.json();
-        if (studentId === 0) {
-            alert("Ошибка авторизации");
-        } else {
-            localStorage.setItem('studentId', studentId);
-            window.location.href = '/menuStudent';
-          console.log('Успешная аутентификация. ID студента:', studentId);
-        }
-     } 
-     if(isTeacher)
-     {
-      const response = await fetch('/api/teacher/auth?log=' + login + '&password=' + password, {
-          method: 'POST'
+
+        studentBtn.addEventListener('click', () => {
+            studentBtn.classList.add('active');
+            isTeacher = false;
+            teacherBtn.classList.remove('active');
         });
-        const teacherId = await response.json();
-        if (teacherId === 0) {
-            alert("Ошибка авторизации");
-        } else {
-            localStorage.setItem('teacherId', teacherId);
-            window.location.href = '/menuTeacher';
-          console.log('Успешная аутентификация. ID учителя:', teacherId);
+
+        loginInput.addEventListener('input', () => {
+            updateLoginButtonState();
+        });
+
+        passwordInput.addEventListener('input', () => {
+            updateLoginButtonState();
+        });
+
+        function updateLoginButtonState() {
+            if (loginInput.value.trim() !== '' && passwordInput.value.trim() !== '') {
+                loginBtn.disabled = false;
+            } else {
+                loginBtn.disabled = true;
+            }
         }
-     }
-    } catch (error) {
-        console.error('Ошибка аутентификации:', error);
-        errorMessage.style.display = 'block';
-      }
-    }
-  
+
+        loginBtn.addEventListener('click', () => {
+
+            const login = loginInput.value;
+            const password = passwordInput.value;
+            console.log('ккк');
+            authenticateStudent(login, password);
+
+        });
+
+        async function authenticateStudent(login, password) {
+            try {
+                if(!isTeacher){
+                    const response = await fetch('/api/students/auth?log=' + login + '&password=' + password, {
+                        method: 'POST'
+                    });
+                    const studentId = await response.json();
+                    if (studentId === 0) {
+                        alert("Ошибка авторизации");
+                    } else {
+                        localStorage.setItem('studentId', studentId);
+                        window.location.href = '/menuStudent';
+                        console.log('Успешная аутентификация. ID студента:', studentId);
+                    }
+                }
+                if(isTeacher)
+                {
+                    const response = await fetch('/api/teacher/auth?log=' + login + '&password=' + password, {
+                        method: 'POST'
+                    });
+                    const teacherId = await response.json();
+                    if (teacherId === 0) {
+                        alert("Ошибка авторизации");
+                    } else {
+                        localStorage.setItem('teacherId', teacherId);
+                        window.location.href = '/menuTeacher';
+                        console.log('Успешная аутентификация. ID учителя:', teacherId);
+                    }
+                }
+            } catch (error) {
+                console.error('Ошибка аутентификации:', error);
+            }
+        }
+
     </script>
-  </body>
+</body>
 </html>

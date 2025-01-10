@@ -11,6 +11,6 @@ public interface SolutionService
 
     List<Task> findTaskBySolutionId(Long idSolution);
 
-    Task randomGenerateTask(int rows, int cols, int numPotions, Long idTeacher);
+    Task randomGenerateTask(int rows, int cols, int numPotions, Long idTeacher, int counter);
 }
 

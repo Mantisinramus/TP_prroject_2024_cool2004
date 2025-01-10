@@ -2,7 +2,9 @@ package com.example.main.service.impl;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 
@@ -255,7 +257,7 @@ public class SolutionServiceImpl implements SolutionService
     }
 
     @Override
-    public Task randomGenerateTask(int rows, int cols, int numPotions, Long idTeacher) 
+    public Task randomGenerateTask(int rows, int cols, int numPotions, Long idTeacher, int counter) 
     {
         Random random = new Random();
         Set<PositionDataModel> usedPositions = new HashSet<>();
@@ -293,6 +295,13 @@ public class SolutionServiceImpl implements SolutionService
             walls.add(wall);
         }
 
+            // Проверка на решаемость
+        if (!isTaskSolvable(rows, cols, player, cauldron, potions, walls)) {
+            System.out.println("Начало секса" + counter);
+            Task newTask = randomGenerateTask(rows, cols, numPotions, idTeacher, counter + 1);
+            return newTask; // Повторить генерацию
+        }
+        
         Task newTask = new Task();
         newTask.setTeacher(reposTeacher.findById(idTeacher).get());
         newTask.setTaskText("Перемести игрока, чтобы собрать " + potions.size() + " зелья и достичь котла.");
@@ -311,33 +320,97 @@ public class SolutionServiceImpl implements SolutionService
      * Возвращает случайную позицию, исключая края.
      */
     private PositionDataModel getRandomInnerPosition(int rows, int cols, Set<PositionDataModel> usedPositions, Random random) {
-        PositionDataModel position;
-        do {
-            position = new PositionDataModel();
-            position.setY(random.nextInt(rows - 2) + 1);// Диапазон от 1 до rows - 2
-            position.setX(random.nextInt(cols - 2) + 1);// Диапазон от 1 до cols - 2
-        } while (usedPositions.contains(position));
-        usedPositions.add(position);
-        return position;
-    }
-
-    /**
-     * Проверяет, имеет ли зелье хотя бы одну свободную соседнюю клетку.
-     */
-    private boolean isPotionAccessible(PositionDataModel potion, Set<PositionDataModel> usedPositions, int rows, int cols) {
-        int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}}; // Вправо, вниз, влево, вверх
-        for (int[] dir : directions) {
-            int newX = potion.getX() + dir[0];
-            int newY = potion.getY() + dir[1];
-            PositionDataModel neighbor = new PositionDataModel();
-            neighbor.setX(newX);
-            neighbor.setY(newY);
-            if (newX >= 0 && newX < rows && newY >= 0 && newY < cols && !usedPositions.contains(neighbor)) {
-                return true; // Есть хотя бы одна доступная клетка
+        final int MAX_ATTEMPTS = 100; // Ограничение количества попыток
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            PositionDataModel position = new PositionDataModel();
+            position.setY(random.nextInt(rows - 2) + 1); // Диапазон от 1 до rows - 2
+            position.setX(random.nextInt(cols - 2) + 1); // Диапазон от 1 до cols - 2
+            if (!usedPositions.contains(position)) {
+                usedPositions.add(position);
+                return position;
             }
         }
-        return false; // Все соседние клетки заняты
+        throw new IllegalStateException("Не удалось найти свободную позицию за " + MAX_ATTEMPTS + " попыток");
     }
+    /**
+ * Проверка, достижимо ли зелье.
+ */
+private boolean isPotionAccessible(PositionDataModel potion, Set<PositionDataModel> usedPositions, int rows, int cols) {
+    Queue<PositionDataModel> queue = new LinkedList<>();
+    Set<PositionDataModel> visited = new HashSet<>();
+
+    // Добавляем начальную позицию игрока
+    queue.add(potion);
+    visited.add(potion);
+
+    int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}}; // Вправо, вниз, влево, вверх
+
+    while (!queue.isEmpty()) {
+        PositionDataModel current = queue.poll();
+
+        // Проверяем соседние клетки
+        for (int[] dir : directions) {
+            int newX = current.getX() + dir[0];
+            int newY = current.getY() + dir[1];
+            PositionDataModel neighbor = new PositionDataModel();
+            neighbor.setY(newY); // Диапазон от 1 до rows - 2
+            neighbor.setX(newX); // Диапазон от 1 до cols - 2
+            
+
+            if (newX >= 0 && newX < rows && newY >= 0 && newY < cols &&
+                    !usedPositions.contains(neighbor) && !visited.contains(neighbor)) {
+                visited.add(neighbor);
+                queue.add(neighbor);
+
+                // Если нашли свободное место — значит достижимо
+                return true;
+            }
+        }
+    }
+
+    // Если не нашли свободное место
+    return false;
+}
+
+/**
+ * Генерация игрового поля.
+ */
+public void generateField(int rows, int cols, int numPotions, int numWalls, Random random) {
+    Set<PositionDataModel> usedPositions = new HashSet<>();
+
+    // Генерация игрока
+    PositionDataModel player = getRandomInnerPosition(rows, cols, usedPositions, random);
+
+    // Генерация котла
+    PositionDataModel cauldron = getRandomInnerPosition(rows, cols, usedPositions, random);
+
+    // Генерация зелий
+    List<PositionDataModel> potions = new ArrayList<>();
+    for (int i = 0; i < numPotions; i++) {
+        PositionDataModel potion = getRandomInnerPosition(rows, cols, usedPositions, random);
+
+        if (!isPotionAccessible(potion, usedPositions, rows, cols)) {
+            throw new IllegalStateException("Позиция зелья недостижима");
+        }
+
+        potions.add(potion);
+    }
+
+    // Генерация стен
+    for (int i = 0; i < numWalls; i++) {
+        getRandomInnerPosition(rows, cols, usedPositions, random);
+    }
+
+    // Вывод результатов
+    System.out.println("Игрок: " + player);
+    System.out.println("Котёл: " + cauldron);
+    System.out.println("Зелья: " + potions);
+}
+
+
+
+
+
 
     /**
      * Проверяет, блокирует ли стена доступ к зелью.
@@ -351,6 +424,111 @@ public class SolutionServiceImpl implements SolutionService
             }
         }
         return false; // Не блокирует
+    }
+
+    private boolean isTaskSolvable(int rows, int cols, PositionDataModel player, PositionDataModel cauldron,List<PositionDataModel> potions, List<PositionDataModel> walls)
+    {
+    // Игровое поле как сет
+    Set<PositionDataModel> obstacles = new HashSet<>(walls);
+    obstacles.addAll(potions);
+
+    // Проверяем, можно ли переместить каждое зелье к котлу
+    for (PositionDataModel potion : potions) {
+    if (!canMovePotionToCauldron(rows, cols, player, cauldron, potion, walls, new HashSet<>())) {
+    return false; // Если хотя бы одно зелье невозможно дотащить, задача нерешаема
+    }
+    }
+
+    // Проверяем, можно ли игроку дойти до котла
+    return canReach(player, cauldron, rows, cols, obstacles);
+    }
+
+
+        /**
+         * Проверяет, можно ли переместить зелье к котлу.
+         */
+        private boolean canMovePotionToCauldron(int rows, int cols, PositionDataModel player, PositionDataModel cauldron,
+        PositionDataModel potion, List<PositionDataModel> walls,
+        Set<PositionDataModel> visited) {
+        // Если зелье уже на котле
+        if (potion.equals(cauldron)) {
+        return true;
+        }
+
+        // Множество препятствий, включая текущие зелья и стены
+        Set<PositionDataModel> obstacles = new HashSet<>(walls);
+        obstacles.add(potion); // Текущее зелье становится препятствием
+
+        // BFS для проверки достижимости зелья
+        Queue<PositionDataModel> queue = new LinkedList<>();
+        queue.add(player);
+
+        while (!queue.isEmpty()) {
+        PositionDataModel current = queue.poll();
+
+        // Проверяем, может ли игрок толкнуть зелье
+        for (int[] dir : new int[][]{{0, 1}, {1, 0}, {0, -1}, {-1, 0}}) {
+        PositionDataModel next = new PositionDataModel();
+        next.setX(current.getX() + dir[0]);
+        next.setY(current.getY() + dir[1]);
+
+        // Если игрок достигает зелья
+        if (next.equals(potion)) {
+        PositionDataModel pushedPotion = new PositionDataModel();
+        pushedPotion.setX(potion.getX() + dir[0]);
+        pushedPotion.setY(potion.getY() + dir[1]);
+        if (isValidPosition(pushedPotion, rows, cols) && !obstacles.contains(pushedPotion)) {
+            // Рекурсивно проверяем достижимость котла с новым положением зелья
+            obstacles.remove(potion); // Убираем текущее зелье
+            if (canMovePotionToCauldron(rows, cols, next, cauldron, pushedPotion, walls, visited)) {
+                return true;
+            }
+            obstacles.add(potion); // Восстанавливаем текущее зелье
+        }
+    }
+
+        // Если клетка доступна для игрока и не была посещена
+        if (isValidPosition(next, rows, cols) && !visited.contains(next) && !obstacles.contains(next)) {
+            queue.add(next);
+            visited.add(next);
+        }
+    }
+    }
+    return false; // Невозможно дотащить зелье к котлу
+    }
+
+    /**
+     * Проверяет, можно ли достичь цели (например, котла) из текущей позиции.
+     */
+    private boolean canReach(PositionDataModel start, PositionDataModel target, int rows, int cols, Set<PositionDataModel> obstacles) {
+        Set<PositionDataModel> visited = new HashSet<>();
+        Queue<PositionDataModel> queue = new LinkedList<>();
+        queue.add(start);
+
+        while (!queue.isEmpty()) {
+            PositionDataModel current = queue.poll();
+            if (current.equals(target)) {
+                return true; // Цель достигнута
+            }
+
+            for (int[] dir : new int[][]{{0, 1}, {1, 0}, {0, -1}, {-1, 0}}) {
+                PositionDataModel next = new PositionDataModel();
+                next.setX(current.getX() + dir[0]);
+                next.setY(current.getY() + dir[1]);
+                if (isValidPosition(next, rows, cols) && !visited.contains(next) && !obstacles.contains(next)) {
+                    queue.add(next);
+                    visited.add(next);
+                }
+            }
+        }
+        return false; // Цель недостижима
+    }
+
+    /**
+     * Проверяет, находится ли позиция в пределах игрового поля.
+     */
+    private boolean isValidPosition(PositionDataModel position, int rows, int cols) {
+        return position.getX() >= 0 && position.getX() < rows && position.getY() >= 0 && position.getY() < cols;
     }
         
 

@@ -53,7 +53,7 @@ public class SolutionController
         }
 
         // Генерация случайной задачи
-        Task generatedTask = solutionService.randomGenerateTask(rows, cols, numPotions, idTeacher);
+        Task generatedTask = solutionService.randomGenerateTask(rows, cols, numPotions, idTeacher, 0);
 
         return ResponseEntity.ok(generatedTask);
 
