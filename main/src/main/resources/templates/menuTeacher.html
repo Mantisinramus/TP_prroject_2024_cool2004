@@ -145,7 +145,15 @@
         // Логика для изменения логина
         const newLogin = changeLoginLogin.value;
         const password = changeLoginPassword.value;
-         changeLogin(newLogin,password);
+        if(newLogin.length>3 && newLogin.length<9)
+        {
+          changeLogin(newLogin,password);
+        }
+        else
+        {
+          alert("Длина нового логина должна быть от 4 до 8 символов")
+        }
+         
 
 
       });
@@ -159,7 +167,15 @@
         // Логика для изменения пароля
         const oldPassword = changePasswordOld.value;
         const newPassword = changePasswordNew.value;
-        changePassword(oldPassword,newPassword);
+        if(newPassword.length>3 && newPassword.length<13)
+        {
+          changePassword(oldPassword,newPassword);
+        }
+        else
+        {
+          alert("Длина нового пароля должна быть от 4 до 12 символов")
+        }
+        
       });
 
 

@@ -115,23 +115,40 @@
       const studentName = document.getElementById('studentName').value;
       const studentLogin = document.getElementById('studentLogin').value;
       const studentPassword = document.getElementById('studentPassword').value;
-      if (!studentName || !studentLogin || !studentPassword) {
-        alert("Пожалуйста, заполните все поля!");
-        return;
-      }
-      const studentData = {
-        studentInitials: studentName,
-        studentLogin: studentLogin,
-        studentPassword: studentPassword,
-      };
+      let alertStr = "";
+      if(studentName.length<10||studentName.length>80)
+    {
+      alertStr+= "Длина ФИО ученика должна быть от 10 до 80 символов";
+    }
+    if(studentLogin.length<4||studentLogin.length>8)
+    {
+      alertStr+= "\nДлина логина ученика должна быть от 4 до 8 символов";
+    }
+    if(studentPassword.length<4||studentPassword.length>12)
+    {
+      alertStr+= "\nДлина пароля ученика должна быть от 4 до 8 символов";
+    }
+
+    if (alertStr.length!= 0) 
+    {
+      alert(alertStr);  
+      return;
+    }
+    else
+    {
       try {
-            const response1 = await fetch(`/api/teacher/students/${studentId}/password?password=${studentPassword}`, {
+            const response2 = await fetch(`/api/teacher/students/${studentId}/login?login=${studentLogin}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
             });
-            const response2 = await fetch(`/api/teacher/students/${studentId}/login?login=${studentLogin}`, {
+            if (!response2.ok) {
+               alert("Указанный логин не уникален");
+               return;
+            }
+            
+            const response1 = await fetch(`/api/teacher/students/${studentId}/password?password=${studentPassword}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -145,18 +162,17 @@
             });
             
 
-            if (!response1.ok) {
-                const errorText = await response.text();
-                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-            }
+           
             window.location.href = '/adminTeacher';
             const responseText = await response.text();
             console.log('Ответ успешно отправлен:', responseText);
-
+           
         } catch (error) {
             console.error('Ошибка при отправке данных:', error);
         }
+    }
 });
+
 </script>
 </body>
 </html>

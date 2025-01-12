@@ -566,14 +566,16 @@
 
     async function sendSolution() {
       let solutionToSend = getDraggedItems();
+      console.log(solutionToSend);
+      const jsonData = {answerTask: solutionToSend };
       const idStudent = localStorage.getItem("studentId"); // Замените на фактический id студента
       try {
-        const response = await fetch(`/api/students/${idStudent}/tasks/${taskId}}`, {
+        const response = await fetch(`/api/students/${idStudent}/tasks/${taskId}/answer`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json' // Обычно не нужен для Query Parameter, но для ясности
           },
-          body: JSON.stringify({ answerTask: solutionToSend })
+          body: solutionToSend
         });
         if (!response.ok) {
           // Обработка ошибок HTTP

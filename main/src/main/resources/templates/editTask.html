@@ -939,6 +939,11 @@ console.log(heroCount+ " "+ cauldronCount+" "+potionCount+ " "+ wallCount+ " "+m
   
               }
               });
+              if(potions.length==0 || cauldron ==null|| player==null)
+              {
+                alert("Для сохранения поля на нем должны присутствовать обязательные объекты (котёл, герой и хотя бы одно зелье)");
+                return;
+              }
               const jsonData = {
         potions: potions,
         walls: walls,
