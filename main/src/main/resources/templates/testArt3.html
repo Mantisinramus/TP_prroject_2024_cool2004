@@ -124,8 +124,8 @@
 
         // Check sequence through backend
         sendCommandButton.addEventListener("click", async () => {
-            const taskId = 1; // Example task ID
-            const answerId = 1; // Example answer ID
+            const taskId = 2; // Example task ID
+            const answerId = 2; // Example answer ID
             try {
                 const response = await fetch(`http://localhost:8080/api/solution/checkSequence/${taskId}/${answerId}`);
                 if (!response.ok) throw new Error("Failed to check sequence");

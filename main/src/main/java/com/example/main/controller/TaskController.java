@@ -28,6 +28,7 @@ public class TaskController {
     private TaskRepository taskRepository;
 
     // Обработка PATCH запроса для изменения только определенных полей
+    @SuppressWarnings("unchecked")
     @PatchMapping("/modern/{id}")
     @Transactional
     public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Map<String, Object> fields) {
