@@ -125,19 +125,31 @@
         studentPassword: studentPassword,
       };
       try {
-            const response = await fetch(`/api/teacher/students/${studentId}`, {
+            const response1 = await fetch(`/api/teacher/students/${studentId}/password?password=${studentPassword}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(studentData),
             });
+            const response2 = await fetch(`/api/teacher/students/${studentId}/login?login=${studentLogin}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            const response3 = await fetch(`/api/teacher/students/${studentId}/initials?initials=${studentName}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            
 
-            if (!response.ok) {
+            if (!response1.ok) {
                 const errorText = await response.text();
                 throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
             }
-            window.location.href = '/students';
+            window.location.href = '/adminTeacher';
             const responseText = await response.text();
             console.log('Ответ успешно отправлен:', responseText);
 

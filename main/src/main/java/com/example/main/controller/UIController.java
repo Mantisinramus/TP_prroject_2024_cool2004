@@ -84,5 +84,9 @@ public class UIController {
     public String test11() {
         return "test11";
     }
-    
+
+    @GetMapping("/") 
+    public String home() {
+      return "login";
+    }
 }

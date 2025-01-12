@@ -1,50 +1,71 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Список учеников</title>
+    <title>Список заданий</title>
     <style>
-        /* CSS для вертикального расположения */
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start; /* Выравниваем по левому краю */
-            padding: 20px; /* Добавляем отступы */
-            font-family: Arial, sans-serif; /* Изменяем шрифт */
+        :root {
+            --gray: #929AA2;
+            --beige: #B9B0B2;
+            --green: #3A5154;
+            --orange: #B7673C;
+            --white: white;
+            --radius: 5px;
         }
-        h1, h2, table, .add-student-form {
-            margin-bottom: 20px; /* Отступы между элементами */
-            width: 80%; /* Занимают всю доступную ширину */
+         body {
+            background-color: var(--gray);
+            color: var(--beige);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
         }
-        input {
-            display: block;
-            margin-bottom: 10px;
-            padding: 10px; /* Добавляем внутренние отступы */
-            font-size: 16px; /* Увеличиваем размер шрифта */
-            border: 1px solid #ccc; /* Цвет рамки */
-            border-radius: 5px; /* Скругление углов */
-            width: calc(40% - 22px); /* Ширина с учетом отступов */
-        }
-        button {
-            padding: 10px 20px; /* Внутренние отступы */
-            font-size: 16px; /* Увеличиваем размер шрифта */
-            background-color: green; /* Зеленый фон */
-            color: white; /* Белый текст */
-            border: none; /* Убираем рамку */
-            border-radius: 5px; /* Скругление углов */
-            cursor: pointer; /* Указатель при наведении */
-        }
-        button:hover {
-            background-color: darkgreen; /* Темно-зеленый фон при наведении */
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--green);
         }
         table {
+            width: 100%;
             border-collapse: collapse;
+            margin-bottom: 20px;
+            box-sizing: border-box;
         }
+
         th, td {
-            border: 1px solid #ddd;
+            border: 1px solid var(--beige);
             padding: 8px;
             text-align: left;
+            box-sizing: border-box;
+        }
+        th {
+            background-color: var(--green);
+        }
+        td {
+          color: var(--green);
+        }
+        button {
+             background-color: var(--orange);
+             color: var(--green);
+             border: none;
+             padding: 10px;
+             margin: 5px;
+             cursor: pointer;
+             border-radius: var(--radius);
+             display: inline-block;
+        }
+
+        button:hover {
+            background-color: #915131;
+        }
+        a {
+             color: var(--orange);
+             text-decoration: none;
+          }
+        a:hover {
+              color: #915131;
         }
     </style>
 </head>
@@ -53,12 +74,17 @@
     <table id="studentTable">
       <thead>
         <tr>
+          <th>Название</th>
+          <th>Просмотр</th>
         </tr>
       </thead>
       <tbody id="task-table">
         <!-- Здесь будут динамически добавляться строки из базы данных -->
       </tbody>
     </table>
+    <div>        
+    <button type="submit" id="add-task-btn">Добавить задание</button>
+    </div>
 
 <script>
  
@@ -67,6 +93,8 @@
     fetch('api/teacher/taskAll').then(responce => responce.json())
     .then(tasks=> 
     {
+      const taskTable = document.getElementById('task-table');
+      taskTable.innerHTML = '';
       tasks.forEach(task => {
         const row = taskTable.insertRow();
        taskNameCell = row.insertCell();
@@ -85,8 +113,14 @@
     }
 )
   }
-const taskTable = document.getElementById('task-table');
 loadTasks();
-</script>
+
+const addTaskButton = document.getElementById('add-task-btn');
+
+// Добавляем слушатель событий на кнопку
+addTaskButton.addEventListener('click', () => {
+  window.location.href = '/editTask'; // Перенаправляем на editTask
+});
+  </script>
 </body>
 </html>

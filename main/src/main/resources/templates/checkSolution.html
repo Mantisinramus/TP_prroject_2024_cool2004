@@ -4,44 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Проверка решения</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        :root {
-            --gray: #929AA2;
-            --beige: #B9B0B2;
-            --green: #3A5154;
-            --orange: #B7673C;
-            --white: white;
-            --radius: 5px;
-        }
-
-        body {
-            background-color: var(--gray);
-            color: var(--beige);
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        h1 {
-            text-align: center;
-            margin-top: -5px;
-            margin-bottom: -5px;
-        }
-
         .description {
             background-color: var(--green);
             color: var(--beige);
-            padding: 20px;
             border-radius: var(--radius);
             margin-bottom: 20px;
             width: 100%;
             box-sizing: border-box;
+            padding: 10px;
         }
-         /*Блок игрового поля и решения*/
+
         .flex-container {
             display: flex;
-            margin-bottom: 20px;
             box-sizing: border-box;
         }
 
@@ -60,6 +36,7 @@
             border-collapse: collapse;
             margin: 0;
             box-sizing: border-box;
+            width: auto;
         }
 
         .game-field table td {
@@ -74,6 +51,7 @@
         }
         .container {
             background-color: var(--green);
+            color: var(--beige);
             padding: 20px;
             border-radius: var(--radius);
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -81,14 +59,16 @@
             width: 40%;
             box-sizing: border-box;
         }
+        h2 {
+            color: var(--beige);
+        }
         .solution {
             background-color: var(--green);
             padding: 15px;
             border-radius: var(--radius);
             width: 90%;
-             box-sizing: border-box;
+            box-sizing: border-box;
         }
-
         .solution-area {
            border: 2px dashed var(--beige);
            min-height: 200px;
@@ -114,34 +94,14 @@
             border-radius: var(--radius);
             align-items: center;
         }
-
-        .btn-custom {
-            background-color: var(--orange);
-            color: var(--green);
-            border: none;
-            padding: 10px;
-            margin: 5px;
-            cursor: pointer;
-            border-radius: var(--radius);
-            display: inline-block;
-        }
-
         .feedback {
             background-color: var(--green);
+            color: var(--beige);
             padding: 15px;
             border-radius: var(--radius);
             margin-top: 20px;
             box-sizing: border-box;
             width: 100%;
-        }
-
-        table {
-            border-collapse: collapse;
-            box-sizing: border-box;
-        }
-        td {
-           border: 1px solid var(--beige);
-            box-sizing: border-box;
         }
         .primitive-img {
           width: 40px;
@@ -151,10 +111,6 @@
         }
     </style>
 </head>
-
-
-
-
 
 
 
@@ -173,7 +129,7 @@
         <!-- Таблица будет динамически добавлена здесь -->
     </div>
     <div class="container">
-        <h1>Решение</h1>
+        <h2>Решение</h2>
         <div style="display:flex;" class="solution">
             <div class="solution-area" id="solutionDisplay">
  
@@ -227,11 +183,11 @@
 
     function load() {
         let imgPlayer = document.createElement('img');
-        imgPlayer.src = '../static/hero.png';
+        imgPlayer.src = 'hero.png';
         imgPlayer.classList.add('game-element', 'player-img');
 
         let imgCauldron = document.createElement('img');
-        imgCauldron.src = '../static/kotyol.png';
+        imgCauldron.src = 'kotyol.png';
         imgCauldron.classList.add('game-element', 'cauldron-img');
 
 
@@ -253,14 +209,14 @@
         data.walls.forEach(wall => {
             let wallCell = document.getElementById('cell_' + wall.x + '_' + wall.y);
             let imgWall = document.createElement('img');
-            imgWall.src = '../static/wall.png';
+            imgWall.src = 'wall.png';
             imgWall.classList.add('game-element', 'wall-img');
             wallCell.appendChild(imgWall);
         });
           data.potions.forEach(potion => {
             let potionCell = document.getElementById('cell_' + potion.x + '_' + potion.y);
             let imgPotion = document.createElement('img');
-            imgPotion.src = '../static/posion1.png';
+            imgPotion.src = 'posion1.png';
             imgPotion.classList.add('game-element', 'potion-img');
             potionCell.appendChild(imgPotion);
         });
@@ -289,89 +245,91 @@
       });
     }
     function addElementToDisplay(elementToAdd, placeToAdd) {
-        const imgElement = document.createElement('img');
-        imgElement.src = "../static/" + elementToAdd + ".png";
-        imgElement.alt = elementToAdd.charAt(0).toUpperCase() + elementToAdd.slice(1);
-        imgElement.className = 'primitive-img';
-        placeToAdd.appendChild(imgElement);
-    }
+    const imgElement = document.createElement('img');
+    imgElement.src = "" + elementToAdd + ".png"; // Путь к картинкам относительно текущей директории
+    imgElement.alt = elementToAdd.charAt(0).toUpperCase() + elementToAdd.slice(1);
+    imgElement.className = 'primitive-img';
+    placeToAdd.appendChild(imgElement);
+}
 
-    function addLoopToDisplay(iterations, placeToAdd, depth) {
-        const loopContainer = document.createElement('div');
-        loopContainer.classList.add('loop-container');
-        loopContainer.setAttribute('data-depth', depth);
-        const label = document.createElement('label');
-        label.textContent = 'repeat (' + iterations + ')';
-        loopContainer.appendChild(label);
-        placeToAdd.appendChild(loopContainer);
-        return loopContainer;
-    }
-    
-    function loadSolutionDisplay(finStr) {
-        let depth = 0;
-        const solutionDisplay = document.getElementById('solutionDisplay');
-        finStr.forEach(ss => {
-            if (ss.startsWith('repeat ')) {
-              let loopContainer = addLoopToDisplay(ss[7], solutionDisplay, depth);
-                ss = workRepeat(ss);
-                ss = splitString(ss);
-                finForDisplay(ss, loopContainer, depth + 1);
-            } else {
-                addElementToDisplay(ss, solutionDisplay);
-            }
-        });
-    }
+function addLoopToDisplay(iterations, placeToAdd, depth) {
+    const loopContainer = document.createElement('div');
+    loopContainer.classList.add('loop-container');
+    loopContainer.setAttribute('data-depth', depth);
+    const label = document.createElement('label');
+    label.textContent = 'repeat (' + iterations + ')';
+    loopContainer.appendChild(label);
+    placeToAdd.appendChild(loopContainer);
+    return loopContainer;
+}
 
 
-  function finForDisplay(loopString, loopContainer, depth) {
-      loopString.forEach(ss => {
-          if (ss.startsWith('repeat ')) {
-              let downLoopContainer = addLoopToDisplay(ss[7], loopContainer, depth);
-              ss = workRepeat(ss);
-              ss = splitString(ss);
-              finForDisplay(ss, downLoopContainer, depth +1);
-          } else {
-              addElementToDisplay(ss, loopContainer);
-          }
-      });
-    }
-
-    function workRepeat(subStr) {
-      let seq1 = subStr.slice(9);
-      seq1 = seq1.slice(0, -1);
-      return seq1;
-    }
-
-    function splitString(inputString) {
-      const result = [];
-      let currentString = "";
-      let level = 0;
-      let ignoreLevel = 0;
-      for (let i = 0; i < inputString.length; i++) {
-        const char = inputString[i];
-        if (char === '(') {
-          level++;
-        } else if (char === ')') {
-          level--;
-        }
-        if (char === ';' && level === 0 && ignoreLevel === 0) {
-          result.push(currentString.trim());
-          currentString = "";
-        } else if (char === '(') {
-          currentString += char;
-          ignoreLevel++;
-        } else if (char === ')') {
-          currentString += char;
-          ignoreLevel--;
+function loadSolutionDisplay(finStr) {
+    let depth = 0;
+    const solutionDisplay = document.getElementById('solutionDisplay');
+    finStr.forEach(ss => {
+        if (ss.startsWith('repeat ')) {
+            let loopContainer = addLoopToDisplay(ss[7], solutionDisplay, depth);
+            ss = workRepeat(ss);
+            ss = splitString(ss);
+            finForDisplay(ss, loopContainer, depth + 1);
         } else {
-          currentString += char;
+            addElementToDisplay(ss, solutionDisplay);
         }
-      }
-      if (currentString.trim() !== "") {
-        result.push(currentString.trim());
-      }
-      return result;
+    });
+}
+
+function finForDisplay(loopString, loopContainer, depth) {
+    loopString.forEach(ss => {
+        if (ss.startsWith('repeat ')) {
+            let downLoopContainer = addLoopToDisplay(ss[7], loopContainer, depth);
+            ss = workRepeat(ss);
+            ss = splitString(ss);
+            finForDisplay(ss, downLoopContainer, depth +1);
+        } else {
+            addElementToDisplay(ss, loopContainer);
+        }
+    });
+}
+
+
+function workRepeat(subStr) {
+  let seq1 = subStr.slice(9);
+  seq1 = seq1.slice(0, -1);
+  return seq1;
+}
+
+function splitString(inputString) {
+  const result = [];
+  let currentString = "";
+  let level = 0;
+  let ignoreLevel = 0;
+  for (let i = 0; i < inputString.length; i++) {
+    const char = inputString[i];
+    if (char === '(') {
+      level++;
+    } else if (char === ')') {
+      level--;
     }
+    if (char === ';' && level === 0 && ignoreLevel === 0) {
+      result.push(currentString.trim());
+      currentString = "";
+    } else if (char === '(') {
+      currentString += char;
+      ignoreLevel++;
+    } else if (char === ')') {
+      currentString += char;
+      ignoreLevel--;
+    } else {
+      currentString += char;
+    }
+  }
+  if (currentString.trim() !== "") {
+    result.push(currentString.trim());
+  }
+  return result;
+}
+
 
     async function sendFeedback() {
     const teacherResponse = document.getElementById('teacherResponse').value;
