@@ -116,6 +116,7 @@
         }
         .editor-sidebar {
             background-color: #f1f1f1;
+             position: relative; /*  для позиционирования кнопки относительно sidebar */
             padding: 20px;
             width: 200px;
         }
@@ -305,11 +306,18 @@
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+  #saveFieldButton {
+       position: absolute; /*  абсолютно позиционируем кнопку */
+            bottom: 0; /*  прижимаем к низу контейнера */
+           left: 20px;
+             width: calc(100% - 40px);
+        }
 
 .element .close-btn:hover {
   background-color: #999;
   color: white;
 }
+
     </style>
 </head>
 <body>
@@ -340,13 +348,17 @@
             <h2>Введите размер</h2>
             <div class="editor-form-group">
                 <label for="width">Ширина:</label>
-                <input type="number" id="width" min="1" value="5">
+                <input type="number" id="width" min="5" max="15" value="5">
             </div>
             <div class="editor-form-group">
                 <label for="height">Высота:</label>
-                <input type="number" id="height" min="1" value="5">
+                <input type="number" id="height" min="5" max="15" value="5">
             </div>
-             <button class="btn-custom" id="confirm-btn">Подтвердить</button>
+             <div class="editor-form-group">
+                <label for="potions">Количество зелий:</label>
+                <input type="number" id="numberOfPotions" min="1" max="2" value="1">
+            </div>
+             <button class="btn-custom" id="generate-btn">Автогенерация</button>
             <div class="editor-elements">
                  <img class="editor-element-image editor-element" id = "imgPlayer" draggable="true" src="hero.png" alt="Hero">
                  <img class="editor-element-image editor-element" id = "imgWall" draggable="true" src="wall.png" alt="Wall">
@@ -354,6 +366,8 @@
                  <img class="editor-element-image editor-element"  id = "imgCauldron" draggable="true" src="kotyol.png" alt="Kotyol">
             </div>
              <div id="trash-bin">🗑️</div>
+             
+             <button class="btn-custom" id="saveFieldButton">Сохранить поле</button>
         </div>
         <div class="game-field" id="game-board">
         
@@ -376,6 +390,11 @@
     <button class="btn-custom" id="sendBtn">Отправить</button>
   </div>
     <script>
+      let heroCount = 0;
+      let cauldronCount = 0;
+      let potionCount = 0;
+      let wallCount = 0;
+      let maxWall =0;
     const getTaskId=  localStorage.getItem('getTaskId');
 
     const sendBtn = document.getElementById("sendBtn");
@@ -400,7 +419,8 @@
         console.error(`Error fetching student ID for ${studentLogin}: ${error}`);
       });
   });
-  location.reload();
+
+  refresh();
 });
 
    
@@ -410,6 +430,46 @@
      const editTaskDescriptionButton = document.getElementById("editTaskDescriptionButton");
      const editNameForm = document.getElementById("editNameForm");
       const editTaskDescriptionInputForm = document.getElementById("editTaskDescriptionInputForm");
+
+
+      saveTaskNameButton.addEventListener('click', () => {
+      
+        if((editTaskNameInputForm.value=='')&&(editTaskDescriptionInputForm.value==''))
+        {
+         alert("Поле ввода не должно быть пустым");
+        }
+        else if((editTaskNameInputForm.value!='')&&(editTaskDescriptionInputForm.value==''))
+        {
+          let updateTaskName = {
+            taskName: editTaskNameInputForm.value
+          };
+          fetch(`/api/tasks/modern/${getTaskId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(updateTaskName)
+        })
+        refresh();
+        }
+        else if((editTaskNameInputForm.value=='')&&(editTaskDescriptionInputForm.value!=''))
+        {
+         
+          let updateTaskDescription = {
+            taskText: editTaskDescriptionInputForm.value
+          };
+          fetch(`/api/tasks/modern/${getTaskId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(updateTaskDescription)
+        })
+        refresh();
+        }
+            }
+        
+          );
      
        editTaskNameButton.addEventListener('click', () => {
          editTaskNameInputForm.style.display = 'flex';
@@ -418,6 +478,7 @@
          editTaskNameButton.style.display = 'none';
           editTaskDescriptionButton.style.display = 'none';
           editNameForm.style.width = '100%';
+          editTaskDescriptionInputForm.value = '';
             });
             
             
@@ -428,6 +489,7 @@
          editTaskNameButton.style.display = 'none';
           editTaskDescriptionButton.style.display = 'none';
           editNameForm.style.width = '100%';
+          editTaskNameInputForm.value = '';
             });
             
                    cancelButton.addEventListener('click', () => {
@@ -515,16 +577,23 @@
     
         const widthInput = document.getElementById('width');
         const heightInput = document.getElementById('height');
-        const confirmBtn = document.getElementById('confirm-btn');
+        const generateFieldBtn = document.getElementById('generate-btn');
+        const amountOfPotionInput = document.getElementById('numberOfPotions');
         const gameBoard = document.getElementById('game-board');
         const trashBin = document.getElementById('trash-bin');
         let draggedElement = null;
          let gameFieldRect = null;
+        let width=0;
+        let height= 0;
 
+         generateFieldBtn.addEventListener('click', () => {
 
-        confirmBtn.addEventListener('click', () => {
-             const width = parseInt(widthInput.value);
-             const height = parseInt(heightInput.value);
+          generateField().then(data => {
+   
+      
+
+              width = parseInt(widthInput.value);
+              height = parseInt(heightInput.value);
              gameBoard.innerHTML = '';
              gameBoard.appendChild(createTable(height, width, 40));
              gameFieldRect = gameBoard.getBoundingClientRect();
@@ -533,6 +602,47 @@
                 cell.addEventListener('dragover', dragOver);
                 cell.addEventListener('drop', drop);
             });
+            console.log(data)
+            let playerCell = document.getElementById('cell_' + data.player.x + '_' + data.player.y);
+                let newElement = imgPlayer.cloneNode(true);
+                playerCell.appendChild(newElement);
+                newElement.addEventListener('dragstart', (e) => {
+                  draggedElement = e.target;
+                });
+
+                let cauldronCell = document.getElementById('cell_' + data.cauldron.x + '_' + data.cauldron.y);
+                newElement = imgCauldron.cloneNode(true);
+                cauldronCell.appendChild(newElement);
+                newElement.addEventListener('dragstart', (e) => {
+                  draggedElement = e.target;
+                });
+
+                data.walls.forEach(wall => {
+                  let wallCell = document.getElementById('cell_' + wall.x + '_' + wall.y);
+                  let elementToAdd = document.getElementById('imgWall');
+               let newWall = elementToAdd.cloneNode(true);
+               console.log(wallCell);
+                wallCell.appendChild(newWall);
+                wallCount++;
+                newWall.addEventListener('dragstart', (e) => {
+                  draggedElement = e.target;
+                });
+               });
+               
+               data.potions.forEach(potion => {
+
+                let potionCell = document.getElementById('cell_' + potion.x + '_' + potion.y);
+                  let elementToAdd = document.getElementById('imgPotion');
+               let newPotion = elementToAdd.cloneNode(true);
+               potionCell.appendChild(newPotion);
+                newPotion.addEventListener('dragstart', (e) => {
+                  draggedElement = e.target;
+                });
+
+               });
+  
+
+              });
         });
 
         function createTable(y_s, x_s, cellSize) {
@@ -540,9 +650,9 @@
               table.setAttribute('cellpadding', '0');
               table.setAttribute('cellspacing', '0');
             for (let i = 0; i < y_s; i++) {
-                const row = document.createElement('tr');
+                let row = document.createElement('tr');
                  for (let j = 0; j < x_s; j++) {
-                    const cell = document.createElement('td');
+                    let cell = document.createElement('td');
                      cell.id = `cell_${j}_${i}`;
                     cell.style.width = cellSize + 'px';
                     cell.style.height = cellSize + 'px';
@@ -573,37 +683,100 @@
     e.preventDefault();
     if (draggedElement) {
         const target = e.target;
+       
           if (target === trashBin && draggedElement.parentNode &&  !draggedElement.parentNode.classList.contains('editor-elements'))
             {
+              switch(draggedElement.id){
+                
+              case "imgPlayer" : 
+              heroCount--;
+               break;
+               case "imgCauldron" : 
+               cauldronCount--;
+                break;
+               case "imgPotion" : 
+               potionCount--;
+                 break;
+                 case "imgWall" : 
+               wallCount--;
+                 break;
+}
                if (draggedElement.parentNode) {
                  draggedElement.parentNode.removeChild(draggedElement);
                 }
             }
             else if (draggedElement.classList.contains('editor-element-image') && draggedElement.parentNode.classList.contains('editor-elements'))
             {
+
+              if(draggedElement.id=="imgPlayer")
+              {
+                if(heroCount==1)
+                {
+                  return;
+                }
+                else
+                {
+                    heroCount++;
+                }
+              }
+
+              if(draggedElement.id=="imgCauldron")
+              {
+                if(cauldronCount==1)
+                {
+                  return;
+                }
+                else
+                {
+                  cauldronCount++;
+                }
+              }
+
+              if(draggedElement.id=="imgPotion")
+              {
+                if(potionCount==2)
+                {
+                  return;
+                }
+                else
+                {
+                  potionCount++;
+                }
+              }
+              if(draggedElement.id=="imgWall")
+              {
+                
+                if(wallCount>=maxWall)
+                {
+                  return;
+                }
+                else
+                {
+                  wallCount++;
+                }
+              }
+
+console.log(heroCount+ " "+ cauldronCount+" "+potionCount+ " "+ wallCount+ " "+maxWall );
                const newElement = draggedElement.cloneNode(true);
                 newElement.setAttribute('draggable', true);
+               
                   newElement.addEventListener('dragstart', (e) => {
                   draggedElement = e.target;
+                  console.log(draggedElement);
                 });
                 if (target.classList.contains('editor-element-image')) {
-                console.log(target);
-                target.parentNode.appendChild(newElement);
-                console.log(target.parentNode);
-                target.remove();
+                console.log(draggedElement);
                }
               else{
                 target.appendChild(newElement);
+                console.log(draggedElement);
                 }
                  
              } else {
                 if (target.classList.contains('editor-element-image')) {
       
-                    console.log(target);
-                    draggedElement.parentNode.removeChild(draggedElement);
-                    target.parentNode.appendChild(draggedElement);
-                    console.log(target.parentNode);
-                     target.remove();
+                    console.log(draggedElement);
+                  
                  }
                  else{
                        draggedElement.parentNode.removeChild(draggedElement);
@@ -628,12 +801,13 @@
         taskNameElement.textContent = data.taskName;
         let taskDescElement = document.getElementById("task-description");
         taskDescElement.textContent = data.taskText;
-        const y_s = data.gridSize.y; // Количество строк
-        const x_s = data.gridSize.x; // Количество столбцов
+        height = data.gridSize.y; // Количество строк
+        width = data.gridSize.x; // Количество столбцов
         const cellSize = 40; // Размер ячеек в пикселях
-        
+        maxWall = (height * width * 0.4) -4;
+        console.log(maxWall);
         gameBoard.innerHTML = '';
-             gameBoard.appendChild(createTable(y_s, x_s, 40));
+             gameBoard.appendChild(createTable(height, width, 40));
              gameFieldRect = gameBoard.getBoundingClientRect();
               const gameCells = document.querySelectorAll('.game-field table td');
             gameCells.forEach(cell => {
@@ -643,6 +817,7 @@
                 let playerCell = document.getElementById('cell_' + data.player.x + '_' + data.player.y);
                 let newElement = imgPlayer.cloneNode(true);
                 playerCell.appendChild(newElement);
+                heroCount++;
                 newElement.addEventListener('dragstart', (e) => {
                   draggedElement = e.target;
                 });
@@ -650,6 +825,7 @@
                 let cauldronCell = document.getElementById('cell_' + data.cauldron.x + '_' + data.cauldron.y);
                 newElement = imgCauldron.cloneNode(true);
                 cauldronCell.appendChild(newElement);
+                cauldronCount++;
                 newElement.addEventListener('dragstart', (e) => {
                   draggedElement = e.target;
                 });
@@ -659,6 +835,7 @@
                   let elementToAdd = document.getElementById('imgWall');
                let newWall = elementToAdd.cloneNode(true);
                 wallCell.appendChild(newWall);
+                wallCount++;
                 newWall.addEventListener('dragstart', (e) => {
                   draggedElement = e.target;
                 });
@@ -670,6 +847,7 @@
                   let elementToAdd = document.getElementById('imgPotion');
                let newPotion = elementToAdd.cloneNode(true);
                potionCell.appendChild(newPotion);
+               potionCount++;
                 newPotion.addEventListener('dragstart', (e) => {
                   draggedElement = e.target;
                 });
@@ -692,6 +870,104 @@
 
 
         }
+
+
+        async function generateField()
+        {
+           heroCount = 1;
+       cauldronCount = 1;
+       wallCount = 0;
+          let columns = widthInput.value;
+          let rows = heightInput.value;
+          let potions = amountOfPotionInput.value;
+          potionCount = potions;
+          maxWall = (columns * rows * 0.4) -4;
+          let toReturnTask;
+          console.log(rows); 
+          console.log(columns); 
+          console.log(potions); 
+          try {
+        const response = await fetch(`http://localhost:8080/api/solution/generate-random?rows=${rows}&cols=${columns}&numPotions=${potions}&idTeacher=1`);
+        
+        if (!response.ok) {
+            throw new Error('Сетевая ошибка: ' + response.statusText);
+        }
+
+        toReturnTask = await response.json();
+        console.log(toReturnTask);
+        return toReturnTask;
+    } catch (error) {
+        alert(`Не удалось сгенерировать задание: ${error.message}`);
+    }
+}
+        
+  const saveFieldButton = document.getElementById('saveFieldButton');
+  saveFieldButton.addEventListener('click', () => {
+    const potions = [];
+    const walls = [];
+    let player = null;
+    let cauldron = null;
+    
+    const gameCells = document.querySelectorAll('.game-field table td');
+            gameCells.forEach(cell => {
+
+              if(cell.children[0]!= undefined)
+              {
+                let str = cell.id;
+              let matches = str.match(/\d+/g);
+              let x = parseInt(matches[0]); // Первое число
+              let y = parseInt(matches[1]); 
+              console.log(x+ " "+ y);
+
+                if(cell.children[0].alt=='Hero')
+                {
+                  player = { x: parseInt(x), y: parseInt(y) };
+                }
+                if(cell.children[0].alt=='Kotyol')
+                {
+                  cauldron = { x: parseInt(x), y: parseInt(y) };
+                }
+                if(cell.children[0].alt=='Poison')
+                {
+                  potions.push({ x: parseInt(x), y: parseInt(y) });
+                }
+                if(cell.children[0].alt=='Wall')
+                {
+                  walls.push({ x: parseInt(x), y: parseInt(y) });
+                }
+                console.log(cell.children[0].alt);
+  
+              }
+              });
+              const jsonData = {
+        potions: potions,
+        walls: walls,
+        player: player, // Значение по умолчанию, если не найдено
+        cauldron: cauldron , // Значение по умолчанию, если не найдено
+        gridSize: { x: width, y: height } // Пример, можно изменить
+    };
+
+    fetch(`/api/tasks/modern/${getTaskId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(jsonData)
+        })
+
+    console.log(JSON.stringify(jsonData, null, 2));  
+   
+            });
+
+
+        function refresh() {    
+    setTimeout(function () {
+        location.reload()
+    }, 100);
+}
+
+
+
 load();
     </script>
 </body>

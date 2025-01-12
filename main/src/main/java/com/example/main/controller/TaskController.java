@@ -17,6 +17,8 @@ import com.example.main.DataModel.PositionDataModel;
 import com.example.main.model.Task;
 import com.example.main.model.Teacher;
 import com.example.main.repos.TaskRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.transaction.Transactional;
 
@@ -27,7 +29,11 @@ public class TaskController {
     @Autowired
     private TaskRepository taskRepository;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     // Обработка PATCH запроса для изменения только определенных полей
+    @SuppressWarnings("unchecked")
     @PatchMapping("/modern/{id}")
     @Transactional
     public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Map<String, Object> fields) {
@@ -45,22 +51,28 @@ public class TaskController {
                     task.setTaskText((String) value);
                     break;
                 case "potions":
-                    task.setPotions((List<PositionDataModel>) value); // Обновление коллекции potions
+                    List<PositionDataModel> potions = objectMapper.convertValue(value, new TypeReference<List<PositionDataModel>>() {});
+                    task.setPotions(potions);
                     break;
                 case "walls":
-                    task.setWalls((List<PositionDataModel>) value); // Обновление коллекции walls
+                    List<PositionDataModel> walls = objectMapper.convertValue(value, new TypeReference<List<PositionDataModel>>() {});
+                    task.setWalls(walls);
                     break;
                 case "player":
-                    task.setPlayer((PositionDataModel) value); // Обновление поля player
+                    PositionDataModel player = objectMapper.convertValue(value, PositionDataModel.class);
+                    task.setPlayer(player);
                     break;
                 case "cauldron":
-                    task.setCauldron((PositionDataModel) value); // Обновление поля cauldron
+                    PositionDataModel cauldron = objectMapper.convertValue(value, PositionDataModel.class);
+                    task.setCauldron(cauldron);
                     break;
                 case "gridSize":
-                    task.setGridSize((PositionDataModel) value); // Обновление поля gridSize
+                    PositionDataModel gridSize = objectMapper.convertValue(value, PositionDataModel.class);
+                    task.setGridSize(gridSize);
                     break;
                 case "teacher":
-                    task.setTeacher((Teacher) value); // Обновление поля teacher
+                    Teacher teacher = objectMapper.convertValue(value, Teacher.class);
+                    task.setTeacher(teacher);
                     break;
                 default:
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid field: " + key);
