@@ -89,4 +89,17 @@ public class UIController {
     public String home() {
       return "login";
     }
+    @GetMapping("/developers") 
+    public String developers() {
+      return "developers";
+    }
+    @GetMapping("/reference") 
+    public String reference() {
+      return "reference";
+    }
+    @GetMapping("/referenceStud") 
+    public String referenceStud() {
+      return "referenceStud";
+    }
+    
 }

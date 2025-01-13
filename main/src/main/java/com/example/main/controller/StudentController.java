@@ -72,8 +72,6 @@ public class StudentController
         return ResponseEntity.ok("Answer submitted successfully");
     }
 
-    //TODO получение обычной solution
-
 
     // Получение оценки за конкретную задачу
     @GetMapping("/{idStudent}/tasks/{idTask}/mark")
@@ -117,7 +115,4 @@ public class StudentController
         List<Student> students = studentService.getStudentsWithoutTask(taskId);
         return ResponseEntity.ok(students);
     }
-
-    
-
 }
