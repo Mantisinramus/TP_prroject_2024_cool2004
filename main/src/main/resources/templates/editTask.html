@@ -611,12 +611,37 @@ backButton.addEventListener('click', () => {
 
          generateFieldBtn.addEventListener('click', () => {
 
+          width = parseInt(widthInput.value);
+              height = parseInt(heightInput.value);
+            let alertStr = "";
+              if((width<5)|| (width>15)||(height<5) || (height>15))
+              {
+              if(width<5)
+              {
+                alertStr+="Ширина должны быть больше или равна 5";
+              }
+              if(width>15)
+              {
+                alertStr+= "\nШирина должны быть меньше или равна 15";
+              }
+              if(height<5)
+              {
+                alertStr+= "\nДлина должны быть больше или равна 5";             
+              }
+              if(height>15)
+              {
+                alertStr+= "\nДлина должны быть меньше или равна 15";
+              }
+              alert(alertStr);
+              return;
+            }
           generateField().then(data => {
    
       
 
-              width = parseInt(widthInput.value);
-              height = parseInt(heightInput.value);
+            
+
+
              gameBoard.innerHTML = '';
              gameBoard.appendChild(createTable(height, width, 40));
              gameFieldRect = gameBoard.getBoundingClientRect();

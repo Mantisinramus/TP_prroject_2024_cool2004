@@ -81,9 +81,36 @@
         p {
             margin: 10px 0;
         }
+        .back-button {
+            position: absolute;
+            top: 10px; /* Отступ сверху */
+            left: 10px; /* Отступ слева */
+            background-color: #ddd;
+            color: #333;
+            padding: 1px 15px;
+            border: none;
+            border-radius: 5px;
+             cursor: pointer;
+            text-decoration: none;
+              font-size: 1em; /* Размер шрифта */
+            transition: background-color 0.3s ease;
+        }
+        .back-button:hover {
+             background-color: #bbb; /* Слегка более тёмный цвет при наведении */
+        }
+        .arrow {
+             width: 24px;
+            height: 24px;
+            color: #333; /* Задайте желаемый цвет */
+           cursor: pointer;
+            position: fixed; /* Фиксируем положение элемента */
+            bottom: 20px;  /* отступ от нижней границы */
+            right: 20px; /* отступ от правой границы */
+        }
     </style>
 </head>
 <body>
+    <a href="/menuTeacher" class="back-button">Вернуться назад</a>
     <div class="container">
         <h1>Справка для учителя</h1>
         
@@ -174,7 +201,7 @@
             <li><strong>Игрок;</strong></li>
             <li><strong>Котёл;</strong>В него необходимо ученику перетаскивать зелья.</li>
             <li><strong>Стена;</strong>Непреодолимая преграда</li>
-            <li><strong>Зелье;</strong>Необходимый грааль "ХЗ ЫЫЫЫЫЫЫ"</li>
+            <li><strong>Зелье;</strong>Необходимый грааль</li>
         </ul>
         <p>После успешного создания или редактирования задания возможно сохранить нажав на соответсвующую кнопку.</p>
         <p>В конце страницы вы можете отправить задание ученикам. Для этого доступно два выбора:</p>
@@ -199,5 +226,22 @@
             <p>© 2025. Все права защищены.</p>
         </div>
     </div>
+    <div class="arrow">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 5L12 19M12 5L6 11M12 5L18 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </div>
+
+
+    <script>
+        const arrow = document.querySelector('.arrow');
+
+        arrow.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth' //  плавная прокрутка
+            });
+        });
+    </script>
 </body>
 </html>
