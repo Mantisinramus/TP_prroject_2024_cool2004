@@ -5,12 +5,12 @@ import java.util.List;
 public class GameStateDTO {
     private PositionDataModel playerPosition;
     private List<PositionDataModel> potions;
-    private Boolean answer;
+    private String answer;
 
     // Конструкторы
-    public GameStateDTO(PositionDataModel playerPosition, List<PositionDataModel> potions, Boolean answer) {
+    public GameStateDTO(PositionDataModel playerPosition, List<PositionDataModel> potion, String answer) {
         this.playerPosition = playerPosition;
-        this.potions = potions;
+        this.potions = potion;
         this.answer = answer;
     }
 
@@ -27,15 +27,15 @@ public class GameStateDTO {
         return potions;
     }
 
-    public void setPotions(List<PositionDataModel> potions) {
-        this.potions = potions;
+    public void setPotions(List<PositionDataModel> potion) {
+        this.potions = potion;
     }
 
-    public Boolean getAnswer() {
+    public String getAnswer() {
         return answer;
     }
 
-    public void setAnswer(Boolean answer) {
+    public void setAnswer(String answer) {
         this.answer = answer;
     }
 }

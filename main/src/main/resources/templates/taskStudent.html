@@ -265,9 +265,10 @@
         <div class="trash-area" id="trashArea">Корзина</div>
       </div>
       <div style="display:flex;">
-        <button class="btn-custom" onclick="getDraggedItems()">Проверить решение</button>
+        <button class="btn-custom" onclick="checkSolution()">Проверить решение</button>
         <button class="btn-custom" onclick="sendSolution()">Отправить решение</button>
       </div>
+      <h3 id = "stepResult">Здесь будет отображен результат каждого шага</h3>
     </div>
   </div>
 
@@ -280,6 +281,7 @@
   <button class="btn-custom" id="backButton">Вернуться назад</button>
 
   <script>
+
 
 const backButton = document.getElementById("backButton");
 backButton.addEventListener('click', () => {
@@ -443,7 +445,7 @@ backButton.addEventListener('click', () => {
     });
     // Функция для создания таблицы
     function createTable(y_s, x_s, cellSize) {
-      let table = '<table>';
+      let table = '<table id = tablet>';
       for (let i = 0; i < y_s; i++) {
         table += '<tr>';
         for (let j = 0; j < x_s; j++) {
@@ -457,6 +459,7 @@ backButton.addEventListener('click', () => {
     }
     const taskId = localStorage.getItem("taskId");
     const solutionId = localStorage.getItem("solutionId");
+    const idStudent = localStorage.getItem("studentId"); // Замените на фактический id студента
 
     function load() {
       let imgPlayer = document.createElement('img');
@@ -568,14 +571,98 @@ backButton.addEventListener('click', () => {
       return seq;
     }
 
-    function checkSolution() {
+    async function checkSolution() 
+    {
+      try {
+                let response = await fetch(`http://localhost:8080/api/solution/checkSequence/${idStudent}/${taskId}`);
+                if (!response.ok) throw new Error("Failed to check sequence");
+                let sequence = await response.json();
+                const table = document.getElementById('tablet');
+                const cells = table.querySelectorAll('td');
+              cells.forEach(cell => 
+              {
+                if(cell.children[0]!=undefined)
+                {
+                  if(cell.children[0].src=="http://localhost:8080/hero.png" ||cell.children[0].src=="http://localhost:8080/posion1.png"  )
+                  {
+                   cell.textContent = '';
+                  }
+                }
+              
+              });
+              
+              console.log(sequence);
+              let imgPlayer = document.createElement('img');
+              imgPlayer.src = 'hero.png'; // Замените на путь к вашему изображению
+              imgPlayer.style.width = '100%'; //  или другой нужный размер
+              imgPlayer.style.height = '100%';
+              imgPlayer.style.objectFit = 'cover';
+             
+
+
+              let stepResult = document.getElementById("stepResult");
+              
+              let stepResultStartValue  = stepResult.textContent;
+              for (const step of sequence) 
+                {
+                  cells.forEach(cell => 
+              {
+                if(cell.children[0]!=undefined)
+                {
+                  if(cell.children[0].src=="http://localhost:8080/posion1.png"  )
+                  {
+                    
+                   cell.textContent = '';
+                  }
+                }
+              
+              });
+             
+
+                  console.log(stepResultStartValue);
+                  let playerCell = document.getElementById('cell_' + step.playerPosition.x + '_' + step.playerPosition.y);
+                  playerCell.appendChild(imgPlayer);
+                  
+                
+
+                  step.potions.forEach(potion => {
+                    
+                  let potionCell = document.getElementById('cell_' + potion.x + '_' + potion.y);
+                 
+              let imgPotion = document.createElement('img');
+                  imgPotion.src = 'posion1.png'; // Замените на путь к вашему изображению
+                  imgPotion.style.width = '100%'; //  или другой нужный размер
+                  imgPotion.style.height = '100%';
+                  imgPotion.style.objectFit = 'cover';
+                  console.log(potionCell);
+                  potionCell.appendChild(imgPotion);
+
+                });
+                stepResult.textContent = step.answer;
+                await delay(1000);
+                
+                }
+                await delay(2000);
+                stepResult.textContent = stepResultStartValue;
+                load();
+
     }
+    catch (error) {
+                console.error("Error checking sequence:", error);
+            }
+  }
+
+  function delay(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+}
 
     async function sendSolution() {
       let solutionToSend = getDraggedItems();
       console.log(solutionToSend);
       const jsonData = {answerTask: solutionToSend };
-      const idStudent = localStorage.getItem("studentId"); // Замените на фактический id студента
+     
       try {
         const response = await fetch(`/api/students/${idStudent}/tasks/${taskId}/answer`, {
           method: 'PUT',
@@ -601,7 +688,7 @@ backButton.addEventListener('click', () => {
     function addElementToDropArea(elementToAdd, placeToAdd) {
       const imgElement = document.createElement('img');
       imgElement.src = elementToAdd + ".png"; 
-      imgElement.alt = elementToAdd.charAt(0).toUpperCase() + elementToAdd.slice(1);
+      imgElement.alt = elementToAdd.charAt(0) + elementToAdd.slice(1);
       imgElement.className = 'draggable';
       imgElement.draggable = true;
       imgElement.setAttribute('data-item', elementToAdd);
@@ -625,6 +712,7 @@ backButton.addEventListener('click', () => {
 
     function loadSequence(finStr) {
       let depth = 0;
+      dropArea.innerHTML = '';
       finStr.forEach(ss => {
         console.log(ss);
         if (ss.startsWith('repeat ')) {

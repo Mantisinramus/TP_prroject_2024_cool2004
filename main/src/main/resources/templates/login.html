@@ -92,6 +92,25 @@
             background-color: var(--orange);
             color: var(--green);
         }
+        .link-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            background-color: var(--green);
+            padding: 20px;
+            border-radius: var(--radius);
+            width: 100%;
+            box-sizing: border-box;
+        }
+         .link-container a {
+            color: var(--beige);
+             text-decoration: none;
+             margin-bottom: 10px;
+        }
+        .link-container a:hover {
+             color: var(--orange);
+        }
     </style>
 </head>
 <body>
@@ -105,6 +124,9 @@
         <div class="role-buttons">
             <button class="" id="teacher-btn">Учитель</button>
             <button class="" id="student-btn">Ученик</button>
+        </div>
+        <div class="link-container">
+            <a href="/developers">Информация о разработчиках</a>
         </div>
     </div>
 
