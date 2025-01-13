@@ -21,9 +21,13 @@
     <tbody>
     </tbody>
 </table>
-
+<button class="form-button" id ="backButton">Вернуться назад</button>
 <script>
-   
+   const backButton = document.getElementById("backButton");
+backButton.addEventListener('click', () => {
+  window.location.href = '/menuTeacher';
+})
+
 function load()
 {
 

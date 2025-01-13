@@ -91,9 +91,10 @@
         <input type="text" placeholder="Введите ФИО ученика" id="studentName">
         <input type="text" placeholder="Введите логин ученика" id="studentLogin">
         <input type="text" placeholder="Введите пароль ученика" id="studentPassword">
-        <button class="form-button" id="saveButton">Сохранить</button>
+        <button class="form-button" id="saveButton">Сохранить изменения</button>
+        <button class="form-button" id="deleteButton">Удалить ученика</button>
     </div>
-
+  <button class="form-button" id="backButton">Вернуться назад</button>
 <script>
     const saveButton = document.getElementById('saveButton');
     const studentId = localStorage.getItem('editStudentId');
@@ -173,6 +174,33 @@
     }
 });
 
+
+const deleteButton= document.getElementById("deleteButton");
+deleteButton.addEventListener('click', async () => {
+
+        try {
+            const response = await fetch(`/api/teacher/students/${studentId}/del`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json' 
+                }
+            });
+              if (!response.ok) {
+                  const errorText = await response.text();
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+               }
+            const responseText = await response.text();
+            alert(responseText);
+            window.location.href = '/adminTeacher';
+        } catch (error) {
+           alert("Error deleting student: " + error.message);
+        }
+    });
+
+const backButton = document.getElementById("backButton");
+backButton.addEventListener('click', () => {
+  window.location.href = '/adminTeacher';
+})
 </script>
 </body>
 </html>

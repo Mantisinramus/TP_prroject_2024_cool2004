@@ -41,9 +41,12 @@
         <input type="text" placeholder="Введите пароль ученика" id="studentPassword">
         <button class="form-button" id ="addButton">Добавить</button>
       </div>
+      <button class="form-button" id ="backButton">Вернуться назад</button>
 <script>
   // Функция для добавления строки в таблицу
   const addButton = document.getElementById('addButton');
+
+
   function loadStudents() {
     const id = localStorage.getItem("teacherId");
     console.log(id);
@@ -102,6 +105,10 @@
     }
    
 
+})
+const backButton = document.getElementById("backButton");
+backButton.addEventListener('click', () => {
+  window.location.href = '/menuTeacher';
 })
 
 

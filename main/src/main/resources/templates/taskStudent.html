@@ -277,8 +277,15 @@
     <h5>Оценка:</h5>
     <p id="userScore">Оценка будет отображена здесь...</p>
   </div>
+  <button class="btn-custom" id="backButton">Вернуться назад</button>
 
   <script>
+
+const backButton = document.getElementById("backButton");
+backButton.addEventListener('click', () => {
+  window.location.href = '/menuStudent';
+})
+
     document.addEventListener('DOMContentLoaded', () => {
       const draggableItems = document.querySelectorAll('.draggable');
       const dropArea = document.getElementById('dropArea');

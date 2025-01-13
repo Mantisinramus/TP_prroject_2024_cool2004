@@ -375,6 +375,7 @@
         
   
   </div>
+  
    <div class="container">
     <form class="student-form">
       <label for="element-select" style="color: white;">Отправить задание ученикам</label>
@@ -389,7 +390,17 @@
     </div>
     <button class="btn-custom" id="sendBtn">Отправить</button>
   </div>
+<div>
+   <button class="btn-custom" id="deleteButton">Удалить задачу</button>
+    </div>
+    <button class="btn-custom" id="backButton">Вернуться назад</button>
     <script>
+
+   
+    const backButton = document.getElementById("backButton");
+backButton.addEventListener('click', () => {
+  window.location.href = '/taskTeacher';
+})
       let heroCount = 0;
       let cauldronCount = 0;
       let potionCount = 0;
@@ -440,6 +451,12 @@
         }
         else if((editTaskNameInputForm.value!='')&&(editTaskDescriptionInputForm.value==''))
         {
+          if(editTaskNameInputForm.value.length<9  || editTaskNameInputForm.value.length>20)
+          {
+            alert("Длина названия задания должна быть от 9 до 20 символов");
+            return;
+          }
+          else{
           let updateTaskName = {
             taskName: editTaskNameInputForm.value
           };
@@ -452,9 +469,15 @@
         })
         refresh();
         }
+      }
         else if((editTaskNameInputForm.value=='')&&(editTaskDescriptionInputForm.value!=''))
         {
-         
+         if(editTaskDescriptionInputForm.value.length<5||editTaskDescriptionInputForm.value.length>300)
+          {
+            alert("Длина описания задания должна быть от 5 до 300 символов");
+            return;
+          }
+          else{
           let updateTaskDescription = {
             taskText: editTaskDescriptionInputForm.value
           };
@@ -466,7 +489,7 @@
           body: JSON.stringify(updateTaskDescription)
         })
         refresh();
-        }
+        }}
             }
         
           );
@@ -971,7 +994,35 @@ console.log(heroCount+ " "+ cauldronCount+" "+potionCount+ " "+ wallCount+ " "+m
     }, 100);
 }
 
+const deleteButton = document.getElementById("deleteButton");
+      deleteButton.addEventListener('click',async () => {
 
+        const isConfirmed =  confirm("Подтвердите удалание задачи " + getTaskId + "?");
+
+      if (!isConfirmed) {
+       return; 
+      }
+      else{
+        try {
+            const response = await fetch(`/api/teacher/tasks/${getTaskId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json' 
+                }
+            });
+              if (!response.ok) {
+                  const errorText = await response.text();
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+               }
+            const responseText = await response.text();
+            alert(responseText);
+            window.location.href = '/taskTeacher';
+        } catch (error) {
+           alert("Error deleting task: " + error.message);
+        }
+ 
+    }
+})
 
 load();
     </script>
