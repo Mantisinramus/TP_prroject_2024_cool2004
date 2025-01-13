@@ -251,7 +251,7 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     // Проверка длины названия задачи
-    if (task.getTaskName() == null || task.getTaskName().length() < 9 || task.getTaskName().length() > 20) 
+    if (task.getTaskName() == null || task.getTaskName().length() < 9 || task.getTaskName().length() > 20 || reposTask.findByTaskName(task.getTaskName()).isPresent())  
     {
         throw new IllegalArgumentException("Длина наименования задачи от 9 до 20");
     }    
@@ -368,7 +368,7 @@ public class TeacherServiceImpl implements TeacherService {
         throw new IllegalArgumentException("Занятые клетки (стены, зелья, котел и игрок) не могут занимать более 40% от общего количества клеток!");
     }
     // Проверка длины названия задачи
-    if (updatedTask.getTaskName() == null || updatedTask.getTaskName().length() < 9 || updatedTask.getTaskName().length() > 20) 
+    if (updatedTask.getTaskName() == null || updatedTask.getTaskName().length() < 9 || updatedTask.getTaskName().length() > 20|| reposTask.findByTaskName(updatedTask.getTaskName()).isPresent()) 
     {
         throw new IllegalArgumentException("Длина наименования задачи от 9 до 20");
     }    
